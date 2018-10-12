@@ -1,0 +1,50 @@
+import { BindingScope, IoC, ReferenceType } from "fmko-ts-ioc";
+
+import {
+    ModuleRegistryFactory,
+    RemoteLogService,
+    IdSynthesizer,
+    VersionImpl
+} from "fmko-typescript-common";
+
+import FSKOnlineConfigurationFactory from "./FSKOnlineConfigurationFactory";
+
+const SINGLETON = BindingScope.SINGLETON;
+const ROOT_ELEMENT_ID = "fmkoddvMain";
+
+export default class FSKOnlineContainer {
+    private _ioc: IoC;
+
+    public constructor() {
+        this._ioc = new IoC();
+
+        this._ioc.bind(ModuleRegistryFactory)
+            .withFactoryFunction(() => ModuleRegistryFactory.getInstance())
+            .scopedAs(SINGLETON);
+        this._ioc.bind("ModuleContext")
+            .withFactoryFunction((resolve) => resolve(ModuleRegistryFactory).getModuleContext())
+            .scopedAs(SINGLETON);
+        this._ioc.bind("FSKConfig")
+            .withFactoryFunction((resolve) => FSKOnlineConfigurationFactory.createInstance(resolve("ModuleContext")))
+            .scopedAs(SINGLETON);
+        this._ioc.bind("RootElement")
+            .withFactoryFunction((resolve) => document.getElementById(ROOT_ELEMENT_ID))
+            .scopedAs(SINGLETON);
+        this._ioc.bind(IdSynthesizer)
+            .withFactoryFunction((resolve) => {
+                const mc = resolve("ModuleContext");
+                return new IdSynthesizer("ddv-online_");
+            }).scopedAs(SINGLETON);
+        this._ioc.bind(`Version`)
+            .withFactoryFunction(() => {
+                return new VersionImpl(SCM_VERSION, SCM_BRANCH, BUILD_TIME, POM_VERSION);
+            })
+            .scopedAs(SINGLETON);
+
+        this._ioc.bind(RemoteLogService).scopedAs(SINGLETON);
+    }
+
+    public resolve(type: ReferenceType) {
+        return this._ioc.resolve(type);
+    }
+}

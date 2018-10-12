@@ -1,0 +1,25 @@
+{
+  "version": "2.8.4",
+  "exclude": [
+    "node_modules",
+    "target",
+    "typings/browser",
+    "typings/browser.d.ts",
+    "typings/main"
+  ],
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "target": "ES2017",
+    "outDir": "target/js",
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true
+  },
+  "lib": ["es2018", "dom"],
+  "atom": {
+    "rewriteTsconfig": true
+  },
+  "compileOnSave": false
+}
