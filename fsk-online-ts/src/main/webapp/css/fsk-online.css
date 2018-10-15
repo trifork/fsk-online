@@ -1,1 +1,75 @@
-/* Empty */
+h1.sds-h1 {
+    font-size: 30px;
+    font-weight: 600;
+}
+
+h3.sds-h3 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+h5.sds-h5 {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+p.sds-p {
+    font-size: 14px;
+}
+
+p.sds-quote {
+    font-size: 16px;
+    font-style: italic;
+}
+
+p.sds-quoted-by {
+    font-size: 16px;
+    color: #222;
+    font-weight: 600;
+}
+
+p.sds-quoted-by:before {
+    content: "-----";
+    background-color: #bfe600;
+}
+
+.sds-primary-color {
+    color: #005a8d;
+}
+
+.sds-secondary-color {
+    color: #007ec5;
+}
+
+.sds-dark-blue-color {
+    color: #405b6b;
+}
+
+.sds-green-color {
+    color: #bfe600;
+}
+
+.sds-white-color {
+    color: #f6f5f0;
+}
+
+.sds-black-color {
+    color: #222;
+}
+
+.sds-grey-color {
+    color: #888;
+}
+
+.sds-light-grey-color {
+    color: #f2f4f6;
+}
+
+a.sds-link {
+    color: #007ec5;
+}
+
+a.sds-link:before {
+    content: ">";
+    color: #007ec5;
+}

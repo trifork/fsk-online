@@ -6,7 +6,7 @@ const webpack = require('webpack');
 const baseConfig = base.webpack.dev({
     entry: './src/main/ts/index.ts',
     output: {
-        filename: 'target/js/fmkoddv.js'
+        filename: 'target/js/fsk.js'
     },
     devtool: 'source-map'
 });

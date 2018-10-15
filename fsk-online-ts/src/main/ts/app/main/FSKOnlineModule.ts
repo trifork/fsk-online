@@ -10,6 +10,7 @@ import {
 } from "fmko-typescript-common";
 import FSKOnlineContainer from "./FSKOnlineContainer";
 import FSKConfig from "./FSKConfig";
+import OrganDonorRegistrationTab from "../tabs/OrganDonorRegistrationTab";
 
 if (!("remove" in Element.prototype)) {
     Element.prototype[`remove`] = function () {
@@ -21,7 +22,7 @@ if (!("remove" in Element.prototype)) {
 
 export default class FSKOnlineModule extends DefaultModule {
     public static FSK_ONLINE_CTX_ID = "FSK_ONLINE";
-    private static MODULE_IDENTIFIER = "vaccinationsregister-ts";
+    private static MODULE_IDENTIFIER = "fsk";
 
     public constructor(private container: FSKOnlineContainer) {
         super(FSKOnlineModule.MODULE_IDENTIFIER);
@@ -43,8 +44,10 @@ export default class FSKOnlineModule extends DefaultModule {
     }
 
     public initAfterModuleRegistered() {
+        const organDonorRegister = <OrganDonorRegistrationTab>this.container.resolve(OrganDonorRegistrationTab);
+        this.addTabbedPanel(organDonorRegister);
 //       this.loadLocalStylesheet("fsk-online/css/pikaday.css");
-       this.loadLocalStylesheet("fsk-online/css/fsk-online.css");
+        this.loadLocalStylesheet("fsk-online-ts/css/fsk-online.css");
     }
 
     public setModuleContext(moduleContext: ModuleContext) {

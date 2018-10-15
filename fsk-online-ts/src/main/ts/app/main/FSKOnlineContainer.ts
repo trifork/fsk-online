@@ -10,7 +10,7 @@ import {
 import FSKOnlineConfigurationFactory from "./FSKOnlineConfigurationFactory";
 
 const SINGLETON = BindingScope.SINGLETON;
-const ROOT_ELEMENT_ID = "fmkoddvMain";
+const ROOT_ELEMENT_ID = "fskMain";
 
 export default class FSKOnlineContainer {
     private _ioc: IoC;
@@ -33,7 +33,7 @@ export default class FSKOnlineContainer {
         this._ioc.bind(IdSynthesizer)
             .withFactoryFunction((resolve) => {
                 const mc = resolve("ModuleContext");
-                return new IdSynthesizer("ddv-online_");
+                return new IdSynthesizer("fsk-online_");
             }).scopedAs(SINGLETON);
         this._ioc.bind(`Version`)
             .withFactoryFunction(() => {

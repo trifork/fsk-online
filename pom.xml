@@ -5,7 +5,7 @@
     <artifactId>fsk-online-parent</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>ddv-online-parent</name>
+    <name>fsk-online-parent</name>
     <parent>
         <groupId>dk.fmkonline</groupId>
         <artifactId>fol-parent</artifactId>
@@ -104,6 +104,7 @@
     </scm>
 
     <modules>
+        <module>fsk-online-ts</module>
     </modules>
 
     <dependencyManagement>

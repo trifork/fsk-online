@@ -6,7 +6,7 @@ const base = require('fmko-typescript-build');
 module.exports = base.grunt.module({
   project: grunt.file.readJSON('package.json'),
   webpack: {
-    "fmkoddv": require('./webpack.config.js')
+    "fsk": require('./webpack.config.js')
   },
   copy: {
     js: {
