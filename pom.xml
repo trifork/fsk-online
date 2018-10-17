@@ -105,10 +105,16 @@
 
     <modules>
         <module>fsk-online-ts</module>
+        <module>fsk-online-ts</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>dk.sundhedsdatastyrelsen.organdonorregistret</groupId>
+                <artifactId>odr-schemas</artifactId>
+                <version>1.0.2-SNAPSHOT</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

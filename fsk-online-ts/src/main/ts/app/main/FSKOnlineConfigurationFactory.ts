@@ -6,7 +6,7 @@ export default class FSKOnlineConfigurationFactory {
 
         const DEFAULTS: FSKConfig = {
             RemoteExceptionLoggingEnabled: true,
-            VaccinationsregisterStamdataUrlBase: "/fmk/ddv-sdm/rest"
+            FSKUrlBase: "/fmk/fsk-online/rest"
         };
 
         return DEFAULTS;

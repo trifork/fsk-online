@@ -1,20 +1,38 @@
-import {ModuleContext, TabbedPanel, UserContext, Widget} from "fmko-typescript-common";
+import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler, Widget} from "fmko-typescript-common";
 import {TemplateWidget} from "fmko-ts-mvc";
 import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
-import {RadioButton, Checkbox, RadioGroup, HTML} from "fmko-ts-widgets";
+import {RadioButton, RadioGroup} from "fmko-ts-widgets";
 import LimitedAccessPermissionPanel from "../panels/organdonor-panels/LimitedAccessPermissionPanel";
+import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
+import FullAccessPermissionPanel from "../panels/organdonor-panels/FullAccessPermissionPanel";
+import {IOrganDonor} from "../model/OrganDonorRegistrationType";
+import DontKnowAccessPermissionPanel from "../panels/organdonor-panels/DontKnowAccessPermissionPanel";
+import NoAccessPermissionPanel from "../panels/organdonor-panels/NoAccessPermissionPanel";
+import OrganDonorRegistration = FSKTypes.OrganDonorRegistration;
 
 export default class OrganDonorRegistrationTab extends TemplateWidget implements TabbedPanel {
     private ID = "OrganDonorRegistrationTab_TS";
     private TITLE = "Organdonorregister";
-    private shown;
+    private shown: boolean;
+    private initialized: boolean;
+    private OrganRegistrationChangeHandler: ValueChangeHandler<FSKTypes.OrganDonorRegistration>;
 
-    public static deps = () => [IoC, "ModuleContext", "RootElement"];
+    private radioGroup: RadioGroup<Widget & IOrganDonor<FSKTypes.OrganDonorRegistration>>;
 
-    constructor(protected container: IoC, private moduleContext: ModuleContext, private rootElement: HTMLElement) {
+    public static deps = () => [IoC, "ModuleContext", FSKOrganDonorCache, "RootElement"];
+
+    constructor(protected container: IoC, private moduleContext: ModuleContext, private fskOrganDonorCache: FSKOrganDonorCache, private rootElement: HTMLElement) {
         super(container);
         this.element = document.createElement(`div`);
+    }
+
+    public init() {
+        if (this.initialized) {
+            return;
+        }
+        this.initialized = true;
+        super.init();
     }
 
     public getTemplate(): string {
@@ -23,49 +41,61 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
 
     public setupBindings(): void {
 
-        const fullPermissionCheckBox = new Checkbox(false, `Min fulde tilladelse forudsætter mine pårørendes accept`);
-        const fullPermissionRadioButton = new RadioButton(fullPermissionCheckBox, `Jeg giver hermed fuld tilladelse til, at mine organer kan anvendes til transplantation efter min død.`, true);
+        const fullAccessPermissionPanel = new FullAccessPermissionPanel();
+        const fullPermissionRadioButton = new RadioButton(fullAccessPermissionPanel, `Jeg giver hermed fuld tilladelse til, at mine organer kan anvendes til transplantation efter min død.`, true);
 
-
-        const radioButtonId = this.idSynthesizer.createId();
-
-        this.addAndReplaceWidgetByVarName(fullPermissionRadioButton.getWrappedButton(radioButtonId), `full-permission-radio`);
-        this.addAndReplaceWidgetByVarName(fullPermissionCheckBox, `full-permission-widget`);
+        this.addAndReplaceWidgetByVarName(fullPermissionRadioButton.getWrappedButton(this.idSynthesizer.createId()), `full-permission-radio`);
+        this.addAndReplaceWidgetByVarName(fullAccessPermissionPanel, `full-permission-widget`);
 
         const limitedAccessPanel = this.container.resolve<LimitedAccessPermissionPanel>(LimitedAccessPermissionPanel);
         limitedAccessPanel.setVisible(false);
-        const limitedPermissionRadioButton = new RadioButton(limitedAccessPanel, `Jeg giver hermed begrænset tillade til, at de organer, jeg har sat krdyds ud for, kan anvendes til transplantation efter min død.`)
+        const limitedPermissionRadioButton = new RadioButton(limitedAccessPanel, `Jeg giver hermed begrænset tillade til, at de organer, jeg har sat krdyds ud for, kan anvendes til transplantation efter min død.`);
 
-        this.addAndReplaceWidgetByVarName(limitedPermissionRadioButton.getWrappedButton(radioButtonId), `limited-permission-radio`);
+        this.addAndReplaceWidgetByVarName(limitedPermissionRadioButton.getWrappedButton(this.idSynthesizer.createId()), `limited-permission-radio`);
         this.addAndReplaceWidgetByVarName(limitedAccessPanel, `limited-permission-widget`);
 
-        const placeholderWidget = new Widget();
-        placeholderWidget.element = document.createElement(`span`);
-        placeholderWidget.setVisible(false);
+        const dontKnowPermissionPanel = new DontKnowAccessPermissionPanel();
 
         const dontKnowPermissionRadioButton = new RadioButton(
-            placeholderWidget,
+            dontKnowPermissionPanel,
             `Jeg tager ikke stilling, jeg overlader det i stedet til mine nærmeste pårørende at tage stilling til, om mine organer kan anvendes til transplantation efter min død`
         );
-        this.addAndReplaceWidgetByVarName(dontKnowPermissionRadioButton.getWrappedButton(radioButtonId), `dont-know-permission-radio`);
+        this.addAndReplaceWidgetByVarName(dontKnowPermissionRadioButton.getWrappedButton(this.idSynthesizer.createId()), `dont-know-permission-radio`);
 
-        const restrictedPermissionRadioButton = new RadioButton(placeholderWidget, `Jeg modsætter mig, at mine organer anvendes til transplantation efter min død`);
-        this.addAndReplaceWidgetByVarName(restrictedPermissionRadioButton.getWrappedButton(radioButtonId), `restricted-permission-radio`);
+        const noAccessPermissionPanel = new NoAccessPermissionPanel();
 
-        const radioGroup = new RadioGroup<Widget>([
+        const restrictedPermissionRadioButton = new RadioButton(noAccessPermissionPanel, `Jeg modsætter mig, at mine organer anvendes til transplantation efter min død`);
+        this.addAndReplaceWidgetByVarName(restrictedPermissionRadioButton.getWrappedButton(this.idSynthesizer.createId()), `restricted-permission-radio`);
+
+        this.radioGroup = new RadioGroup<Widget & IOrganDonor<FSKTypes.OrganDonorRegistration>>([
             fullPermissionRadioButton,
             limitedPermissionRadioButton,
             dontKnowPermissionRadioButton,
             restrictedPermissionRadioButton
         ], this.idSynthesizer, false);
 
-        radioGroup.addValueChangeHandler(handler => {
+        this.radioGroup.addValueChangeHandler(handler => {
             const value = handler.getValue();
-            radioGroup.getRadioButtons().forEach(radioButton => {
+            this.radioGroup.getRadioButtons().forEach(radioButton => {
                 radioButton.getValue().setVisible(value === radioButton.getValue());
             });
         });
         this.rootElement.appendChild(this.element);
+    }
+
+    public setData(organDonorRegistration: OrganDonorRegistration): void {
+        const type = organDonorRegistration.permissionType;
+
+        this.radioGroup.getRadioButtons().forEach(button => {
+            if (button.getValue().getType() === type) {
+                this.radioGroup.setValue(button.getValue(), false);
+                button.getValue().setValue(organDonorRegistration);
+                button.getInput().checked = true;
+                button.getValue().setVisible(true);
+            } else {
+                button.getValue().setVisible(false);
+            }
+        });
     }
 
     public tearDownBindings(): void {
@@ -89,7 +119,11 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         }
 
         if (visible) {
+            this.addListeners();
             this.init();
+            this.render();
+        } else {
+            this.removeListeners();
         }
 
         this.shown = visible;
@@ -113,6 +147,40 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
 
     public getLeftToRightPriority(): number {
         return 201;
+    }
+
+    public render() {
+        const value = this.fskOrganDonorCache.organDonorRegister.getValue();
+        const loading = this.fskOrganDonorCache.organDonorRegister.isLoading();
+        const failed = this.fskOrganDonorCache.organDonorRegister.isFailed();
+
+        if (loading) {
+            if (this.initialized) {
+
+            }
+        } else if (failed) {
+
+        } else {
+            this.setData(value);
+        }
+    }
+
+    private addListeners() {
+        if (!this.OrganRegistrationChangeHandler) {
+            this.OrganRegistrationChangeHandler = (() => {
+                if (this.isVisible()) {
+                    this.render();
+                }
+            });
+            this.fskOrganDonorCache.organDonorRegister.addValueChangeHandler(this.OrganRegistrationChangeHandler);
+        }
+    }
+
+    private removeListeners() {
+        if (this.OrganRegistrationChangeHandler) {
+            this.fskOrganDonorCache.organDonorRegister.removeValueChangeHandler(this.OrganRegistrationChangeHandler);
+            this.OrganRegistrationChangeHandler = undefined;
+        }
     }
 
 }
