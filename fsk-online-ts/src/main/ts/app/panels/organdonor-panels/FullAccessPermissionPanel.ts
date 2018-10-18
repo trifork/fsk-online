@@ -11,6 +11,7 @@ export default class FullAccessPermissionPanel extends Widget implements IOrganD
     public constructor() {
         super();
         this.element = document.createElement(`div`);
+        this.element.className = `card full-access-panel`;
         this.fullPermissionCheckBox = new Checkbox(false, `Min fulde tilladelse forudsætter mine pårørendes accept`);
         this.add(this.fullPermissionCheckBox);
     }
@@ -20,6 +21,13 @@ export default class FullAccessPermissionPanel extends Widget implements IOrganD
             permissionType: this.getType(),
             requiresRelativeAcceptance: this.fullPermissionCheckBox.getValue()
         };
+    }
+
+    public setVisible(visible: boolean): void{
+        super.setVisible(visible);
+        if(!visible){
+            this.element.style.display = `block`;
+        }
     }
 
     public setValue(organDonorRegistation: FSKTypes.OrganDonorRegistration) {

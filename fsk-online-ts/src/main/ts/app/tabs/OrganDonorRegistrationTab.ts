@@ -9,7 +9,8 @@ import FullAccessPermissionPanel from "../panels/organdonor-panels/FullAccessPer
 import {IOrganDonor} from "../model/OrganDonorRegistrationType";
 import DontKnowAccessPermissionPanel from "../panels/organdonor-panels/DontKnowAccessPermissionPanel";
 import NoAccessPermissionPanel from "../panels/organdonor-panels/NoAccessPermissionPanel";
-import OrganDonorRegistration = FSKTypes.OrganDonorRegistration;
+import FSKService from "../services/FSKService";
+import SDSButton from "../elements/SDSButton";
 
 export default class OrganDonorRegistrationTab extends TemplateWidget implements TabbedPanel {
     private ID = "OrganDonorRegistrationTab_TS";
@@ -20,9 +21,13 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
 
     private radioGroup: RadioGroup<Widget & IOrganDonor<FSKTypes.OrganDonorRegistration>>;
 
-    public static deps = () => [IoC, "ModuleContext", FSKOrganDonorCache, "RootElement"];
+    public static deps = () => [IoC, "ModuleContext", FSKOrganDonorCache, FSKService, "RootElement"];
 
-    constructor(protected container: IoC, private moduleContext: ModuleContext, private fskOrganDonorCache: FSKOrganDonorCache, private rootElement: HTMLElement) {
+    constructor(protected container: IoC,
+                private moduleContext: ModuleContext,
+                private fskOrganDonorCache: FSKOrganDonorCache,
+                private fskService: FSKService,
+                private rootElement: HTMLElement) {
         super(container);
         this.element = document.createElement(`div`);
     }
@@ -80,10 +85,28 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
                 radioButton.getValue().setVisible(value === radioButton.getValue());
             });
         });
+
+        const createButton = new SDSButton("Opret registering", "primary", () => {
+           //  this.fskService.createOrganDonorRegisterForPatient(this.moduleContext.getUserContext().getCpr(), null);
+        });
+        createButton.setVisible(false);
+
+        const updateButton = new SDSButton("Opdatér", "primary", () => {
+           //  this.fskService.updateOrganDonorRegisterForPatient(this.moduleContext.getUserContext().getCpr(), null);
+        });
+
+        const deleteButton = new SDSButton("Slet registering", "danger", () => {
+            // this.fskService.deleteOrganDonorRegisterForPatient(this.moduleContext.getUserContext().getCpr());
+        });
+
+        this.addAndReplaceWidgetByVarName(createButton, `create-button`);
+        this.addAndReplaceWidgetByVarName(updateButton, `update-button`);
+        this.addAndReplaceWidgetByVarName(deleteButton, `delete-button`);
+
         this.rootElement.appendChild(this.element);
     }
 
-    public setData(organDonorRegistration: OrganDonorRegistration): void {
+    public setData(organDonorRegistration: FSKTypes.OrganDonorRegistration): void {
         const type = organDonorRegistration.permissionType;
 
         this.radioGroup.getRadioButtons().forEach(button => {

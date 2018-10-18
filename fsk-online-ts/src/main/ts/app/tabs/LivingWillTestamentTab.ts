@@ -2,12 +2,14 @@ import {ModuleContext, TabbedPanel, UserContext} from "fmko-typescript-common";
 import {TemplateWidget} from "fmko-ts-mvc";
 import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
-import {ButtonStyle, CheckboxWrapper, StyledButton} from "fmko-ts-widgets";
+import {CheckboxWrapper} from "fmko-ts-widgets";
+import SDSButton from "../elements/SDSButton";
 
 export default class LivingWillTestamentTab extends TemplateWidget implements TabbedPanel {
     private ID = "LivingWillTestamentTab_TS";
     private TITLE = "Livstestamente";
-    private shown;
+    private shown: boolean;
+    private initialized: boolean;
 
     public static deps = () => [IoC, "ModuleContext", "RootElement"];
 
@@ -16,22 +18,30 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         this.element = document.createElement(`div`);
     }
 
+    public init() {
+        if (this.initialized) {
+            return;
+        }
+        this.initialized = true;
+        super.init();
+    }
+
     public getTemplate(): string {
         return loadTemplate("tabs/livingWillTestamentTab.html");
     }
 
     public setupBindings(): void {
 
-       // const terminallyIllCheckbox = new Checkbox(false, `Jeg er i en situation, hvor jeg er uafvendeligt døende`);
-       // this.addAndReplaceWidgetByVarName(terminallyIllCheckbox, `terminally-ill-checkbox`);
+        // const terminallyIllCheckbox = new Checkbox(false, `Jeg er i en situation, hvor jeg er uafvendeligt døende`);
+        // this.addAndReplaceWidgetByVarName(terminallyIllCheckbox, `terminally-ill-checkbox`);
 
         const terminallyIllCheckbox = new CheckboxWrapper(this.getElementByVarName(`terminally-ill-checkbox`));
         const severelyHandicappedCheckbox = new CheckboxWrapper(this.getElementByVarName(`severely-handicapped-checkbox`));
 
-        const updateButton = new StyledButton(ButtonStyle.BLACK, `Opdater`);
+        const updateButton = new SDSButton(`Opdatér`, "primary");
         this.addAndReplaceWidgetByVarName(updateButton, `update-button`);
 
-        const deleteButton = new StyledButton(ButtonStyle.BLACK, `Slet`);
+        const deleteButton = new SDSButton(`Slet`, "danger");
         this.addAndReplaceWidgetByVarName(deleteButton, `delete-button`);
 
         this.rootElement.appendChild(this.element);

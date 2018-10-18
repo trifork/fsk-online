@@ -16,6 +16,7 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
         super(container);
         this.element = document.createElement(`div`);
         this.init();
+        this.setVisible(false);
     }
 
     public getTemplate(): string {

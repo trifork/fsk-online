@@ -24,11 +24,23 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
     public setupBindings(): any {
         const checkboxes = this.createCheckboxes();
 
-        Object.entries(checkboxes).forEach(([key, checkbox]) => {
+        let row: HTML = null;
+
+        Object.entries(checkboxes).forEach(([key, checkbox], index) => {
             if (key !== "requiresRelativeAcceptance") {
-                this.appendWidgetOnVarName(this.wrapInRow(checkbox), `limited-access-checkboxes`);
+                if (index % 4 === 0) {
+                    if (row) {
+                        this.appendWidgetOnVarName(row, `limited-access-checkboxes`);
+                    }
+                    row = new HTML();
+                    row.addStyleName(`row`);
+                    row.getCssStyle().marginBottom = `8px`;
+                }
+
+                this.wrapInRow(row, checkbox);
             }
         });
+        this.appendWidgetOnVarName(row, `limited-access-checkboxes`);
 
         this.addAndReplaceWidgetByVarName(checkboxes.requiresRelativeAcceptance, `family-consent`);
     }
@@ -60,21 +72,24 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
         });
     }
 
+    public setVisible(visible: boolean): void {
+        super.setVisible(visible);
+        if (!visible) {
+            this.element.style.display = `block`;
+        }
+    }
+
     public tearDownBindings(): any {
         // Unused
     }
 
-    private wrapInRow(checkBox: Checkbox) {
-        const row = new HTML();
-        const column = new HTML();
+    private wrapInRow(row: HTML, checkBox: Checkbox): void {
 
-        row.addStyleName(`row`);
-        column.addStyleName(`col-12`);
+        const column = new HTML();
+        column.addStyleName(`col-3`);
 
         column.add(checkBox);
         row.add(column);
-
-        return row;
     }
 
     public createCheckboxes(): OrganRegistrationCheckBoxes {

@@ -6,7 +6,7 @@ h1.sds-h1 {
 h3.sds-h3 {
     font-size: 18px;
     font-weight: 600;
-    margin-bottom:16px;
+    margin-bottom: 16px;
 }
 
 h5.sds-h5 {
@@ -73,4 +73,80 @@ a.sds-link {
 a.sds-link:before {
     content: ">";
     color: #007ec5;
+}
+
+button.sds-outline-button {
+    min-width: 64px;
+    height: 36px;
+    line-height: 32px;
+    border-radius: 2px;
+    border: 2px solid #888;
+    background-color: white;
+    padding-left: 16px;
+    padding-right: 16px;
+    margin-right: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+button.sds-outline-button.primary {
+    border-color: #005a8d;
+    color: #005a8d;
+}
+
+button.sds-outline-button.primary:hover {
+    background-color: #005a8d;
+    color: white;
+}
+
+button.sds-outline-button.primary:active {
+    background-color: #004870;
+    border-color: #004870;
+    color: white;
+}
+
+button.sds-outline-button.danger {
+    border-color: #ff3547;
+    color: #ff3547;
+}
+
+button.sds-outline-button.danger:hover {
+    background-color: #ff3547;
+    color: white;
+}
+
+button.sds-outline-button.danger:active {
+    background-color: #CC2A39;
+    border-color: #CC2A39;
+    color: white;
+}
+
+.limited-access-panel {
+    transition: height 0.25s;
+    width: 540px;
+    height: 90px;
+    transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
+    overflow: hidden;
+}
+
+.limited-access-panel[aria-hidden] {
+    height: 0;
+    display: block;
+    padding:0;
+}
+
+.full-access-panel {
+    transition: height 0.25s;
+    height: 25px;
+    transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
+    overflow: hidden;
+}
+
+.full-access-panel[aria-hidden] {
+    height: 0;
+    display: block;
+    padding:0;
 }

@@ -1,14 +1,15 @@
-import {ModuleContext, TabbedPanel, UserContext} from "fmko-typescript-common";
+import {ModuleContext, TabbedPanel, UserContext, Widget} from "fmko-typescript-common";
 import {TemplateWidget} from "fmko-ts-mvc";
 import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
-import {ButtonStyle, CheckboxWrapper, StyledButton} from "fmko-ts-widgets";
+import {CheckboxWrapper} from "fmko-ts-widgets";
 import TreatmentWillWishPanel from "../panels/treatment-will-testament-panels/TreatmentWillWishPanel";
 
 export default class TreatmentWillTab extends TemplateWidget implements TabbedPanel {
     private ID = "TreatmentWillTab_TS";
     private TITLE = "Behandlingstestamente";
     private shown;
+    private initialized: boolean;
 
     public static deps = () => [IoC, "ModuleContext", "RootElement"];
 
@@ -17,34 +18,51 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
         this.element = document.createElement(`div`);
     }
 
+    public init() {
+        if (this.initialized) {
+            return;
+        }
+        this.initialized = true;
+        super.init();
+    }
+
     public getTemplate(): string {
         return loadTemplate("tabs/treatmentWillTab.html");
     }
 
     public setupBindings(): void {
-
-
         const terminallyIllCheckbox = new CheckboxWrapper(this.getElementByVarName(`terminally-ill-checkbox`));
         const terminallyIllPanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
+        this.addHandlerForCheckandPanel(terminallyIllCheckbox, terminallyIllPanel);
 
-        this.addAndReplaceWidgetByVarName(terminallyIllPanel,`terminally-ill-panel`);
+        this.addAndReplaceWidgetByVarName(terminallyIllPanel, `terminally-ill-panel`);
 
         const illNoImprovementCheckbox = new CheckboxWrapper(this.getElementByVarName(`ill-no-improvement-checkbox`));
         const illNoImprovementPanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
+        this.addHandlerForCheckandPanel(illNoImprovementCheckbox, illNoImprovementPanel);
 
-        this.addAndReplaceWidgetByVarName(illNoImprovementPanel,`ill-no-improvement-panel`);
+        this.addAndReplaceWidgetByVarName(illNoImprovementPanel, `ill-no-improvement-panel`);
 
         const illWithPermanentPainCheckbox = new CheckboxWrapper(this.getElementByVarName(`ill-with-permanent-pain-checkbox`));
         const illWithPermanentPainPanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
+        this.addHandlerForCheckandPanel(illWithPermanentPainCheckbox, illWithPermanentPainPanel);
 
-        this.addAndReplaceWidgetByVarName(illWithPermanentPainPanel,`ill-with-permanent-pain-panel`);
+        this.addAndReplaceWidgetByVarName(illWithPermanentPainPanel, `ill-with-permanent-pain-panel`);
 
         const treatmentByForceCheckbox = new CheckboxWrapper(this.getElementByVarName(`treatment-by-force-checkbox`));
         const treatmentByForcePanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
+        this.addHandlerForCheckandPanel(treatmentByForceCheckbox, treatmentByForcePanel);
 
-        this.addAndReplaceWidgetByVarName(treatmentByForcePanel,`treatment-by-force-panel`);
+        this.addAndReplaceWidgetByVarName(treatmentByForcePanel, `treatment-by-force-panel`);
 
         this.rootElement.appendChild(this.element);
+    }
+
+    private addHandlerForCheckandPanel(checkBox: CheckboxWrapper, panel: Widget) {
+        checkBox.addValueChangeHandler(handler => {
+            const value = handler.getValue();
+            panel.setVisible(value);
+        });
     }
 
     public tearDownBindings(): void {
