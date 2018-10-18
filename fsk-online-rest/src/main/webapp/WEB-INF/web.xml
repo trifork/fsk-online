@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+	xmlns="http://java.sun.com/xml/ns/j2ee" version="2.4">
+    <display-name>fsk-online</display-name>
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>dk.sundhedsdatastyrelsen.fskrest.spring</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>contextClass</param-name>
+        <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>dk.fmkonline.server.shared.bootstrap.InitServletContextListener</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>IsAliveServlet</servlet-name>
+        <servlet-class>dk.sundhedsdatastyrelsen.fskrest.RestIsAliveServlet</servlet-class>
+        <init-param>
+            <param-name>component-name</param-name>
+            <param-value>fsk-online</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>IsAliveServlet</servlet-name>
+        <url-pattern>/isalive</url-pattern>
+    </servlet-mapping>
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>jersey-container</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>dk.sundhedsdatastyrelsen.fskrest</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>jersey-container</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>ExceptionLoggerFilter</filter-name>
+        <filter-class>dk.fmkonline.server.shared.filter.Log4jExceptionLoggerFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ExceptionLoggerFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>requestContextFilter</filter-name>
+        <filter-class>
+            org.springframework.web.filter.RequestContextFilter
+        </filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>requestContextFilter</filter-name>
+        <url-pattern>/rest/*</url-pattern>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>UserInfoFilter</filter-name>
+        <filter-class>com.trifork.web.security.userinfo.UserInfoFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>UserInfoFilter</filter-name>
+        <url-pattern>/rest/*</url-pattern>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+</web-app>

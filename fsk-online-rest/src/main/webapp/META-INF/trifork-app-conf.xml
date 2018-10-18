@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE trifork-app-conf PUBLIC '-//Trifork Technologies//DTD Trifork Application Descriptor 2.0//EN' 'http://trifork.com/j2ee/dtds/trifork-app-conf_2_0.dtd'>
+
+<trifork-app-conf>
+
+<web-app>
+    <context-root>fsk-online</context-root>
+</web-app>
+
+</trifork-app-conf>

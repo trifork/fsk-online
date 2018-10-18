@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%-2p] [%X{RequestHandle}] %c - %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="FILE"
+		class="org.apache.log4j.appender.TimeAndSizeRollingAppender">
+		<param name="DatePattern" value="yyyy-MM-dd" />
+		<param name="MaxFileSize" value="50MB" />
+		<param name="MaxRollFileCount" value="8" />
+		<param name="ScavengeInterval" value="3600000" /> <!-- hver time -->
+		<param name="BufferedIO" value="false" />
+		<param name="File" value="fmk_log/ddv-rest.log" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%-2p] [%X{RequestHandle}] %c - %m%n" />
+		</layout>
+	</appender>
+
+	<!-- Async appender -->
+	<appender name="ASYNC" class="org.apache.log4j.AsyncAppender">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+	</appender>
+
+	<logger name="dk.sundhedsdatastyrelsen.fskrest" additivity="false">
+		<level value="info" />
+		<appender-ref ref="ASYNC" />
+	</logger>
+
+    <logger name="org.apache.cxf.services.LookupServiceService.LookupServicePort.LookupService" additivity="false">
+        <level value="info"/> <!-- Change this to warn if you don't want payload logging -->
+    </logger>
+
+    <root>
+		<level value="info" />
+		<appender-ref ref="ASYNC" />
+	</root>
+
+</log4j:configuration>
