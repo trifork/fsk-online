@@ -1,5 +1,5 @@
 export interface FSKConfig {
-    readonly VaccinationsregisterStamdataUrlBase: string;
+    readonly FSKUrlBase: string;
     readonly RemoteExceptionLoggingEnabled: boolean;
 }
 

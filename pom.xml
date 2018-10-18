@@ -99,9 +99,4 @@
         <module>fsk-online-ts</module>
         <module>fsk-online-rest</module>
     </modules>
-
-    <dependencyManagement>
-        <dependencies>
-        </dependencies>
-    </dependencyManagement>
 </project>

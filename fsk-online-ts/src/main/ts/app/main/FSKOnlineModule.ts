@@ -11,6 +11,9 @@ import {
 import FSKOnlineContainer from "./FSKOnlineContainer";
 import FSKConfig from "./FSKConfig";
 import OrganDonorRegistrationTab from "../tabs/OrganDonorRegistrationTab";
+import LivingWillTestamentTab from "../tabs/LivingWillTestamentTab";
+import TreatmentWillWishPanel from "../panels/treatment-will-testament-panels/TreatmentWillWishPanel";
+import TreatmentWillTab from "../tabs/TreatmentWillTab";
 
 if (!("remove" in Element.prototype)) {
     Element.prototype[`remove`] = function () {
@@ -46,6 +49,10 @@ export default class FSKOnlineModule extends DefaultModule {
     public initAfterModuleRegistered() {
         const organDonorRegister = <OrganDonorRegistrationTab>this.container.resolve(OrganDonorRegistrationTab);
         this.addTabbedPanel(organDonorRegister);
+        const livingWillTestament = <LivingWillTestamentTab>this.container.resolve(LivingWillTestamentTab);
+        this.addTabbedPanel(livingWillTestament);
+        const treatmentWillTestamentTab = <TreatmentWillTab>this.container.resolve(TreatmentWillTab);
+        this.addTabbedPanel(treatmentWillTestamentTab);
 //       this.loadLocalStylesheet("fsk-online/css/pikaday.css");
         this.loadLocalStylesheet("fsk-online-ts/css/fsk-online.css");
     }

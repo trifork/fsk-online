@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://nsi.dk/reimbursement/xml.schema/2012/12/01"
+        elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <include schemaLocation="../../target/odr-schemas/schema/cda/OrganDonor.xsd"/>
+</schema>
