@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema targetNamespace="urn:hl7-org:btr" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:hl7-org:btr"
+           elementFormDefault="qualified" xmlns:hl7="urn:hl7-org:v3">
+    <xs:annotation>
+        <xs:documentation>Treatment Will Schema Extensions, May 2018</xs:documentation>
+    </xs:annotation>
+
+    <xs:import schemaLocation="../cda/POCD_MT000040_SDTC.xsd" namespace="urn:hl7-org:v3"/>
+
+    <xs:complexType name="TreatmentWill">
+        <xs:complexContent>
+            <xs:extension base="hl7:ANY">
+                <xs:sequence>
+                    <xs:element name="noLifeProlongingIfDying" type="TreatmentWillValueType"/>
+                    <xs:element name="noLifeProlongingIfSeverelyDegraded" type="TreatmentWillValueType"/>
+                    <xs:element name="noLifeProlongingIfSeverePain" type="TreatmentWillValueType"/>
+                    <xs:element name="noForcedTreatmentIfIncapable" type="TreatmentWillValueType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="TreatmentWillValueType">
+        <xs:simpleContent>
+            <xs:extension base="xs:boolean">
+                <xs:attribute name="acceptanceNeeded">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="relativeAcceptanceRequired"/>
+                            <xs:enumeration value="guardianAcceptanceRequired"/>
+                            <xs:enumeration value="trustedAgentAcceptanceRequired"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+</xs:schema>

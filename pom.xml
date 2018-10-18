@@ -20,15 +20,6 @@
         <grunt.command>node_modules/.bin/grunt.cmd</grunt.command>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
     <repositories>
         <repository>
             <id>trifork-public</id>
@@ -104,7 +95,9 @@
     </scm>
 
     <modules>
+        <module>odr-schemas</module>
         <module>fsk-online-ts</module>
+        <module>fsk-online-rest</module>
     </modules>
 
     <dependencyManagement>

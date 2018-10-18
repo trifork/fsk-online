@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                  xmlns:ltr20180501="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01/"
+                  xmlns:tns="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01/"
+                  targetNamespace="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01/">
+
+    <wsdl:types>
+        <xs:schema targetNamespace="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01/">
+            <xs:include schemaLocation="../schema/2018_05_01/livstestamenteregister.xsd"/>
+        </xs:schema>
+    </wsdl:types>
+
+    <wsdl:message name="CreateLivingWillRequest_2018_05_01">
+        <wsdl:part element="ltr20180501:CreateLivingWillRequest" name="CreateLivingWillRequest"/>
+    </wsdl:message>
+    <wsdl:message name="CreateLivingWillResponse_2018_05_01">
+        <wsdl:part element="ltr20180501:CreateLivingWillResponse" name="CreateLivingWillResponse"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateLivingWillRequest_2018_05_01">
+        <wsdl:part element="ltr20180501:UpdateLivingWillRequest" name="UpdateLivingWillRequest"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateLivingWillResponse_2018_05_01">
+        <wsdl:part element="ltr20180501:UpdateLivingWillResponse" name="UpdateLivingWillResponse"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteLivingWillRequest_2018_05_01">
+        <wsdl:part element="ltr20180501:DeleteLivingWillRequest" name="DeleteLivingWillRequest"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteLivingWillResponse_2018_05_01">
+        <wsdl:part element="ltr20180501:DeleteLivingWillResponse" name="DeleteLivingWillResponse"/>
+    </wsdl:message>
+    <wsdl:message name="GetLivingWillRequest_2018_05_01">
+        <wsdl:part element="ltr20180501:GetLivingWillRequest" name="GetLivingWillRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetLivingWillResponse_2018_05_01">
+        <wsdl:part element="ltr20180501:GetLivingWillResponse" name="GetLivingWillResponse"/>
+    </wsdl:message>
+    <wsdl:message name="HasLivingWillRequest_2018_05_01">
+        <wsdl:part element="ltr20180501:HasLivingWillRequest" name="HasLivingWillRequest"/>
+    </wsdl:message>
+    <wsdl:message name="HasLivingWillResponse_2018_05_01">
+        <wsdl:part element="ltr20180501:HasLivingWillResponse" name="HasLivingWillResponse"/>
+    </wsdl:message>
+
+    <wsdl:portType name="LivingWillPortType">
+        <wsdl:operation name="CreateLivingWill_2018_05_01">
+            <wsdl:input message="tns:CreateLivingWillRequest_2018_05_01" name="CreateLivingWillRequest_2018_05_01"/>
+            <wsdl:output message="tns:CreateLivingWillResponse_2018_05_01" name="CreateLivingWillResponse_2018_05_01"/>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateLivingWill_2018_05_01">
+            <wsdl:input message="tns:UpdateLivingWillRequest_2018_05_01" name="UpdateLivingWillRequest_2018_05_01"/>
+            <wsdl:output message="tns:UpdateLivingWillResponse_2018_05_01" name="UpdateLivingWillResponse_2018_05_01"/>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteLivingWill_2018_05_01">
+            <wsdl:input message="tns:DeleteLivingWillRequest_2018_05_01" name="DeleteLivingWillRequest_2018_05_01"/>
+            <wsdl:output message="tns:DeleteLivingWillResponse_2018_05_01" name="DeleteLivingWillResponse_2018_05_01"/>
+        </wsdl:operation>
+        <wsdl:operation name="GetLivingWill_2018_05_01">
+            <wsdl:input message="tns:GetLivingWillRequest_2018_05_01" name="GetLivingWillRequest_2018_05_01"/>
+            <wsdl:output message="tns:GetLivingWillResponse_2018_05_01" name="GetLivingWillResponse_2018_05_01"/>
+        </wsdl:operation>
+        <wsdl:operation name="HasLivingWill_2018_05_01">
+            <wsdl:input message="tns:HasLivingWillRequest_2018_05_01" name="HasLivingWillRequest_2018_05_01"/>
+            <wsdl:output message="tns:HasLivingWillResponse_2018_05_01" name="HasLivingWillResponse_2018_05_01"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="LivingWillBinding" type="tns:LivingWillPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <wsdl:operation name="CreateLivingWill_2018_05_01">
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01#AdminCreateLivingWill"/>
+            <wsdl:input name="CreateLivingWillRequest_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="CreateLivingWillResponse_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="UpdateLivingWill_2018_05_01">
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01#AdminUpdateLivingWill"/>
+            <wsdl:input name="UpdateLivingWillRequest_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="UpdateLivingWillResponse_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="DeleteLivingWill_2018_05_01">
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01#AdminDeleteLivingWill"/>
+            <wsdl:input name="DeleteLivingWillRequest_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="DeleteLivingWillResponse_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetLivingWill_2018_05_01">
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01#AdminGetLivingWill"/>
+            <wsdl:input name="GetLivingWillRequest_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="GetLivingWillResponse_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="HasLivingWill_2018_05_01">
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01#AdminHasLivingWill"/>
+            <wsdl:input name="HasLivingWillRequest_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HasLivingWillResponse_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="LivingWillService">
+        <wsdl:port name="LivingWillPort" binding="tns:LivingWillBinding">
+            <soap:address location="http://localhost:8080/btr-service/ltr"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

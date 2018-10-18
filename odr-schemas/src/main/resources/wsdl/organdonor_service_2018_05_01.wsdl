@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                  xmlns:odr20180501="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01/"
+                  xmlns:tns="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01/"
+                  targetNamespace="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01/">
+
+    <wsdl:types>
+        <xs:schema targetNamespace="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01/">
+            <xs:include schemaLocation="../schema/2018_05_01/organdonorregister.xsd"/>
+        </xs:schema>
+    </wsdl:types>
+
+    <wsdl:message name="CreateOrganDonorRegistrationRequest_2018_05_01">
+        <wsdl:part element="odr20180501:CreateOrganDonorRegistrationRequest" name="CreateOrganDonorRegistrationRequest"/>
+    </wsdl:message>
+    <wsdl:message name="CreateOrganDonorRegistrationResponse_2018_05_01">
+        <wsdl:part element="odr20180501:CreateOrganDonorRegistrationResponse" name="CreateOrganDonorRegistrationResponse"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateOrganDonorRegistrationRequest_2018_05_01">
+        <wsdl:part element="odr20180501:UpdateOrganDonorRegistrationRequest" name="UpdateOrganDonorRegistrationRequest"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateOrganDonorRegistrationResponse_2018_05_01">
+        <wsdl:part element="odr20180501:UpdateOrganDonorRegistrationResponse" name="UpdateOrganDonorRegistrationResponse"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteOrganDonorRegistrationRequest_2018_05_01">
+        <wsdl:part element="odr20180501:DeleteOrganDonorRegistrationRequest" name="DeleteOrganDonorRegistrationRequest"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteOrganDonorRegistrationResponse_2018_05_01">
+        <wsdl:part element="odr20180501:DeleteOrganDonorRegistrationResponse" name="DeleteOrganDonorRegistrationResponse"/>
+    </wsdl:message>
+    <wsdl:message name="GetOrganDonorRegistrationRequest_2018_05_01">
+        <wsdl:part element="odr20180501:GetOrganDonorRegistrationRequest" name="GetOrganDonorRegistrationRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetOrganDonorRegistrationResponse_2018_05_01">
+        <wsdl:part element="odr20180501:GetOrganDonorRegistrationResponse" name="GetOrganDonorRegistrationResponse"/>
+    </wsdl:message>
+    <wsdl:message name="HasOrganDonorRegistrationRequest_2018_05_01">
+        <wsdl:part element="odr20180501:HasOrganDonorRegistrationRequest" name="HasOrganDonorRegistrationRequest"/>
+    </wsdl:message>
+    <wsdl:message name="HasOrganDonorRegistrationResponse_2018_05_01">
+        <wsdl:part element="odr20180501:HasOrganDonorRegistrationResponse" name="HasOrganDonorRegistrationResponse"/>
+    </wsdl:message>
+
+    <wsdl:portType name="OrganDonorRegistrationPortType">
+        <wsdl:operation name="CreateOrganDonorRegistration_2018_05_01">
+            <wsdl:input message="tns:CreateOrganDonorRegistrationRequest_2018_05_01" name="CreateOrganDonorRegistrationRequest_2018_05_01"/>
+            <wsdl:output message="tns:CreateOrganDonorRegistrationResponse_2018_05_01" name="CreateOrganDonorRegistrationResponse_2018_05_01"/>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateOrganDonorRegistration_2018_05_01">
+            <wsdl:input message="tns:UpdateOrganDonorRegistrationRequest_2018_05_01" name="UpdateOrganDonorRegistrationRequest_2018_05_01"/>
+            <wsdl:output message="tns:UpdateOrganDonorRegistrationResponse_2018_05_01" name="UpdateOrganDonorRegistrationResponse_2018_05_01"/>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteOrganDonorRegistration_2018_05_01">
+            <wsdl:input message="tns:DeleteOrganDonorRegistrationRequest_2018_05_01" name="DeleteOrganDonorRegistrationRequest_2018_05_01"/>
+            <wsdl:output message="tns:DeleteOrganDonorRegistrationResponse_2018_05_01" name="DeleteOrganDonorRegistrationResponse_2018_05_01"/>
+        </wsdl:operation>
+        <wsdl:operation name="GetOrganDonorRegistration_2018_05_01">
+            <wsdl:input message="tns:GetOrganDonorRegistrationRequest_2018_05_01" name="GetOrganDonorRegistrationRequest_2018_05_01"/>
+            <wsdl:output message="tns:GetOrganDonorRegistrationResponse_2018_05_01" name="GetOrganDonorRegistrationResponse_2018_05_01"/>
+        </wsdl:operation>
+        <wsdl:operation name="HasOrganDonorRegistration_2018_05_01">
+            <wsdl:input message="tns:HasOrganDonorRegistrationRequest_2018_05_01" name="HasOrganDonorRegistrationRequest_2018_05_01"/>
+            <wsdl:output message="tns:HasOrganDonorRegistrationResponse_2018_05_01" name="HasOrganDonorRegistrationResponse_2018_05_01"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="OrganDonorRegistrationBinding" type="tns:OrganDonorRegistrationPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <wsdl:operation name="CreateOrganDonorRegistration_2018_05_01">
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01#AdminCreateOrganDonorRegistration"/>
+            <wsdl:input name="CreateOrganDonorRegistrationRequest_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="CreateOrganDonorRegistrationResponse_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="UpdateOrganDonorRegistration_2018_05_01">
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01#AdminUpdateOrganDonorRegistration"/>
+            <wsdl:input name="UpdateOrganDonorRegistrationRequest_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="UpdateOrganDonorRegistrationResponse_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="DeleteOrganDonorRegistration_2018_05_01">
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01#AdminDeleteOrganDonorRegistration"/>
+            <wsdl:input name="DeleteOrganDonorRegistrationRequest_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="DeleteOrganDonorRegistrationResponse_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetOrganDonorRegistration_2018_05_01">
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01#AdminGetOrganDonorRegistration"/>
+            <wsdl:input name="GetOrganDonorRegistrationRequest_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="GetOrganDonorRegistrationResponse_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="HasOrganDonorRegistration_2018_05_01">
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01#AdminHasOrganDonorRegistration"/>
+            <wsdl:input name="HasOrganDonorRegistrationRequest_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HasOrganDonorRegistrationResponse_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="OrganDonorRegistrationService">
+        <wsdl:port name="OrganDonorRegistrationPort" binding="tns:OrganDonorRegistrationBinding">
+            <soap:address location="http://localhost:8989/odr-service/odr"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

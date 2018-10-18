@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema targetNamespace="urn:hl7-org:odr" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:hl7-org:odr"
+           elementFormDefault="qualified" xmlns:hl7="urn:hl7-org:v3">
+    <xs:annotation>
+        <xs:documentation>ODR Schema Extensions, May 2018</xs:documentation>
+    </xs:annotation>
+
+    <xs:import schemaLocation="POCD_MT000040_SDTC.xsd" namespace="urn:hl7-org:v3"/>
+
+    <xs:simpleType name="PermissionType" final="restriction" >
+        <xs:annotation>
+            <xs:documentation>
+                Defines type of permission for organ donation: Full permission, limited, no permission or don't know.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="FULL" />
+            <xs:enumeration value="LIMITED" />
+            <xs:enumeration value="NONE" />
+            <xs:enumeration value="DONT_KNOW" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="OrganDonorRegistration">
+        <xs:annotation>
+            <xs:documentation>
+                Defines OrganDonorRegistration for use as Value in Observation.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="hl7:ANY">
+                <xs:sequence>
+                    <xs:element name="permissionType" type="PermissionType" minOccurs="1" maxOccurs="1"/>
+                    <xs:element name="permissionForHeart" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="permissionForLungs" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="permissionForLiver" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="permissionForPancreas" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="permissionForKidneys" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="permissionForCornea" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="permissionForSmallIntestine" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="permissionForSkin" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="requiresRelativeAcceptance" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                  xmlns:btr20180501="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01/"
+                  xmlns:tns="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01/"
+                  targetNamespace="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01/">
+
+    <wsdl:types>
+        <xs:schema targetNamespace="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01/">
+            <xs:include schemaLocation="../schema/2018_05_01/behandlingstestamenteregister.xsd"/>
+        </xs:schema>
+    </wsdl:types>
+
+    <wsdl:message name="CreateTreatmentWillRequest_2018_05_01">
+        <wsdl:part element="btr20180501:CreateTreatmentWillRequest" name="CreateTreatmentWillRequest"/>
+    </wsdl:message>
+    <wsdl:message name="CreateTreatmentWillResponse_2018_05_01">
+        <wsdl:part element="btr20180501:CreateTreatmentWillResponse" name="CreateTreatmentWillResponse"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateTreatmentWillRequest_2018_05_01">
+        <wsdl:part element="btr20180501:UpdateTreatmentWillRequest" name="UpdateTreatmentWillRequest"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateTreatmentWillResponse_2018_05_01">
+        <wsdl:part element="btr20180501:UpdateTreatmentWillResponse" name="UpdateTreatmentWillResponse"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteTreatmentWillRequest_2018_05_01">
+        <wsdl:part element="btr20180501:DeleteTreatmentWillRequest" name="DeleteTreatmentWillRequest"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteTreatmentWillResponse_2018_05_01">
+        <wsdl:part element="btr20180501:DeleteTreatmentWillResponse" name="DeleteTreatmentWillResponse"/>
+    </wsdl:message>
+    <wsdl:message name="GetTreatmentWillRequest_2018_05_01">
+        <wsdl:part element="btr20180501:GetTreatmentWillRequest" name="GetTreatmentWillRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetTreatmentWillResponse_2018_05_01">
+        <wsdl:part element="btr20180501:GetTreatmentWillResponse" name="GetTreatmentWillResponse"/>
+    </wsdl:message>
+    <wsdl:message name="HasTreatmentWillRequest_2018_05_01">
+        <wsdl:part element="btr20180501:HasTreatmentWillRequest" name="HasTreatmentWillRequest"/>
+    </wsdl:message>
+    <wsdl:message name="HasTreatmentWillResponse_2018_05_01">
+        <wsdl:part element="btr20180501:HasTreatmentWillResponse" name="HasTreatmentWillResponse"/>
+    </wsdl:message>
+
+    <wsdl:portType name="TreatmentWillPortType">
+        <wsdl:operation name="CreateTreatmentWill_2018_05_01">
+            <wsdl:input message="tns:CreateTreatmentWillRequest_2018_05_01" name="CreateTreatmentWillRequest_2018_05_01"/>
+            <wsdl:output message="tns:CreateTreatmentWillResponse_2018_05_01" name="CreateTreatmentWillResponse_2018_05_01"/>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateTreatmentWill_2018_05_01">
+            <wsdl:input message="tns:UpdateTreatmentWillRequest_2018_05_01" name="UpdateTreatmentWillRequest_2018_05_01"/>
+            <wsdl:output message="tns:UpdateTreatmentWillResponse_2018_05_01" name="UpdateTreatmentWillResponse_2018_05_01"/>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteTreatmentWill_2018_05_01">
+            <wsdl:input message="tns:DeleteTreatmentWillRequest_2018_05_01" name="DeleteTreatmentWillRequest_2018_05_01"/>
+            <wsdl:output message="tns:DeleteTreatmentWillResponse_2018_05_01" name="DeleteTreatmentWillResponse_2018_05_01"/>
+        </wsdl:operation>
+        <wsdl:operation name="GetTreatmentWill_2018_05_01">
+            <wsdl:input message="tns:GetTreatmentWillRequest_2018_05_01" name="GetTreatmentWillRequest_2018_05_01"/>
+            <wsdl:output message="tns:GetTreatmentWillResponse_2018_05_01" name="GetTreatmentWillResponse_2018_05_01"/>
+        </wsdl:operation>
+        <wsdl:operation name="HasTreatmentWill_2018_05_01">
+            <wsdl:input message="tns:HasTreatmentWillRequest_2018_05_01" name="HasTreatmentWillRequest_2018_05_01"/>
+            <wsdl:output message="tns:HasTreatmentWillResponse_2018_05_01" name="HasTreatmentWillResponse_2018_05_01"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="TreatmentWillBinding" type="tns:TreatmentWillPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <wsdl:operation name="CreateTreatmentWill_2018_05_01">
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01#AdminCreateTreatmentWill"/>
+            <wsdl:input name="CreateTreatmentWillRequest_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="CreateTreatmentWillResponse_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="UpdateTreatmentWill_2018_05_01">
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01#AdminUpdateTreatmentWill"/>
+            <wsdl:input name="UpdateTreatmentWillRequest_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="UpdateTreatmentWillResponse_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="DeleteTreatmentWill_2018_05_01">
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01#AdminDeleteTreatmentWill"/>
+            <wsdl:input name="DeleteTreatmentWillRequest_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="DeleteTreatmentWillResponse_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetTreatmentWill_2018_05_01">
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01#AdminGetTreatmentWill"/>
+            <wsdl:input name="GetTreatmentWillRequest_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="GetTreatmentWillResponse_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="HasTreatmentWill_2018_05_01">
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01#AdminHasTreatmentWill"/>
+            <wsdl:input name="HasTreatmentWillRequest_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="HasTreatmentWillResponse_2018_05_01">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="TreatmentWillService">
+        <wsdl:port name="TreatmentWillPort" binding="tns:TreatmentWillBinding">
+            <soap:address location="http://localhost:8080/btr-service/btr"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

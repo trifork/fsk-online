@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="2.0" targetNamespace="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01/" xmlns:hl7="urn:hl7-org:v3" xmlns:odr="urn:hl7-org:odr"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:import schemaLocation="../cda/POCD_MT000040_SDTC.xsd" namespace="urn:hl7-org:v3"/>
+    <xs:import schemaLocation="../cda/OrganDonor.xsd" namespace="urn:hl7-org:odr"/>
+
+    <xs:element name="GetOrganDonorRegistrationRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="hl7:II" minOccurs="1" maxOccurs="1"/> <!-- cprnr -->
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetOrganDonorRegistrationResponse" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="ClinicalDocument" type="hl7:POCD_MT000040.ClinicalDocument" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateOrganDonorRegistrationRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="hl7:II" minOccurs="1" maxOccurs="1"/> <!-- cprnr -->
+                <xs:element name="organDonorRegistration" type="odr:OrganDonorRegistration" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateOrganDonorRegistrationResponse" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:complexType>
+            <xs:sequence>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UpdateOrganDonorRegistrationRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="hl7:II" minOccurs="1" maxOccurs="1"/> <!-- cprnr -->
+                <xs:element name="organDonorRegistration" type="odr:OrganDonorRegistration" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UpdateOrganDonorRegistrationResponse" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:complexType>
+            <xs:sequence>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteOrganDonorRegistrationRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="hl7:II" minOccurs="1" maxOccurs="1"/> <!-- cprnr -->
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteOrganDonorRegistrationResponse" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:complexType>
+            <xs:sequence>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="HasOrganDonorRegistrationRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="hl7:II" minOccurs="1" maxOccurs="1"/> <!-- cprnr -->
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="HasOrganDonorRegistrationResponse" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="registrationExists" type="hl7:bl" minOccurs="1" maxOccurs="1"/> <!-- true/false -->
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

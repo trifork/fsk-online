@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema targetNamespace="urn:hl7-org:ltr" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:hl7-org:ltr"
+           elementFormDefault="qualified" xmlns:hl7="urn:hl7-org:v3">
+    <xs:annotation>
+        <xs:documentation>Living Will Schema Extensions, May 2018</xs:documentation>
+    </xs:annotation>
+
+    <xs:import schemaLocation="../cda/POCD_MT000040_SDTC.xsd" namespace="urn:hl7-org:v3"/>
+
+    <xs:complexType name="LivingWill">
+        <xs:annotation>
+            <xs:documentation>
+                Defines Living Will for use as Value in Observation.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="hl7:ANY">
+                <xs:sequence>
+                    <xs:element name="noLifeProlongingIfDying" type="xs:boolean" minOccurs="1" maxOccurs="1"/>
+                    <xs:element name="noLifeProlongingIfSeverelyDegraded" type="xs:boolean" minOccurs="1" maxOccurs="1"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>
