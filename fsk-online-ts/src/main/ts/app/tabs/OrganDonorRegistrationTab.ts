@@ -17,9 +17,9 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     private TITLE = "Organdonorregister";
     private shown: boolean;
     private initialized: boolean;
-    private OrganRegistrationChangeHandler: ValueChangeHandler<FSKTypes.OrganDonorRegistration>;
+    private OrganRegistrationChangeHandler: ValueChangeHandler<FSKTypes.OrganDonorRegistrationType>;
 
-    private radioGroup: RadioGroup<Widget & IOrganDonor<FSKTypes.OrganDonorRegistration>>;
+    private radioGroup: RadioGroup<Widget & IOrganDonor<FSKTypes.OrganDonorRegistrationType>>;
 
     public static deps = () => [IoC, "ModuleContext", FSKOrganDonorCache, FSKService, "RootElement"];
 
@@ -72,7 +72,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         const restrictedPermissionRadioButton = new RadioButton(noAccessPermissionPanel, `Jeg modsætter mig, at mine organer anvendes til transplantation efter min død`);
         this.addAndReplaceWidgetByVarName(restrictedPermissionRadioButton.getWrappedButton(this.idSynthesizer.createId()), `restricted-permission-radio`);
 
-        this.radioGroup = new RadioGroup<Widget & IOrganDonor<FSKTypes.OrganDonorRegistration>>([
+        this.radioGroup = new RadioGroup<Widget & IOrganDonor<FSKTypes.OrganDonorRegistrationType>>([
             fullPermissionRadioButton,
             limitedPermissionRadioButton,
             dontKnowPermissionRadioButton,
@@ -87,17 +87,19 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         });
 
         const createButton = new SDSButton("Opret registering", "primary", () => {
-           //  this.fskService.createOrganDonorRegisterForPatient(this.moduleContext.getUserContext().getCpr(), null);
+            this.fskService.createOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr(), this.radioGroup.getValue().getValue());
         });
-        createButton.setVisible(false);
+       // createButton.setVisible(false);
 
         const updateButton = new SDSButton("Opdatér", "primary", () => {
-           //  this.fskService.updateOrganDonorRegisterForPatient(this.moduleContext.getUserContext().getCpr(), null);
+           //  this.fskService.updateOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr(), null);
         });
+        updateButton.setVisible(false);
 
         const deleteButton = new SDSButton("Slet registering", "danger", () => {
-            // this.fskService.deleteOrganDonorRegisterForPatient(this.moduleContext.getUserContext().getCpr());
+            // this.fskService.deleteOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr());
         });
+        deleteButton.setVisible(false);
 
         this.addAndReplaceWidgetByVarName(createButton, `create-button`);
         this.addAndReplaceWidgetByVarName(updateButton, `update-button`);
@@ -106,7 +108,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         this.rootElement.appendChild(this.element);
     }
 
-    public setData(organDonorRegistration: FSKTypes.OrganDonorRegistration): void {
+    public setData(organDonorRegistration: FSKTypes.OrganDonorRegistrationType): void {
         const type = organDonorRegistration.permissionType;
 
         this.radioGroup.getRadioButtons().forEach(button => {

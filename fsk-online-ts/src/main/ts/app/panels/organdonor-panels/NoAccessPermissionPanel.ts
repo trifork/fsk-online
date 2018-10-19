@@ -1,20 +1,20 @@
 import {Widget} from "fmko-typescript-common";
 import {IOrganDonor} from "../../model/OrganDonorRegistrationType";
 
-export default class NoAccessPermissionPanel extends Widget implements IOrganDonor<FSKTypes.OrganDonorRegistration> {
+export default class NoAccessPermissionPanel extends Widget implements IOrganDonor<FSKTypes.OrganDonorRegistrationType> {
 
     public constructor() {
         super();
         this.element = document.createElement(`div`);
     }
 
-    getValue(): FSKTypes.OrganDonorRegistration {
-        return <FSKTypes.OrganDonorRegistration>{
+    getValue(): FSKTypes.OrganDonorRegistrationType {
+        return <FSKTypes.OrganDonorRegistrationType>{
             permissionType: this.getType()
         };
     }
 
-    public setValue(organDonorRegistation: FSKTypes.OrganDonorRegistration) {
+    public setValue(organDonorRegistation: FSKTypes.OrganDonorRegistrationType) {
         // Unused
     }
 

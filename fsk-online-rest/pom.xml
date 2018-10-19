@@ -13,7 +13,6 @@
     <version>1.0-SNAPSHOT</version>
     <name>fsk-online-rest</name>
 
-
     <properties>
         <fmk.online.version>2.25.4</fmk.online.version>
         <spring.context.version>5.0.5.RELEASE</spring.context.version>
@@ -50,7 +49,7 @@
         <!-- Internal dependencies -->
         <dependency>
             <groupId>dk.sundhedsdatastyrelsen.fsk</groupId>
-            <artifactId>odr-schemas</artifactId>
+            <artifactId>fsk-online-schemas</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 

@@ -2,7 +2,7 @@ import {RESTClient, Version} from "fmko-typescript-common";
 import ODRRestUrls from "./ODRRestUrls";
 import BTRRestUrls from "./BTRRestUrls";
 import LTRRestUrl from "./LTRRestUrl";
-import OrganDonorRegistration = FSKTypes.OrganDonorRegistration;
+import OrganDonorRegistration = FSKTypes.OrganDonorRegistrationType;
 
 export default class FSKService {
     public static deps = () => [ODRRestUrls, BTRRestUrls, LTRRestUrl, "Version"];

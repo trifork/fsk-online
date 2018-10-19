@@ -1,6 +1,6 @@
 import {AsyncValueHolder, ModuleContext} from "fmko-typescript-common";
 import FSKService from "./FSKService";
-import OrganDonorRegistration = FSKTypes.OrganDonorRegistration;
+import OrganDonorRegistration = FSKTypes.OrganDonorRegistrationType;
 
 export default class FSKOrganDonorCache {
     public static deps = () => ["ModuleContext", FSKService];

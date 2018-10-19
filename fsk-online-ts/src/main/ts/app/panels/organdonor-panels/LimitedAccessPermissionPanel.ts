@@ -3,9 +3,9 @@ import {IoC} from "fmko-ts-ioc";
 import loadTemplate from "../../main/TemplateLoader";
 import {Checkbox, HTML} from "fmko-ts-widgets";
 import {IOrganDonor} from "../../model/OrganDonorRegistrationType";
-import OrganDonorRegistration = FSKTypes.OrganDonorRegistration;
+import OrganDonorRegistration = FSKTypes.OrganDonorRegistrationType;
 
-export default class LimitedAccessPermissionPanel extends TemplateWidget implements IOrganDonor<FSKTypes.OrganDonorRegistration> {
+export default class LimitedAccessPermissionPanel extends TemplateWidget implements IOrganDonor<FSKTypes.OrganDonorRegistrationType> {
 
     public static deps = () => [IoC];
 
@@ -49,8 +49,8 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
         return "LIMITED";
     }
 
-    public getValue(): FSKTypes.OrganDonorRegistration {
-        return <FSKTypes.OrganDonorRegistration>{
+    public getValue(): FSKTypes.OrganDonorRegistrationType {
+        return <FSKTypes.OrganDonorRegistrationType>{
             permissionType: this.getType(),
             permissionForHeart: this.checkboxes.permissionForHeart.getValue(),
             permissionForKidneys: this.checkboxes.permissionForKidneys.getValue(),
@@ -64,7 +64,7 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
         };
     }
 
-    public setValue(value: FSKTypes.OrganDonorRegistration): void {
+    public setValue(value: FSKTypes.OrganDonorRegistrationType): void {
         Object.entries(value).forEach(([key, value]) => {
             if (key !== "permissionType") {
                 this.checkboxes[key].setValue(value);

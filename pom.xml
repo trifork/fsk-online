@@ -95,7 +95,7 @@
     </scm>
 
     <modules>
-        <module>odr-schemas</module>
+        <module>fsk-online-schemas</module>
         <module>fsk-online-ts</module>
         <module>fsk-online-rest</module>
     </modules>
