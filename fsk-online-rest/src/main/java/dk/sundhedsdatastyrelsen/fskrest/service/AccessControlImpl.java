@@ -13,16 +13,17 @@ public class AccessControlImpl implements AccessControl {
     @Value("${whitelisted.cvrs:}")
     private String whitelistedCVRs;
 
+    private boolean contains = false;
+
     @Override
     public boolean checkAccess() {
         UserInfo userInfo = UserInfoHolder.get();
         if (userInfo != null && userInfo.cvr != null) {
-            boolean contains = whitelistedCVRs.contains(userInfo.cvr);
+            contains = whitelistedCVRs.contains(userInfo.cvr);
             if (!contains) {
-                log.warn("Adgang til dette kald er ikke tilladt");
+                log.error("Adgang til at foretage dette kald er ikke tilladt");
             }
-            return contains;
         }
-        return false;
+        return contains;
     }
 }
