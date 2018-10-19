@@ -1,8 +1,8 @@
 import {AsyncValueHolder, ModuleContext} from "fmko-typescript-common";
 import FSKService from "./FSKService";
-import OrganDonorRegistrationType = FSKTypes.OrganDonorRegistrationType;
+import TreatmentWillType = FSKTypes.TreatmentWillType;
 
-export default class FSKOrganDonorCache {
+export default class TreatmentWillCache {
     public static deps = () => ["ModuleContext", FSKService];
 
     constructor(private moduleContext: ModuleContext, private fskService: FSKService) {
@@ -11,7 +11,7 @@ export default class FSKOrganDonorCache {
 
     public hasRegistration: boolean;
 
-    public organDonorRegister = new AsyncValueHolder<OrganDonorRegistrationType>(async () => {
+    public treatmentWill = new AsyncValueHolder<TreatmentWillType>(async () => {
         if (this.hasRegistration) {
             return this.getRegistration();
         } else {
@@ -26,11 +26,11 @@ export default class FSKOrganDonorCache {
     });
 
     private async loadHasRegistration(): Promise<boolean> {
-        this.hasRegistration = (await this.fskService.hasOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr())).registrationExists;
+        this.hasRegistration = (await this.fskService.hasTreatmentWillForPatient(this.moduleContext.getPatient().getCpr())).willExists;
         return this.hasRegistration;
     }
 
-    private async getRegistration(): Promise<OrganDonorRegistrationType> {
-        return await this.fskService.getOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr());
+    private async getRegistration(): Promise<TreatmentWillType> {
+        return await this.fskService.getTreatmentWillForPatient(this.moduleContext.getPatient().getCpr());
     }
 }

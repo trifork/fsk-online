@@ -23,15 +23,15 @@ export default class FullAccessPermissionPanel extends Widget implements IOrganD
         };
     }
 
-    public setVisible(visible: boolean): void{
+    public setVisible(visible: boolean): void {
         super.setVisible(visible);
-        if(!visible){
+        if (!visible) {
             this.element.style.display = `block`;
         }
     }
 
     public setValue(organDonorRegistation: FSKTypes.OrganDonorRegistrationType) {
-        this.fullPermissionCheckBox.setValue(!!organDonorRegistation.requiresRelativeAcceptance);
+        this.fullPermissionCheckBox.setValue(!!organDonorRegistation && !!organDonorRegistation.requiresRelativeAcceptance);
     }
 
     public getType(): FSKTypes.OrganDonorPermissionType {

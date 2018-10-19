@@ -8,6 +8,8 @@ import {
 } from "fmko-typescript-common";
 
 import FSKOnlineConfigurationFactory from "./FSKOnlineConfigurationFactory";
+import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
+import TreatmentWillCache from "../services/TreatmentWillCache";
 
 const SINGLETON = BindingScope.SINGLETON;
 const ROOT_ELEMENT_ID = "fskMain";
@@ -42,6 +44,8 @@ export default class FSKOnlineContainer {
             .scopedAs(SINGLETON);
 
         this._ioc.bind(RemoteLogService).scopedAs(SINGLETON);
+        this._ioc.bind(FSKOrganDonorCache).scopedAs(SINGLETON);
+        this._ioc.bind(TreatmentWillCache).scopedAs(SINGLETON);
     }
 
     public resolve(type: ReferenceType) {

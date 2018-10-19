@@ -65,11 +65,25 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
     }
 
     public setValue(value: FSKTypes.OrganDonorRegistrationType): void {
-        Object.entries(value).forEach(([key, value]) => {
-            if (key !== "permissionType") {
-                this.checkboxes[key].setValue(value);
-            }
-        });
+        if (value) {
+            Object.entries(value).forEach(([key, value]) => {
+                if ([
+                        `permissionForHeart`,
+                        `permissionForKidneys`,
+                        `permissionForLungs`,
+                        `permissionForCornea`,
+                        `permissionForLiver`,
+                        `permissionForSmallIntestine`,
+                        `permissionForPancreas`,
+                        `permissionForSkin`,
+                        `requiresRelativeAcceptance`
+                    ].includes(key)) {
+                    this.checkboxes[key].setValue(value);
+                }
+            });
+        } else {
+            Object.values(this.checkboxes).forEach(checkbox => checkbox.setValue(false));
+        }
     }
 
     public setVisible(visible: boolean): void {

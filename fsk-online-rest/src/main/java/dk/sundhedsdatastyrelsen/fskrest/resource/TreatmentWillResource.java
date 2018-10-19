@@ -25,13 +25,14 @@ public class TreatmentWillResource extends AbstractResource {
         GetTreatmentWillRequest request = new GetTreatmentWillRequest();
         request.setId(getId(cpr));
         GetTreatmentWillResponse response = treatmentWillPortType.getTreatmentWill20180501(request);
-        TreatmentWill treatmentWill = null;
+
         try {
-            treatmentWill = (TreatmentWill) response.getClinicalDocument().getComponent().getStructuredBody().getComponents().get(0).getSection().getEntries();
+            TreatmentWill treatmentWill = (TreatmentWill) response.getClinicalDocument().getComponent().getStructuredBody().
+                    getComponents().get(0).getSection().getEntries().get(0).getObservation().getValues().get(0);
+            return buildNonCacheableResponse(treatmentWill);
         } catch (Exception e) {
             return Response.status(Response.Status.NO_CONTENT).build();
         }
-        return buildNonCacheableResponse(treatmentWill);
     }
 
     @GET

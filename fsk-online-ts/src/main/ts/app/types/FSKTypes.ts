@@ -21,20 +21,28 @@ namespace FSKTypes {
         | "trustedAgentAcceptanceRequired" ;
 
     export interface TreatmentWillValueType {
-        acceptanceNeeded: boolean;
-        $?: TreatmentWillAcceptanceType;
+        acceptanceNeeded: TreatmentWillAcceptanceType;
+        $?: boolean;
     }
 
-    export interface TreatmentWill {
-        noLifeProlongingIfDying: TreatmentWillValueType;
-        noLifeProlongingIfSeverelyDegraded: TreatmentWillValueType;
-        noLifeProlongingIfSeverePain: TreatmentWillValueType;
-        noForcedTreatmentIfIncapable: TreatmentWillValueType;
+    export interface TreatmentWillType {
+        noLifeProlongingIfDying?: TreatmentWillValueType;
+        noLifeProlongingIfSeverelyDegraded?: TreatmentWillValueType;
+        noLifeProlongingIfSeverePain?: TreatmentWillValueType;
+        noForcedTreatmentIfIncapable?: TreatmentWillValueType;
     }
 
-    export interface LivingWill {
+    export interface LivingWillType {
         noLifeProlongingIfDying: boolean;
         noLifeProlongingIfSeverelyDegraded: boolean;
+    }
+
+    export interface HasRegistrationResponse {
+        registrationExists: boolean;
+    }
+
+    export interface HasWillResponse {
+        willExists: boolean;
     }
 
 }

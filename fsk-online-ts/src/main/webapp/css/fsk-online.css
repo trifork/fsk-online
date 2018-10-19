@@ -150,3 +150,16 @@ button.sds-outline-button.danger:active {
     display: block;
     padding:0;
 }
+
+.treatment-will-panel {
+    transition: height 0.25s;
+    height: 110px;
+    transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
+    overflow: hidden;
+}
+
+.treatment-will-panel[aria-hidden] {
+    height: 0;
+    display: block;
+    padding:0;
+}

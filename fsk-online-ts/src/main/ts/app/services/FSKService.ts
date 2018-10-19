@@ -3,14 +3,20 @@ import ODRRestUrls from "./ODRRestUrls";
 import BTRRestUrls from "./BTRRestUrls";
 import LTRRestUrl from "./LTRRestUrl";
 import OrganDonorRegistration = FSKTypes.OrganDonorRegistrationType;
+import TreatmentWillType = FSKTypes.TreatmentWillType;
+import LivingWillType = FSKTypes.LivingWillType;
+import HasWillResponse = FSKTypes.HasWillResponse;
+import HasRegistrationResponse = FSKTypes.HasRegistrationResponse;
 
 export default class FSKService {
     public static deps = () => [ODRRestUrls, BTRRestUrls, LTRRestUrl, "Version"];
 
-    public constructor(private odrRestUrls: ODRRestUrls, private btrRestUrls: BTRRestUrls, private ltrRestUrls: LTRRestUrl, private version: Version) {
+    public constructor(
+        private odrRestUrls: ODRRestUrls,
+        private btrRestUrls: BTRRestUrls,
+        private ltrRestUrls: LTRRestUrl,
+        private version: Version) {
     }
-
-    // ORGAN DONATION REGISTRATION
 
     public async getOrganDonorRegisterForPatient(cpr: string): Promise<OrganDonorRegistration> {
         const url = this.odrRestUrls.getOrganDonorRegisterForPatient(cpr);
@@ -18,9 +24,9 @@ export default class FSKService {
         return await restClient.get(url, `Henter organdonor information for cpr: ${cpr}`);
     }
 
-    public async hasOrganDonorRegisterForPatient(cpr: string): Promise<boolean> {
+    public async hasOrganDonorRegisterForPatient(cpr: string): Promise<HasRegistrationResponse> {
         const url = this.odrRestUrls.hasOrganDonorRegisterForPatient(cpr);
-        const restClient = new RESTClient<boolean>(this.version);
+        const restClient = new RESTClient<HasRegistrationResponse>(this.version);
         return await restClient.get(url, `Undersøger om cpr ${cpr} har en organdonor registering`);
     }
 
@@ -44,28 +50,28 @@ export default class FSKService {
 
     // TREATMENT WILL
 
-    public async getTreatmentWillForPatient(cpr: string): Promise<OrganDonorRegistration> {
+    public async getTreatmentWillForPatient(cpr: string): Promise<TreatmentWillType> {
         const url = this.btrRestUrls.getTreatmentWillForPatient(cpr);
-        const restClient = new RESTClient<OrganDonorRegistration>(this.version);
+        const restClient = new RESTClient<TreatmentWillType>(this.version);
         return await restClient.get(url, `Henter organdonor information for cpr: ${cpr}`);
     }
 
-    public async hasTreatmentWillForPatient(cpr: string): Promise<boolean> {
+    public async hasTreatmentWillForPatient(cpr: string): Promise<HasWillResponse> {
         const url = this.btrRestUrls.hasTreatmentWillForPatient(cpr);
-        const restClient = new RESTClient<boolean>(this.version);
+        const restClient = new RESTClient<HasWillResponse>(this.version);
         return await restClient.get(url, `Undersøger om cpr ${cpr} har en organdonor registering`);
     }
 
-    public async createTreatmentWillForPatient(cpr: string): Promise<{}> {
+    public async createTreatmentWillForPatient(cpr: string, treatmentWill: TreatmentWillType): Promise<{}> {
         const url = this.btrRestUrls.createTreatmentWillForPatient(cpr);
         const restClient = new RESTClient<{}>(this.version);
-        return await restClient.post(url, null, `Opretter organdonor information for cpr: ${cpr}`);
+        return await restClient.post(url, treatmentWill, `Opretter organdonor information for cpr: ${cpr}`);
     }
 
-    public async updateTreatmentWillForPatient(cpr: string): Promise<{}> {
+    public async updateTreatmentWillForPatient(cpr: string, treatmentWill: TreatmentWillType): Promise<{}> {
         const url = this.btrRestUrls.updateTreatmentWillForPatient(cpr);
         const restClient = new RESTClient<{}>(this.version);
-        return await restClient.put(url, null, `Opdaterer organdonor information for cpr: ${cpr}`);
+        return await restClient.put(url, treatmentWill, `Opdaterer organdonor information for cpr: ${cpr}`);
     }
 
     public async deleteTreatmentWillForPatient(cpr: string): Promise<{}> {
@@ -76,28 +82,28 @@ export default class FSKService {
 
     // LIVING WILL
 
-    public async getLivingWillForPatient(cpr: string): Promise<OrganDonorRegistration> {
+    public async getLivingWillForPatient(cpr: string): Promise<LivingWillType> {
         const url = this.ltrRestUrls.getLivingWillForPatient(cpr);
-        const restClient = new RESTClient<OrganDonorRegistration>(this.version);
+        const restClient = new RESTClient<LivingWillType>(this.version);
         return await restClient.get(url, `Henter organdonor information for cpr: ${cpr}`);
     }
 
-    public async hasLivingWillForPatient(cpr: string): Promise<boolean> {
+    public async hasLivingWillForPatient(cpr: string): Promise<HasWillResponse> {
         const url = this.ltrRestUrls.hasLivingWillForPatient(cpr);
-        const restClient = new RESTClient<boolean>(this.version);
+        const restClient = new RESTClient<HasWillResponse>(this.version);
         return await restClient.get(url, `Undersøger om cpr ${cpr} har en organdonor registering`);
     }
 
-    public async createLivingWillForPatient(cpr: string): Promise<{}> {
+    public async createLivingWillForPatient(cpr: string, livingWill: LivingWillType): Promise<{}> {
         const url = this.ltrRestUrls.createLivingWillForPatient(cpr);
         const restClient = new RESTClient<{}>(this.version);
-        return await restClient.post(url, null, `Opretter organdonor information for cpr: ${cpr}`);
+        return await restClient.post(url, livingWill, `Opretter organdonor information for cpr: ${cpr}`);
     }
 
-    public async updateLivingWillForPatient(cpr: string): Promise<{}> {
+    public async updateLivingWillForPatient(cpr: string, livingWill: LivingWillType): Promise<{}> {
         const url = this.ltrRestUrls.updateLivingWillForPatient(cpr);
         const restClient = new RESTClient<{}>(this.version);
-        return await restClient.put(url, null, `Opdaterer organdonor information for cpr: ${cpr}`);
+        return await restClient.put(url, livingWill, `Opdaterer organdonor information for cpr: ${cpr}`);
     }
 
     public async deleteLivingWillForPatient(cpr: string): Promise<{}> {
