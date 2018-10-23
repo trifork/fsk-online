@@ -112,6 +112,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
                     this.moduleContext.getPatient().getCpr(),
                     this.getValue());
                 this.updateCache(true);
+                this.moduleContext.setApplicationContextId(`PATIENT`);
             } catch (error) {
                 ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
             }
@@ -132,6 +133,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             try {
                 await this.fskService.deleteTreatmentWillForPatient(this.moduleContext.getPatient().getCpr());
                 this.updateCache(false);
+                this.moduleContext.setApplicationContextId(`PATIENT`);
             } catch (error) {
                 ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
             }

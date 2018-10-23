@@ -96,7 +96,7 @@ button.sds-button {
     min-width: 64px;
     height: 36px;
     line-height: 32px;
-    border-radius: 2px;
+    border-radius: 4px;
     color: white;
     padding-left: 16px;
     padding-right: 16px;
@@ -122,15 +122,15 @@ button.sds-button.primary:active {
 }
 
 button.sds-button.danger {
-    background-color: #ff3547;
+    background-color: #dc3545;
 }
 
 button.sds-button.danger:hover {
-    background-color: #E63040;
+    background-color: #C6303E;
 }
 
 button.sds-button.danger:active {
-    background-color: #CC2A39;
+    background-color: #C62A38;
 }
 
 button.sds-outline-button {
@@ -205,10 +205,8 @@ button.sds-outline-button.danger:active {
 }
 
 .treatment-will-panel-container {
-    padding: 16px;
-    background-color: #f2f4f6;
-    transition: height .35s ease, opacity .35s ease;
-    height: 142px;
+    padding: 8px 16px 16px 16px;
+    height: 124px;
     overflow: hidden;
     opacity: 1;
 }
@@ -222,9 +220,7 @@ button.sds-outline-button.danger:active {
 
 .treatment-will-panel-col-12 {
     min-height: 32px;
-    background-color: #005a8d;
-    color: white;
-    padding: 8px;
+    padding:0 8px;
 }
 
 .col-25-px {
@@ -239,4 +235,9 @@ button.sds-outline-button.danger:active {
     margin: 0 16px;
     border-radius: 4px;
     padding-right: 33%;
+}
+
+.sds-line {
+    border-bottom: 1px solid #007ec5;
+    padding-top: 8px;
 }

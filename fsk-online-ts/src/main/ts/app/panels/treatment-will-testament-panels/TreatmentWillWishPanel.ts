@@ -9,9 +9,9 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
     public static deps = () => [IoC];
 
     public static NO_ACCEPT = `Altid`;
-    public static FAMILY_ACCEPT = `Hvis mine nærmeste pårørende meddeler sin accept i den konkrete situation`;
-    public static GUARDIAN_ACCEPT = `Hvis min værge meddeler sin accept i den konkrete situation`;
-    public static TRUSTED_AGENT_ACCEPT = `Hvis mine fremtidsfulmægtige meddeler sin accept i den konkrete situation`;
+    public static FAMILY_ACCEPT = `Hvis patientens nærmeste pårørende meddeler sin accept i den konkrete situation`;
+    public static GUARDIAN_ACCEPT = `Hvis patientens værge meddeler sin accept i den konkrete situation`;
+    public static TRUSTED_AGENT_ACCEPT = `Hvis patientens fremtidsfulmægtige meddeler sin accept i den konkrete situation`;
 
     private radioGroup: RadioGroup<TreatmentWillAcceptanceTypeAndNoAccept>;
 

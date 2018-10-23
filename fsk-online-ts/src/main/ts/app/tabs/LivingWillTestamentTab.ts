@@ -7,6 +7,7 @@ import SDSButton from "../elements/SDSButton";
 import FSKService from "../services/FSKService";
 import LivingWillCache from "../services/LivingWillCache";
 import ErrorUtil from "../util/ErrorUtil";
+import TreatmentWillCache from "../services/TreatmentWillCache";
 import LivingWillType = FSKTypes.LivingWillType;
 
 export default class LivingWillTestamentTab extends TemplateWidget implements TabbedPanel {
@@ -24,11 +25,12 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
     private terminallyIllCheckbox: CheckboxWrapper;
     private severelyHandicappedCheckbox: CheckboxWrapper;
 
-    public static deps = () => [IoC, "ModuleContext", LivingWillCache, FSKService, "RootElement"];
+    public static deps = () => [IoC, "ModuleContext", LivingWillCache, TreatmentWillCache, FSKService, "RootElement"];
 
     public constructor(protected container: IoC,
                        private moduleContext: ModuleContext,
                        private livingWillCache: LivingWillCache,
+                       private treatmentWillCache: TreatmentWillCache,
                        private fskService: FSKService,
                        private rootElement: HTMLElement) {
         super(container);
@@ -154,8 +156,8 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         //return userContext.isAdministratorLogin() || userContext.isSupporterLogin();
     }
 
-    public applicationContextIdChanged(applicationContextId: string): any {
-        if (applicationContextId === "PATIENT") {
+    public async applicationContextIdChanged(applicationContextId: string): Promise<void> {
+        if (applicationContextId === "PATIENT" && !(await this.treatmentWillCache.loadHasRegistration())) {
             this.moduleContext.showTab(this.ID);
         } else {
             this.moduleContext.hideTab(this.ID);
