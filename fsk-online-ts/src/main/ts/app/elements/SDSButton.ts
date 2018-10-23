@@ -6,7 +6,7 @@ export default class SDSButton extends Widget {
         this.element = document.createElement(`button`);
         this.element.innerText = title;
 
-        this.element.classList.add("sds-outline-button");
+        this.element.classList.add("sds-button");
         if (buttonStyle) {
             this.element.classList.add(buttonStyle);
         }

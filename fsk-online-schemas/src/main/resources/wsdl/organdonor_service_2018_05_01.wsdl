@@ -70,7 +70,7 @@
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
 
         <wsdl:operation name="CreateOrganDonorRegistration_2018_05_01">
-            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01#AdminCreateOrganDonorRegistration"/>
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01#CreateOrganDonorRegistration"/>
             <wsdl:input name="CreateOrganDonorRegistrationRequest_2018_05_01">
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -80,7 +80,7 @@
         </wsdl:operation>
 
         <wsdl:operation name="UpdateOrganDonorRegistration_2018_05_01">
-            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01#AdminUpdateOrganDonorRegistration"/>
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01#UpdateOrganDonorRegistration"/>
             <wsdl:input name="UpdateOrganDonorRegistrationRequest_2018_05_01">
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -90,7 +90,7 @@
         </wsdl:operation>
 
         <wsdl:operation name="DeleteOrganDonorRegistration_2018_05_01">
-            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01#AdminDeleteOrganDonorRegistration"/>
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01#DeleteOrganDonorRegistration"/>
             <wsdl:input name="DeleteOrganDonorRegistrationRequest_2018_05_01">
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -100,7 +100,7 @@
         </wsdl:operation>
 
         <wsdl:operation name="GetOrganDonorRegistration_2018_05_01">
-            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01#AdminGetOrganDonorRegistration"/>
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01#GetOrganDonorRegistration"/>
             <wsdl:input name="GetOrganDonorRegistrationRequest_2018_05_01">
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -110,7 +110,7 @@
         </wsdl:operation>
 
         <wsdl:operation name="HasOrganDonorRegistration_2018_05_01">
-            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01#AdminHasOrganDonorRegistration"/>
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/organdonor/2018/05/01#HasOrganDonorRegistration"/>
             <wsdl:input name="HasOrganDonorRegistrationRequest_2018_05_01">
                 <soap:body use="literal"/>
             </wsdl:input>

@@ -11,7 +11,7 @@ export default class LivingWillCache {
 
     public hasRegistration: boolean;
 
-    public livingWill = new AsyncValueHolder<LivingWillType>(async () => {
+    public readonly livingWill = new AsyncValueHolder<LivingWillType>(async () => {
         if (this.hasRegistration) {
             return this.getRegistration();
         } else {
@@ -26,7 +26,9 @@ export default class LivingWillCache {
     });
 
     private async loadHasRegistration(): Promise<boolean> {
-        this.hasRegistration = (await this.fskService.hasLivingWillForPatient(this.moduleContext.getPatient().getCpr())).willExists;
+        this.hasRegistration = this.moduleContext.getPatient()
+            ? (await this.fskService.hasLivingWillForPatient(this.moduleContext.getPatient().getCpr())).willExists
+            : await false;
         return this.hasRegistration;
     }
 

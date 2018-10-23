@@ -1,34 +1,95 @@
-<div class="card">
-    <div>
-        <h3 class="sds-h3">Fuld Tilladelse</h3>
-        <div style="padding-left:8px; padding-bottom: 8px">
-            <div id="{full-permission-radio}"></div>
-        </div>
-        <div id="{full-permission-widget}"></div>
-    </div>
-    <div>
-        <h3 class="sds-h3">Begrænset Tilladelse</h3>
-        <div style="padding-left:8px; padding-bottom: 8px">
-            <div id="{limited-permission-radio}"></div>
-        </div>
-        <div id="{limited-permission-widget}"></div>
-    </div>
-    <div>
-        <h3 class="sds-h3">Ved ikke</h3>
-        <div style="padding-left:8px; padding-bottom: 8px">
-            <div id="{dont-know-permission-radio}"></div>
-        </div>
-    </div>
-    <div>
-        <h3 class="sds-h3">Forbud</h3>
-        <div style="padding-left:8px; padding-bottom: 8px">
-            <div id="{restricted-permission-radio}"></div>
-        </div>
-    </div>
-
+<div class="card sds-title">
+    <h1 class="sds-h1">Organdonation</h1>
 </div>
+
 <div class="card">
-    <button id="{create-button}"></button>
-    <button id="{update-button}"></button>
-    <button id="{delete-button}"></button>
+    <div style="padding-left:8px; padding-bottom: 16px">
+        <div class="row">
+            <div class="col-25-px">
+                <div id="{full-permission-radio}"></div>
+            </div>
+            <div class="col-11">
+                <h3 class="sds-h3-no-margin">Fuld tilladelse</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-25-px">
+            </div>
+            <div class="col-11">
+                <label class="sds-label" for="{full-permission-radio}">
+                    Patienten har givet fuld tilladelse til, at patientens organer kan anvendes til transplantation
+                    efter patientens død
+                </label>
+            </div>
+        </div>
+    </div>
+    <div style="padding-left:8px; padding-bottom: 16px">
+        <div class="row">
+            <div class="col-25-px">
+                <div id="{limited-permission-radio}"></div>
+            </div>
+            <div class="col-11">
+                <h3 class="sds-h3-no-margin">Begrænset tilladelse</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-25-px">
+            </div>
+            <div class="col-11">
+                <label class="sds-label" for="{limited-permission-radio}">
+                    Patienten har givet begrænset tilladelse til, at de organer der er sat kryds ud for, kan anvendes
+                    til transplantation efter patientens død
+                </label>
+            </div>
+        </div>
+    </div>
+    <div style="padding-left:8px; padding-bottom: 16px">
+        <div class="row">
+            <div class="col-25-px">
+                <div id="{dont-know-permission-radio}"></div>
+            </div>
+            <div class="col-11">
+                <h3 class="sds-h3-no-margin">Ved ikke</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-25-px">
+            </div>
+            <div class="col-11">
+                <label class="sds-label" for="{dont-know-permission-radio}">
+                    Patienten har ikke taget stilling, men overlader det i stedet til sine nærmeste pårørende at tage
+                    stilling til, om patientens organer kan anvendes til transplantation efter patientens død
+                </label>
+            </div>
+        </div>
+    </div>
+    <div style="padding-left:8px; padding-bottom: 16px">
+        <div class="row">
+            <div class="col-25-px">
+                <div id="{restricted-permission-radio}"></div>
+            </div>
+            <div class="col-11">
+                <h3 class="sds-h3-no-margin">Forbud</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-25-px">
+            </div>
+            <div class="col-11">
+                <label class="sds-label" for="{restricted-permission-radio}">
+                    Patienten har modsat sig, at patientens organer anvendes til transplantation efter patientens
+                    død
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <div id="{full-permission-widget}"></div>
+    <div id="{limited-permission-widget}"></div>
+</div>
+<div class="card" style="text-align: right">
+    <div id="{delete-button}"></div>
+    <div id="{create-button}"></div>
+    <div id="{update-button}"></div>
 </div>

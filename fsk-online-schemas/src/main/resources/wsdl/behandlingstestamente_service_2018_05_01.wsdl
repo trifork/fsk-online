@@ -70,7 +70,7 @@
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
 
         <wsdl:operation name="CreateTreatmentWill_2018_05_01">
-            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01#AdminCreateTreatmentWill"/>
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01#CreateTreatmentWill"/>
             <wsdl:input name="CreateTreatmentWillRequest_2018_05_01">
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -80,7 +80,7 @@
         </wsdl:operation>
 
         <wsdl:operation name="UpdateTreatmentWill_2018_05_01">
-            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01#AdminUpdateTreatmentWill"/>
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01#UpdateTreatmentWill"/>
             <wsdl:input name="UpdateTreatmentWillRequest_2018_05_01">
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -90,7 +90,7 @@
         </wsdl:operation>
 
         <wsdl:operation name="DeleteTreatmentWill_2018_05_01">
-            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01#AdminDeleteTreatmentWill"/>
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01#DeleteTreatmentWill"/>
             <wsdl:input name="DeleteTreatmentWillRequest_2018_05_01">
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -100,7 +100,7 @@
         </wsdl:operation>
 
         <wsdl:operation name="GetTreatmentWill_2018_05_01">
-            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01#AdminGetTreatmentWill"/>
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01#GetTreatmentWill"/>
             <wsdl:input name="GetTreatmentWillRequest_2018_05_01">
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -110,7 +110,7 @@
         </wsdl:operation>
 
         <wsdl:operation name="HasTreatmentWill_2018_05_01">
-            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01#AdminHasTreatmentWill"/>
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01#HasTreatmentWill"/>
             <wsdl:input name="HasTreatmentWillRequest_2018_05_01">
                 <soap:body use="literal"/>
             </wsdl:input>

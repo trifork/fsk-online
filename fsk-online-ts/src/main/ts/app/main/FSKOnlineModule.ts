@@ -12,8 +12,10 @@ import FSKOnlineContainer from "./FSKOnlineContainer";
 import FSKConfig from "./FSKConfig";
 import OrganDonorRegistrationTab from "../tabs/OrganDonorRegistrationTab";
 import LivingWillTestamentTab from "../tabs/LivingWillTestamentTab";
-import TreatmentWillWishPanel from "../panels/treatment-will-testament-panels/TreatmentWillWishPanel";
 import TreatmentWillTab from "../tabs/TreatmentWillTab";
+import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
+import TreatmentWillCache from "../services/TreatmentWillCache";
+import LivingWillCache from "../services/LivingWillCache";
 
 if (!("remove" in Element.prototype)) {
     Element.prototype[`remove`] = function () {
@@ -26,6 +28,10 @@ if (!("remove" in Element.prototype)) {
 export default class FSKOnlineModule extends DefaultModule {
     public static FSK_ONLINE_CTX_ID = "FSK_ONLINE";
     private static MODULE_IDENTIFIER = "fsk";
+
+    private organDonorCache: FSKOrganDonorCache;
+    private treatmentWillCache: TreatmentWillCache;
+    private livingWillCache: LivingWillCache;
 
     public constructor(private container: FSKOnlineContainer) {
         super(FSKOnlineModule.MODULE_IDENTIFIER);
@@ -42,6 +48,9 @@ export default class FSKOnlineModule extends DefaultModule {
                     remoteLogService.setupErrorHandler(false);
                 }
         */
+        this.organDonorCache = <FSKOrganDonorCache>this.container.resolve(FSKOrganDonorCache);
+        this.treatmentWillCache = <TreatmentWillCache>this.container.resolve(TreatmentWillCache);
+        this.livingWillCache = <LivingWillCache>this.container.resolve(LivingWillCache);
         this.initAfterModuleRegistered();
         ModuleRegistryFactory.getInstance().moduleInitializationCompleted(FSKOnlineModule.MODULE_IDENTIFIER);
     }
@@ -73,7 +82,16 @@ export default class FSKOnlineModule extends DefaultModule {
 
     public setPatient(patient: PersonInfo, asyncResponse: AsyncResponse): boolean {
         const result = super.setPatient(patient, asyncResponse);
-        // this.dummyTab.setPatient(patient);
+        if (patient) {
+            this.organDonorCache.organDonorRegister.setStale();
+            this.livingWillCache.livingWill.setStale();
+            this.treatmentWillCache.treatmentWill.setStale();
+
+        } else if (!patient) {
+            this.organDonorCache.organDonorRegister.clear();
+            this.livingWillCache.livingWill.clear();
+            this.treatmentWillCache.treatmentWill.clear();
+        }
         return result;
     }
 

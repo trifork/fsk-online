@@ -1,6 +1,7 @@
 import {Widget} from "fmko-typescript-common";
 import {IOrganDonor} from "../../model/OrganDonorRegistrationType";
 import {Checkbox} from "fmko-ts-widgets";
+import {Tag} from "fmko-ts-widgets";
 
 export default class FullAccessPermissionPanel extends Widget implements IOrganDonor<FSKTypes.OrganDonorRegistrationType> {
 
@@ -12,7 +13,11 @@ export default class FullAccessPermissionPanel extends Widget implements IOrganD
         super();
         this.element = document.createElement(`div`);
         this.element.className = `card full-access-panel`;
-        this.fullPermissionCheckBox = new Checkbox(false, `Min fulde tilladelse forudsætter mine pårørendes accept`);
+        this.fullPermissionCheckBox = new Checkbox(false, `Forudsætter accept fra patientens pårørende`);
+        this.fullPermissionCheckBox.getCssStyle().fontSize = `14px`;
+        const pTag = new Tag(`p`,`Detaljer for <b>fuld tilladelse</b>`);
+        pTag.getCssStyle().fontSize = `16px`;
+        this.add(pTag);
         this.add(this.fullPermissionCheckBox);
     }
 
@@ -23,11 +28,8 @@ export default class FullAccessPermissionPanel extends Widget implements IOrganD
         };
     }
 
-    public setVisible(visible: boolean): void {
-        super.setVisible(visible);
-        if (!visible) {
-            this.element.style.display = `block`;
-        }
+    public setEnabled(enabled: boolean) {
+        this.fullPermissionCheckBox.setEnabled(enabled);
     }
 
     public setValue(organDonorRegistation: FSKTypes.OrganDonorRegistrationType) {

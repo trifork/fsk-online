@@ -33,10 +33,7 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
     }
 
     public setVisible(visible: boolean): void {
-        super.setVisible(visible);
-        if (!visible) {
-            this.element.style.display = `block`;
-        }
+        this.element.setAttribute("aria-hidden", `${!visible}`);
     }
 
     public setValue(value: TreatmentWillAcceptanceType) {

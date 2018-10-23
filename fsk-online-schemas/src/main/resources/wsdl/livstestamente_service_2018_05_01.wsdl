@@ -70,7 +70,7 @@
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
 
         <wsdl:operation name="CreateLivingWill_2018_05_01">
-            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01#AdminCreateLivingWill"/>
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01#CreateLivingWill"/>
             <wsdl:input name="CreateLivingWillRequest_2018_05_01">
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -80,7 +80,7 @@
         </wsdl:operation>
 
         <wsdl:operation name="UpdateLivingWill_2018_05_01">
-            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01#AdminUpdateLivingWill"/>
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01#UpdateLivingWill"/>
             <wsdl:input name="UpdateLivingWillRequest_2018_05_01">
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -90,7 +90,7 @@
         </wsdl:operation>
 
         <wsdl:operation name="DeleteLivingWill_2018_05_01">
-            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01#AdminDeleteLivingWill"/>
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01#DeleteLivingWill"/>
             <wsdl:input name="DeleteLivingWillRequest_2018_05_01">
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -100,7 +100,7 @@
         </wsdl:operation>
 
         <wsdl:operation name="GetLivingWill_2018_05_01">
-            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01#AdminGetLivingWill"/>
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01#GetLivingWill"/>
             <wsdl:input name="GetLivingWillRequest_2018_05_01">
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -110,7 +110,7 @@
         </wsdl:operation>
 
         <wsdl:operation name="HasLivingWill_2018_05_01">
-            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01#AdminHasLivingWill"/>
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/livstestamente/2018/05/01#HasLivingWill"/>
             <wsdl:input name="HasLivingWillRequest_2018_05_01">
                 <soap:body use="literal"/>
             </wsdl:input>

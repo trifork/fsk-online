@@ -18,6 +18,8 @@ export default class FSKService {
         private version: Version) {
     }
 
+    // OrgandonationRegistration
+
     public async getOrganDonorRegisterForPatient(cpr: string): Promise<OrganDonorRegistration> {
         const url = this.odrRestUrls.getOrganDonorRegisterForPatient(cpr);
         const restClient = new RESTClient<OrganDonorRegistration>(this.version);

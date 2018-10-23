@@ -49,18 +49,22 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
         return "LIMITED";
     }
 
+    public setEnabled(enabled: boolean): void {
+        Object.values(this.checkboxes).forEach(checkbox => checkbox.setEnabled(enabled));
+    }
+
     public getValue(): FSKTypes.OrganDonorRegistrationType {
         return <FSKTypes.OrganDonorRegistrationType>{
             permissionType: this.getType(),
-            permissionForHeart: this.checkboxes.permissionForHeart.getValue(),
-            permissionForKidneys: this.checkboxes.permissionForKidneys.getValue(),
-            permissionForLungs: this.checkboxes.permissionForLungs.getValue(),
-            permissionForCornea: this.checkboxes.permissionForCornea.getValue(),
-            permissionForLiver: this.checkboxes.permissionForLiver.getValue(),
-            permissionForSmallIntestine: this.checkboxes.permissionForSmallIntestine.getValue(),
-            permissionForPancreas: this.checkboxes.permissionForPancreas.getValue(),
-            permissionForSkin: this.checkboxes.permissionForSkin.getValue(),
-            requiresRelativeAcceptance: this.checkboxes.requiresRelativeAcceptance.getValue(),
+            permissionForHeart: !!this.checkboxes.permissionForHeart.getValue(),
+            permissionForKidneys: !!this.checkboxes.permissionForKidneys.getValue(),
+            permissionForLungs: !!this.checkboxes.permissionForLungs.getValue(),
+            permissionForCornea: !!this.checkboxes.permissionForCornea.getValue(),
+            permissionForLiver: !!this.checkboxes.permissionForLiver.getValue(),
+            permissionForSmallIntestine: !!this.checkboxes.permissionForSmallIntestine.getValue(),
+            permissionForPancreas: !!this.checkboxes.permissionForPancreas.getValue(),
+            permissionForSkin: !!this.checkboxes.permissionForSkin.getValue(),
+            requiresRelativeAcceptance: !!this.checkboxes.requiresRelativeAcceptance.getValue(),
         };
     }
 
@@ -86,13 +90,6 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
         }
     }
 
-    public setVisible(visible: boolean): void {
-        super.setVisible(visible);
-        if (!visible) {
-            this.element.style.display = `block`;
-        }
-    }
-
     public tearDownBindings(): any {
         // Unused
     }
@@ -115,7 +112,7 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
         const intestineCheckbox = new Checkbox(false, `Tyndtarm`);
         const pancreasCheckbox = new Checkbox(false, `Bugspytkirtel`);
         const skinCheckbox = new Checkbox(false, `Hud`);
-        const consentCheckBox = new Checkbox(false, `Min begrænsede tilladelse forudsætter mine pårørende accept`);
+        const consentCheckBox = new Checkbox(false, `Forudsætter accept fra patientens pårørende`);
 
         this.checkboxes = <OrganRegistrationCheckBoxes>{
             permissionForHeart: heartCheckbox,
@@ -128,6 +125,10 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
             permissionForSkin: skinCheckbox,
             requiresRelativeAcceptance: consentCheckBox
         };
+
+        Object.values(this.checkboxes).forEach(currentCheckbox => {
+            currentCheckbox.getCssStyle().fontSize = `14px`;
+        });
 
         return this.checkboxes;
     }

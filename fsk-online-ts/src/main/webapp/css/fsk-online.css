@@ -1,21 +1,38 @@
 h1.sds-h1 {
     font-size: 30px;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 h3.sds-h3 {
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 500;
     margin-bottom: 16px;
+}
+
+h3.sds-h3-no-margin {
+    font-size: 18px;
+    font-weight: 500;
 }
 
 h5.sds-h5 {
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 500;
+}
+
+label.sds-label {
+    font-size: 14px;
+}
+
+.sds-title {
+    background-color: #005a8d;
+    color: white;
+    border-radius: 4px;
+    margin: 0 16px 8px 16px;
 }
 
 p.sds-p {
     font-size: 14px;
+    margin-bottom: 8px;
 }
 
 p.sds-quote {
@@ -26,7 +43,7 @@ p.sds-quote {
 p.sds-quoted-by {
     font-size: 16px;
     color: #222;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 p.sds-quoted-by:before {
@@ -75,6 +92,47 @@ a.sds-link:before {
     color: #007ec5;
 }
 
+button.sds-button {
+    min-width: 64px;
+    height: 36px;
+    line-height: 32px;
+    border-radius: 2px;
+    color: white;
+    padding-left: 16px;
+    padding-right: 16px;
+    margin-left: 8px;
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+button.sds-button.primary {
+    background-color: #005a8d;
+}
+
+button.sds-button.primary:hover {
+    background-color: #00517F;
+}
+
+button.sds-button.primary:active {
+    background-color: #004870;
+}
+
+button.sds-button.danger {
+    background-color: #ff3547;
+}
+
+button.sds-button.danger:hover {
+    background-color: #E63040;
+}
+
+button.sds-button.danger:active {
+    background-color: #CC2A39;
+}
+
 button.sds-outline-button {
     min-width: 64px;
     height: 36px;
@@ -84,7 +142,7 @@ button.sds-outline-button {
     background-color: white;
     padding-left: 16px;
     padding-right: 16px;
-    margin-right: 8px;
+    margin-left: 8px;
     cursor: pointer;
     font-weight: 600;
     text-transform: uppercase;
@@ -125,41 +183,60 @@ button.sds-outline-button.danger:active {
 }
 
 .limited-access-panel {
-    transition: height 0.25s;
-    width: 540px;
-    height: 90px;
-    transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
+    transition: opacity .35s ease;
     overflow: hidden;
+    opacity: 1;
 }
 
-.limited-access-panel[aria-hidden] {
-    height: 0;
-    display: block;
-    padding:0;
+.limited-access-panel[aria-hidden="true"] {
+    padding: 0 0 0 16px;
+    opacity: 0;
 }
 
 .full-access-panel {
-    transition: height 0.25s;
-    height: 25px;
-    transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
+    transition: opacity .35s ease;
     overflow: hidden;
+    opacity: 1;
 }
 
-.full-access-panel[aria-hidden] {
-    height: 0;
-    display: block;
-    padding:0;
+.full-access-panel[aria-hidden="true"] {
+    padding: 0 0 0 16px;
+    opacity: 0;
 }
 
-.treatment-will-panel {
-    transition: height 0.25s;
-    height: 110px;
-    transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
+.treatment-will-panel-container {
+    padding: 16px;
+    background-color: #f2f4f6;
+    transition: height .35s ease, opacity .35s ease;
+    height: 142px;
     overflow: hidden;
+    opacity: 1;
 }
 
-.treatment-will-panel[aria-hidden] {
+.treatment-will-panel-container[aria-hidden="true"] {
+    padding: 0 0 0 16px;
+    margin-bottom: 0;
     height: 0;
-    display: block;
-    padding:0;
+    opacity: 0;
+}
+
+.treatment-will-panel-col-12 {
+    min-height: 32px;
+    background-color: #005a8d;
+    color: white;
+    padding: 8px;
+}
+
+.col-25-px {
+    position: relative;
+    min-height: 1px;
+    width: 25px;
+    float: left;
+}
+
+.organ-donor-panel {
+    border: 1px solid #005a8d;
+    margin: 0 16px;
+    border-radius: 4px;
+    padding-right: 33%;
 }

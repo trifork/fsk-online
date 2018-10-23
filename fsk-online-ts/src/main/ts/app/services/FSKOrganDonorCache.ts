@@ -11,7 +11,7 @@ export default class FSKOrganDonorCache {
 
     public hasRegistration: boolean;
 
-    public organDonorRegister = new AsyncValueHolder<OrganDonorRegistrationType>(async () => {
+    public readonly organDonorRegister = new AsyncValueHolder<OrganDonorRegistrationType>(async () => {
         if (this.hasRegistration) {
             return this.getRegistration();
         } else {
@@ -26,7 +26,9 @@ export default class FSKOrganDonorCache {
     });
 
     private async loadHasRegistration(): Promise<boolean> {
-        this.hasRegistration = (await this.fskService.hasOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr())).registrationExists;
+        this.hasRegistration = this.moduleContext.getPatient()
+            ? (await this.fskService.hasOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr())).registrationExists
+            : await false;
         return this.hasRegistration;
     }
 

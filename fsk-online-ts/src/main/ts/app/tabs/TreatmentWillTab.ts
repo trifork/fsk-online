@@ -8,9 +8,9 @@ import SDSButton from "../elements/SDSButton";
 import ValueChangeHandler from "fmko-typescript-common/target/lib/ts/core/ValueChangeHandler";
 import TreatmentWillCache from "../services/TreatmentWillCache";
 import FSKService from "../services/FSKService";
+import ErrorUtil from "../util/ErrorUtil";
 import TreatmentWillType = FSKTypes.TreatmentWillType;
 import TreatmentWillValueType = FSKTypes.TreatmentWillValueType;
-import ErrorUtil from "../util/ErrorUtil";
 
 export default class TreatmentWillTab extends TemplateWidget implements TabbedPanel {
     private ID = "TreatmentWillTab_TS";
@@ -106,7 +106,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
 
         this.addAndReplaceWidgetByVarName(this.treatmentByForcePanel, `treatment-by-force-panel`);
 
-        this.createButton = new SDSButton("Opret registering", "primary", async () => {
+        this.createButton = new SDSButton("Opret registrering", "primary", async () => {
             try {
                 await this.fskService.createTreatmentWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
@@ -128,7 +128,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             }
         });
 
-        this.deleteButton = new SDSButton("Slet registering", "danger", async () => {
+        this.deleteButton = new SDSButton("Slet registrering", "danger", async () => {
             try {
                 await this.fskService.deleteTreatmentWillForPatient(this.moduleContext.getPatient().getCpr());
                 this.updateCache(false);
@@ -137,11 +137,19 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             }
         });
 
+        this.hideButtons();
+
         this.addAndReplaceWidgetByVarName(this.createButton, `create-button`);
         this.addAndReplaceWidgetByVarName(this.updateButton, `update-button`);
         this.addAndReplaceWidgetByVarName(this.deleteButton, `delete-button`);
 
         this.rootElement.appendChild(this.element);
+    }
+
+    public hideButtons() {
+        this.createButton.setVisible(false);
+        this.updateButton.setVisible(false);
+        this.deleteButton.setVisible(false);
     }
 
     private addHandlerForCheckandPanel(checkBox: CheckboxWrapper, panel: Widget) {
@@ -189,7 +197,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
-        return true;
+        return userContext.isAdministratorLogin();
     }
 
     public applicationContextIdChanged(applicationContextId: string): any {

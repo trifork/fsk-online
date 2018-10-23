@@ -6,8 +6,8 @@ import {CheckboxWrapper, ErrorDisplay} from "fmko-ts-widgets";
 import SDSButton from "../elements/SDSButton";
 import FSKService from "../services/FSKService";
 import LivingWillCache from "../services/LivingWillCache";
-import LivingWillType = FSKTypes.LivingWillType;
 import ErrorUtil from "../util/ErrorUtil";
+import LivingWillType = FSKTypes.LivingWillType;
 
 export default class LivingWillTestamentTab extends TemplateWidget implements TabbedPanel {
     private ID = "LivingWillTestamentTab_TS";
@@ -58,7 +58,7 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         this.terminallyIllCheckbox = new CheckboxWrapper(this.getElementByVarName(`terminally-ill-checkbox`));
         this.severelyHandicappedCheckbox = new CheckboxWrapper(this.getElementByVarName(`severely-handicapped-checkbox`));
 
-        this.createButton = new SDSButton("Opret registering", "primary", async () => {
+        this.createButton = new SDSButton("Opret registrering", "primary", async () => {
             try {
                 await this.fskService.createLivingWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
@@ -80,20 +80,30 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
             }
         });
 
-        this.deleteButton = new SDSButton("Slet registering", "danger", async () => {
+        this.deleteButton = new SDSButton("Slet registrering", "danger", async () => {
             try {
                 await this.fskService.deleteLivingWillForPatient(this.moduleContext.getPatient().getCpr());
+                this.terminallyIllCheckbox.setValue(false);
+                this.severelyHandicappedCheckbox.setValue(false);
                 this.updateCache(false);
             } catch (error) {
                 ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
             }
         });
 
+        this.hideButtons();
+
         this.addAndReplaceWidgetByVarName(this.createButton, `create-button`);
         this.addAndReplaceWidgetByVarName(this.updateButton, `update-button`);
         this.addAndReplaceWidgetByVarName(this.deleteButton, `delete-button`);
 
         this.rootElement.appendChild(this.element);
+    }
+
+    public hideButtons() {
+        this.createButton.setVisible(false);
+        this.updateButton.setVisible(false);
+        this.deleteButton.setVisible(false);
     }
 
     public setCreateMode(isCreateMode: boolean) {
@@ -140,7 +150,8 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
-        return true;
+        return userContext.isAdministratorLogin();
+        //return userContext.isAdministratorLogin() || userContext.isSupporterLogin();
     }
 
     public applicationContextIdChanged(applicationContextId: string): any {
