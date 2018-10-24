@@ -1,21 +1,25 @@
-import {ModuleContext, TabbedPanel, UserContext, Widget} from "fmko-typescript-common";
+import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler, Widget} from "fmko-typescript-common";
 import {TemplateWidget} from "fmko-ts-mvc";
 import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
-import {CheckboxWrapper, ErrorDisplay} from "fmko-ts-widgets";
+import {ButtonStyle, CheckboxWrapper, DialogOption, ErrorDisplay, PopupDialog, PopupDialogKind} from "fmko-ts-widgets";
 import TreatmentWillWishPanel from "../panels/treatment-will-testament-panels/TreatmentWillWishPanel";
 import SDSButton from "../elements/SDSButton";
-import ValueChangeHandler from "fmko-typescript-common/target/lib/ts/core/ValueChangeHandler";
 import TreatmentWillCache from "../services/TreatmentWillCache";
 import FSKService from "../services/FSKService";
 import ErrorUtil from "../util/ErrorUtil";
+import FSKConfig from "../main/FSKConfig";
+import FSKOnlineModule from "../main/FSKOnlineModule";
+import LivingWillCache from "../services/LivingWillCache";
+import FSKUserUtil from "../util/FSKUserUtil";
+import TimelineUtil from "../util/TimelineUtil";
 import TreatmentWillType = FSKTypes.TreatmentWillType;
 import TreatmentWillValueType = FSKTypes.TreatmentWillValueType;
 
 export default class TreatmentWillTab extends TemplateWidget implements TabbedPanel {
     private ID = "TreatmentWillTab_TS";
     private TITLE = "Behandlingstestamente";
-    private shown;
+    private shown: boolean;
     private initialized: boolean;
 
     private treatmentWillChangeHandler: ValueChangeHandler<FSKTypes.TreatmentWillType>;
@@ -34,10 +38,14 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     private illWithPermanentPainPanel: TreatmentWillWishPanel;
     private treatmentByForcePanel: TreatmentWillWishPanel;
 
-    public static deps = () => [IoC, "ModuleContext", TreatmentWillCache, FSKService, "RootElement"];
+    private canSee = false;
+
+    public static deps = () => [IoC, "ModuleContext", "FSKConfig", LivingWillCache, TreatmentWillCache, FSKService, "RootElement"];
 
     public constructor(protected container: IoC,
                        private moduleContext: ModuleContext,
+                       private fskConfig: FSKConfig,
+                       private livingWillCache: LivingWillCache,
                        private treatmentWillCache: TreatmentWillCache,
                        private fskService: FSKService,
                        private rootElement: HTMLElement) {
@@ -74,35 +82,30 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             $: isChecked
         };
     }
+    public async setupBindings(): Promise<void> {
+        Widget.setVisible(this.getElementByVarName(`living-will-exists`), (await this.livingWillCache.loadHasRegistration() && FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext())));
 
-    public getWishPanelValue(wishPanel: TreatmentWillWishPanel) {
-        return wishPanel.getValue() === TreatmentWillWishPanel.NO_ACCEPT_PROPERTY
-            ? null
-            : wishPanel.getValue();
-    }
-
-    public setupBindings(): void {
         this.terminallyIllCheckbox = new CheckboxWrapper(this.getElementByVarName(`terminally-ill-checkbox`));
         this.terminallyIllPanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
-        this.addHandlerForCheckandPanel(this.terminallyIllCheckbox, this.terminallyIllPanel);
+        this.addHandlerForCheckboxAndPanel(this.terminallyIllCheckbox, this.terminallyIllPanel);
 
         this.addAndReplaceWidgetByVarName(this.terminallyIllPanel, `terminally-ill-panel`);
 
         this.illNoImprovementCheckbox = new CheckboxWrapper(this.getElementByVarName(`ill-no-improvement-checkbox`));
         this.illNoImprovementPanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
-        this.addHandlerForCheckandPanel(this.illNoImprovementCheckbox, this.illNoImprovementPanel);
+        this.addHandlerForCheckboxAndPanel(this.illNoImprovementCheckbox, this.illNoImprovementPanel);
 
         this.addAndReplaceWidgetByVarName(this.illNoImprovementPanel, `ill-no-improvement-panel`);
 
         this.illWithPermanentPainCheckbox = new CheckboxWrapper(this.getElementByVarName(`ill-with-permanent-pain-checkbox`));
         this.illWithPermanentPainPanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
-        this.addHandlerForCheckandPanel(this.illWithPermanentPainCheckbox, this.illWithPermanentPainPanel);
+        this.addHandlerForCheckboxAndPanel(this.illWithPermanentPainCheckbox, this.illWithPermanentPainPanel);
 
         this.addAndReplaceWidgetByVarName(this.illWithPermanentPainPanel, `ill-with-permanent-pain-panel`);
 
         this.treatmentByForceCheckbox = new CheckboxWrapper(this.getElementByVarName(`treatment-by-force-checkbox`));
         this.treatmentByForcePanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
-        this.addHandlerForCheckandPanel(this.treatmentByForceCheckbox, this.treatmentByForcePanel);
+        this.addHandlerForCheckboxAndPanel(this.treatmentByForceCheckbox, this.treatmentByForcePanel);
 
         this.addAndReplaceWidgetByVarName(this.treatmentByForcePanel, `treatment-by-force-panel`);
 
@@ -141,6 +144,8 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
 
         this.hideButtons();
 
+        this.setEnabled(FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext()));
+
         this.addAndReplaceWidgetByVarName(this.createButton, `create-button`);
         this.addAndReplaceWidgetByVarName(this.updateButton, `update-button`);
         this.addAndReplaceWidgetByVarName(this.deleteButton, `delete-button`);
@@ -154,7 +159,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
         this.deleteButton.setVisible(false);
     }
 
-    private addHandlerForCheckandPanel(checkBox: CheckboxWrapper, panel: Widget) {
+    private addHandlerForCheckboxAndPanel(checkBox: CheckboxWrapper, panel: Widget) {
         checkBox.addValueChangeHandler(handler => {
             const value = handler.getValue();
             panel.setVisible(value);
@@ -165,7 +170,21 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
         this.treatmentWillCache.hasRegistration = hasRegistration;
         this.setCreateMode(!hasRegistration);
         this.treatmentWillCache.treatmentWill.setStale();
-    };
+    }
+
+    public setEnabled(enabled: boolean) {
+        this.terminallyIllCheckbox.setEnabled(enabled);
+        this.terminallyIllPanel.setEnabled(enabled);
+
+        this.illNoImprovementCheckbox.setEnabled(enabled);
+        this.illNoImprovementPanel.setEnabled(enabled);
+
+        this.illWithPermanentPainCheckbox.setEnabled(enabled);
+        this.illWithPermanentPainPanel.setEnabled(enabled);
+
+        this.treatmentByForceCheckbox.setEnabled(enabled);
+        this.treatmentByForcePanel.setEnabled(enabled);
+    }
 
     public tearDownBindings(): void {
         // unused
@@ -179,15 +198,43 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
         return this.TITLE;
     }
 
-    setVisible(visible: boolean): any {
-        super.setVisible(visible);
+    public async setVisible(visible: boolean): Promise<void> {
+        let canSee = visible;
 
-        if (this.shown === visible) {
+        const yesOption = <DialogOption>{
+            buttonStyle: ButtonStyle.GREEN,
+            text: `Videre`,
+        };
+
+        const noOption = <DialogOption>{
+            buttonStyle: ButtonStyle.RED,
+            text: `Fortryd`,
+        };
+
+        if (FSKUserUtil.userHasAuthorisations(this.moduleContext.getUserContext()) && visible && !this.canSee) {
+            const yesClicked = await PopupDialog.display(
+                PopupDialogKind.WARNING,
+                "Er du sikker?",
+                "<h4 style='font-size:18px'>Dette vil blive min-logget</h4> " +
+                "<br>" +
+                "Visningen af behandlingstestamentet burde kun blive vist hvis " +
+                "<ul style='list-style: inherit; padding-left:32px'>" +
+                "<li>Patienten ligger for døden (dvs. er uafvendeligt døende)</li>" +
+                "<li>Patienten hvis patienten ligger hjælpeløs hen pga. sygdom, ulykke mv, og der ikke er tegn på bedring</li>" +
+                "</ul>",
+                noOption,
+                yesOption);
+            canSee = yesClicked === yesOption;
+            this.canSee = canSee;
+        }
+        super.setVisible(canSee);
+
+        if (this.shown === canSee) {
             // Debounce..
             return;
         }
 
-        if (visible) {
+        if (canSee) {
             this.addListeners();
             this.init();
             this.render();
@@ -195,11 +242,18 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             this.removeListeners();
         }
 
-        this.shown = visible;
+        this.shown = canSee;
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
-        return userContext.isAdministratorLogin();
+        if (!TimelineUtil.useTreatmentWill(this.fskConfig)) {
+            return false;
+        }
+
+        const hasTreatmentWillRights = FSKUserUtil.isFSKAdmin(userContext);
+
+        const hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !hasTreatmentWillRights;
+        return hasAuthAndNotAdmin || hasTreatmentWillRights;
     }
 
     public applicationContextIdChanged(applicationContextId: string): any {
@@ -219,9 +273,10 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     }
 
     public setCreateMode(isCreateMode: boolean) {
-        this.createButton.setVisible(isCreateMode);
-        this.updateButton.setVisible(!isCreateMode);
-        this.deleteButton.setVisible(!isCreateMode);
+        const canWrite = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
+        this.createButton.setVisible(isCreateMode && canWrite);
+        this.updateButton.setVisible(!isCreateMode && canWrite);
+        this.deleteButton.setVisible(!isCreateMode && canWrite);
     }
 
     public setData(treatmentWill: FSKTypes.TreatmentWillType): void {
@@ -274,6 +329,13 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             this.setData(value);
         }
     }
+
+    private getWishPanelValue(wishPanel: TreatmentWillWishPanel) {
+        return wishPanel.getValue() === TreatmentWillWishPanel.NO_ACCEPT_PROPERTY
+            ? null
+            : wishPanel.getValue();
+    }
+
 
     private addListeners() {
         if (!this.treatmentWillChangeHandler) {

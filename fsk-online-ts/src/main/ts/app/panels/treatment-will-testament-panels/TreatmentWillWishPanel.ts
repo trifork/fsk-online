@@ -48,6 +48,12 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
         });
     }
 
+    public setEnabled(enabled: boolean) {
+        this.radioGroup.getRadioButtons().forEach(button => {
+            button.setEnabled(enabled);
+        });
+    }
+
     public setupBindings(): any {
         const radioButtons =
             Object.entries(this.treatmentType)

@@ -25,7 +25,7 @@ export default class LivingWillCache {
         // Ignore
     });
 
-    private async loadHasRegistration(): Promise<boolean> {
+    public async loadHasRegistration(): Promise<boolean> {
         this.hasRegistration = this.moduleContext.getPatient()
             ? (await this.fskService.hasLivingWillForPatient(this.moduleContext.getPatient().getCpr())).willExists
             : await false;

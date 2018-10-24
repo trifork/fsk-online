@@ -7,7 +7,10 @@ import SDSButton from "../elements/SDSButton";
 import FSKService from "../services/FSKService";
 import LivingWillCache from "../services/LivingWillCache";
 import ErrorUtil from "../util/ErrorUtil";
-import TreatmentWillCache from "../services/TreatmentWillCache";
+import FSKOnlineModule from "../main/FSKOnlineModule";
+import FSKConfig from "../main/FSKConfig";
+import FSKUserUtil from "../util/FSKUserUtil";
+import TimelineUtil from "../util/TimelineUtil";
 import LivingWillType = FSKTypes.LivingWillType;
 
 export default class LivingWillTestamentTab extends TemplateWidget implements TabbedPanel {
@@ -25,12 +28,14 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
     private terminallyIllCheckbox: CheckboxWrapper;
     private severelyHandicappedCheckbox: CheckboxWrapper;
 
-    public static deps = () => [IoC, "ModuleContext", LivingWillCache, TreatmentWillCache, FSKService, "RootElement"];
+    private hasAuthAndNotAdmin: boolean;
+
+    public static deps = () => [IoC, "ModuleContext", "FSKConfig", LivingWillCache, FSKService, "RootElement"];
 
     public constructor(protected container: IoC,
                        private moduleContext: ModuleContext,
+                       private fskConfig: FSKConfig,
                        private livingWillCache: LivingWillCache,
-                       private treatmentWillCache: TreatmentWillCache,
                        private fskService: FSKService,
                        private rootElement: HTMLElement) {
         super(container);
@@ -94,6 +99,7 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         });
 
         this.hideButtons();
+        this.setEnabled(FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext()));
 
         this.addAndReplaceWidgetByVarName(this.createButton, `create-button`);
         this.addAndReplaceWidgetByVarName(this.updateButton, `update-button`);
@@ -109,9 +115,10 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
     }
 
     public setCreateMode(isCreateMode: boolean) {
-        this.createButton.setVisible(isCreateMode);
-        this.updateButton.setVisible(!isCreateMode);
-        this.deleteButton.setVisible(!isCreateMode);
+        const isFSKAdmin = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
+        this.createButton.setVisible(isCreateMode && isFSKAdmin && !TimelineUtil.useTreatmentWill(this.fskConfig));
+        this.updateButton.setVisible(!isCreateMode && isFSKAdmin && !TimelineUtil.useTreatmentWill(this.fskConfig));
+        this.deleteButton.setVisible(!isCreateMode && isFSKAdmin);
     }
 
     public updateCache(hasRegistration: boolean) {
@@ -132,7 +139,7 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         return this.TITLE;
     }
 
-    setVisible(visible: boolean): any {
+    public setVisible(visible: boolean): any {
         super.setVisible(visible);
 
         if (this.shown === visible) {
@@ -152,16 +159,39 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
-        return userContext.isAdministratorLogin();
-        //return userContext.isAdministratorLogin() || userContext.isSupporterLogin();
+        const hasTreatmentWillRights = FSKUserUtil.isFSKAdmin(userContext);
+
+        const hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !hasTreatmentWillRights;
+        return hasAuthAndNotAdmin || hasTreatmentWillRights;
     }
 
     public async applicationContextIdChanged(applicationContextId: string): Promise<void> {
-        if (applicationContextId === "PATIENT" && !(await this.treatmentWillCache.loadHasRegistration())) {
+        const livingWillDateSurpassed = this.hasLivingWillDateBeenSurpassed();
+        const hasLivingWill = await this.livingWillCache.loadHasRegistration();
+        const canView = !livingWillDateSurpassed || hasLivingWill;
+        if (applicationContextId === "PATIENT" && canView) {
             this.moduleContext.showTab(this.ID);
         } else {
             this.moduleContext.hideTab(this.ID);
         }
+    }
+
+    public setEnabled(enabled: boolean): void {
+        this.terminallyIllCheckbox.setEnabled(enabled);
+        this.severelyHandicappedCheckbox.setEnabled(enabled);
+    }
+
+    private hasLivingWillDateBeenSurpassed(): boolean {
+        if (!this.fskConfig.TreatmentWillStartDate) {
+            return false;
+        }
+        const treatmentWillStartDate = new Date(this.fskConfig.TreatmentWillStartDate);
+
+        if (isNaN(treatmentWillStartDate.valueOf())) {
+            return false;
+        }
+
+        return new Date().valueOf() > treatmentWillStartDate.valueOf();
     }
 
     public showInitially(): boolean {

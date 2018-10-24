@@ -1,4 +1,4 @@
-import { ModuleContext } from "fmko-typescript-common";
+import {ModuleContext} from "fmko-typescript-common";
 import FSKConfig from "./FSKConfig";
 
 export default class FSKOnlineConfigurationFactory {
@@ -6,9 +6,9 @@ export default class FSKOnlineConfigurationFactory {
 
         const DEFAULTS: FSKConfig = {
             RemoteExceptionLoggingEnabled: true,
-            FSKUrlBase: "/fmk/fsk-online/rest"
+            FSKUrlBase: `/fmk/fsk-online/rest`,
+            TreatmentWillStartDate: `2018-01-31T23:00:00.000Z`
         };
-
         return DEFAULTS;
     }
 }

@@ -1,3 +1,7 @@
+#fskMain {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 h1.sds-h1 {
     font-size: 30px;
     font-weight: 500;
@@ -220,7 +224,7 @@ button.sds-outline-button.danger:active {
 
 .treatment-will-panel-col-12 {
     min-height: 32px;
-    padding:0 8px;
+    padding: 0 8px;
 }
 
 .col-25-px {
@@ -240,4 +244,20 @@ button.sds-outline-button.danger:active {
 .sds-line {
     border-bottom: 1px solid #007ec5;
     padding-top: 8px;
+}
+
+.fsk-warning {
+    color: #852d12;
+    font-size: 16px;
+    line-height: 16px;
+    font-weight: 400;
+    background-color: #ffddd3;
+    border-radius: 4px;
+}
+
+.fsk-warning-header {
+    font-size:22px;
+    font-family: sans-serif;
+    margin-bottom: 8px;
+    font-weight: 500;
 }

@@ -26,6 +26,8 @@ if (!("remove" in Element.prototype)) {
 }
 
 export default class FSKOnlineModule extends DefaultModule {
+
+    public static SYSTEM_NAME = "FSK";
     public static FSK_ONLINE_CTX_ID = "FSK_ONLINE";
     private static MODULE_IDENTIFIER = "fsk";
 
