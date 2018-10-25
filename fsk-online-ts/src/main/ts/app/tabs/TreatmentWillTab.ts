@@ -199,6 +199,10 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     }
 
     public async setVisible(visible: boolean): Promise<void> {
+        if(!this.moduleContext.getPatient()) {
+            return;
+        }
+
         let canSee = visible;
 
         const yesOption = <DialogOption>{
@@ -214,14 +218,14 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
         if (FSKUserUtil.userHasAuthorisations(this.moduleContext.getUserContext()) && visible && !this.canSee) {
             const yesClicked = await PopupDialog.display(
                 PopupDialogKind.WARNING,
-                "Er du sikker?",
-                "<h4 style='font-size:18px'>Dette vil blive min-logget</h4> " +
-                "<br>" +
-                "Visningen af behandlingstestamentet burde kun blive vist hvis " +
+                "Bekræft",
+                "<h4 style='font-size:18px'>Visning af behandlingstestamente</h4><br>" +
+                "Behandlingstestamente bør kun fremsøges såfremt<br><br>" +
                 "<ul style='list-style: inherit; padding-left:32px'>" +
                 "<li>Patienten ligger for døden (dvs. er uafvendeligt døende)</li>" +
-                "<li>Patienten hvis patienten ligger hjælpeløs hen pga. sygdom, ulykke mv, og der ikke er tegn på bedring</li>" +
-                "</ul>",
+                "<li>Patienten er hjælpeløs pga. sygdom, ulykke mv., og der ikke er tegn på bedring</li>" +
+                "</ul>" +
+                "<br>Bemærk: Tilgang til data for testamentet vil blive logget. Tilgang vil fremgå af patientens minlog.</li>",
                 noOption,
                 yesOption);
             canSee = yesClicked === yesOption;
