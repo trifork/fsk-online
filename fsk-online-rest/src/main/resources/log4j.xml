@@ -16,7 +16,7 @@
 		<param name="MaxRollFileCount" value="8" />
 		<param name="ScavengeInterval" value="3600000" /> <!-- hver time -->
 		<param name="BufferedIO" value="false" />
-		<param name="File" value="fmk_log/ddv-rest.log" />
+		<param name="File" value="fsk-online/fsk-online-rest.log" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d [%-2p] [%X{RequestHandle}] %c - %m%n" />
 		</layout>
