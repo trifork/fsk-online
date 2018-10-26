@@ -1,6 +1,7 @@
 package dk.sundhedsdatastyrelsen.fskrest.resource;
 
 import dk.sundhedsdatastyrelsen.behandlingstestamente._2018._05._01.*;
+import org.apache.log4j.Logger;
 import org.hl7.btr.TreatmentWill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,8 @@ import javax.ws.rs.core.Response;
 @Path("/btr")
 @Component
 public class TreatmentWillResource extends AbstractResource {
+    Logger logger = Logger.getLogger(TreatmentWillResource.class);
+
     @Autowired
     TreatmentWillPortType treatmentWillPortType;
 
@@ -19,9 +22,7 @@ public class TreatmentWillResource extends AbstractResource {
     @Path("/getTreatmentWill")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTreatmentWill(@QueryParam("cpr") String cpr) {
-        if (!accessControl.checkAccess()) {
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }
+        accessControl.checkLtrBtrReadAccess();
         GetTreatmentWillRequest request = new GetTreatmentWillRequest();
         request.setId(getId(cpr));
         GetTreatmentWillResponse response = treatmentWillPortType.getTreatmentWill20180501(request);
@@ -31,6 +32,7 @@ public class TreatmentWillResource extends AbstractResource {
                     getComponents().get(0).getSection().getEntries().get(0).getObservation().getValues().get(0);
             return buildNonCacheableResponse(treatmentWill);
         } catch (Exception e) {
+            logger.error("Could not extract treatmentwill from getresponse: " +  e.getMessage());
             return Response.status(Response.Status.NO_CONTENT).build();
         }
     }
@@ -39,9 +41,6 @@ public class TreatmentWillResource extends AbstractResource {
     @Path("/hasTreatmentWill")
     @Produces(MediaType.APPLICATION_JSON)
     public Response hasTreatmentWill(@QueryParam("cpr") String cpr) {
-        if (!accessControl.checkAccess()) {
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }
         HasTreatmentWillRequest request = new HasTreatmentWillRequest();
         request.setId(getId(cpr));
         HasTreatmentWillResponse response = treatmentWillPortType.hasTreatmentWill20180501(request);
@@ -52,9 +51,6 @@ public class TreatmentWillResource extends AbstractResource {
     @Path("/createTreatmentWill")
     @Produces(MediaType.APPLICATION_JSON)
     public Response createTreatmentWill(@QueryParam("cpr") String cpr, TreatmentWill treatmentWill) {
-        if (!accessControl.checkAccess()) {
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }
         CreateTreatmentWillRequest request = new CreateTreatmentWillRequest();
         request.setId(getId(cpr));
         request.setTreatmentWill(treatmentWill);

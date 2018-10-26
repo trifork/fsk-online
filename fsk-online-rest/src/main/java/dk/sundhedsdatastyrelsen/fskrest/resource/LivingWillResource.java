@@ -1,6 +1,7 @@
 package dk.sundhedsdatastyrelsen.fskrest.resource;
 
 import dk.sundhedsdatastyrelsen.livstestamente._2018._05._01.*;
+import org.apache.log4j.Logger;
 import org.hl7.ltr.LivingWill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import javax.ws.rs.core.Response;
 @Path("/ltr")
 @Component
 public class LivingWillResource extends AbstractResource {
+    Logger logger = Logger.getLogger(LivingWillResource.class);
 
     @Autowired
     LivingWillPortType livingWillPortType;
@@ -23,14 +25,14 @@ public class LivingWillResource extends AbstractResource {
         GetLivingWillRequest request = new GetLivingWillRequest();
         request.setId(getId(cpr));
         GetLivingWillResponse response = livingWillPortType.getLivingWill20180501(request);
-        LivingWill livingWill = null;
         try {
-            livingWill = (LivingWill) response.getClinicalDocument().getComponent().getStructuredBody().
+            LivingWill livingWill = (LivingWill) response.getClinicalDocument().getComponent().getStructuredBody().
                     getComponents().get(0).getSection().getEntries().get(0).getObservation().getValues().get(0);
+            return buildNonCacheableResponse(livingWill);
         } catch (Exception e) {
+            logger.error("Could not extract livingwill from getresponse: " +  e.getMessage());
             return Response.status(Response.Status.NO_CONTENT).build();
         }
-        return buildNonCacheableResponse(livingWill);
     }
 
     @GET

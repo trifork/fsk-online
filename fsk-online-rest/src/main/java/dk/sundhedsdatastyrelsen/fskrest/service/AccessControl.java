@@ -1,6 +1,9 @@
 package dk.sundhedsdatastyrelsen.fskrest.service;
 
 public interface AccessControl {
-    boolean checkAccess();
+    void checkOdrReadAccess();
 
+    void checkLtrBtrReadAccess();
+
+    void checkWriteAccess();
 }

@@ -12,11 +12,11 @@ public class AbstractResource {
     private final String cprRoot = "1.2.208.176.1.2";
     private final String cprAssigningAuthority = "CPR";
 
-    @Autowired
-    protected AccessControl accessControl;
-
     @Context
     HttpServletRequest servletRequest;
+
+    @Autowired
+    protected AccessControl accessControl;
 
     protected Response buildNonCacheableResponse(Object returnedObject) {
         if (returnedObject == null) {
@@ -34,11 +34,4 @@ public class AbstractResource {
         id.setAssigningAuthorityName(cprAssigningAuthority);
         return id;
     }
-
-    protected void validateAccess() {
-        if (!accessControl.checkAccess()) {
-            Response.status(Response.Status.FORBIDDEN).build();
-        }
-    }
-
 }

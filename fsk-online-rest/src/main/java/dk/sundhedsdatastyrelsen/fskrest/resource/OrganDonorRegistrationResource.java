@@ -1,6 +1,7 @@
 package dk.sundhedsdatastyrelsen.fskrest.resource;
 
 import dk.sundhedsdatastyrelsen.organdonor._2018._05._01.*;
+import org.apache.log4j.Logger;
 import org.hl7.odr.OrganDonorRegistration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import javax.ws.rs.core.Response;
 @Path("/odr")
 @Component
 public class OrganDonorRegistrationResource extends AbstractResource {
+    Logger logger = Logger.getLogger(OrganDonorRegistrationResource.class);
 
     @Autowired
     OrganDonorRegistrationPortType organDonorRegistrationPortType;
@@ -28,6 +30,7 @@ public class OrganDonorRegistrationResource extends AbstractResource {
                     getComponents().get(0).getSection().getEntries().get(0).getObservation().getValues().get(0);
             return buildNonCacheableResponse(organDonorRegistration);
         } catch (Exception e) {
+            logger.error("Could not extract organdonor from getresponse: " +  e.getMessage());
             return Response.status(Response.Status.NO_CONTENT).build();
         }
     }
