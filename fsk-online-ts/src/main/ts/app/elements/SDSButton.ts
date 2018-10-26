@@ -16,6 +16,15 @@ export default class SDSButton extends Widget {
         }
     }
 
+    public setEnabled(enabled: boolean): void {
+        if(enabled){
+            this.element.removeAttribute(`disabled`);
+        } else {
+            this.element.setAttribute(`disabled`, ``);
+        }
+
+    }
+
     public addClickEvent(event?: (MouseEvent) => void) {
         this.element.addEventListener(`click`, event);
     }

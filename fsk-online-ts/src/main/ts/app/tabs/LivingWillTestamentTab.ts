@@ -2,12 +2,11 @@ import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler} from "fmko-
 import {TemplateWidget} from "fmko-ts-mvc";
 import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
-import {CheckboxWrapper, ErrorDisplay} from "fmko-ts-widgets";
+import {ButtonStyle, CheckboxWrapper, DialogOption, ErrorDisplay, PopupDialog, PopupDialogKind} from "fmko-ts-widgets";
 import SDSButton from "../elements/SDSButton";
 import FSKService from "../services/FSKService";
 import LivingWillCache from "../services/LivingWillCache";
 import ErrorUtil from "../util/ErrorUtil";
-import FSKOnlineModule from "../main/FSKOnlineModule";
 import FSKConfig from "../main/FSKConfig";
 import FSKUserUtil from "../util/FSKUserUtil";
 import TimelineUtil from "../util/TimelineUtil";
@@ -27,6 +26,8 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
 
     private terminallyIllCheckbox: CheckboxWrapper;
     private severelyHandicappedCheckbox: CheckboxWrapper;
+
+    private canSee = false;
 
     private hasAuthAndNotAdmin: boolean;
 
@@ -93,6 +94,9 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
                 this.terminallyIllCheckbox.setValue(false);
                 this.severelyHandicappedCheckbox.setValue(false);
                 this.updateCache(false);
+                if (TimelineUtil.useTreatmentWill(this.fskConfig)) {
+                    this.moduleContext.hideTab(this.ID);
+                }
             } catch (error) {
                 ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
             }
@@ -118,6 +122,10 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         const isFSKAdmin = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
         this.createButton.setVisible(isCreateMode && isFSKAdmin && !TimelineUtil.useTreatmentWill(this.fskConfig));
         this.updateButton.setVisible(!isCreateMode && isFSKAdmin && !TimelineUtil.useTreatmentWill(this.fskConfig));
+        const onlyPermissionToReadAfterDate = !isCreateMode && isFSKAdmin && TimelineUtil.useTreatmentWill(this.fskConfig);
+        if (onlyPermissionToReadAfterDate) {
+            this.setEnabled(false);
+        }
         this.deleteButton.setVisible(!isCreateMode && isFSKAdmin);
     }
 
@@ -139,15 +147,48 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         return this.TITLE;
     }
 
-    public setVisible(visible: boolean): any {
+    public async setVisible(visible: boolean): Promise<void> {
+        if(!this.moduleContext.getPatient()) {
+            return;
+        }
+
+        let canSee = visible;
+
+        const yesOption = <DialogOption>{
+            buttonStyle: ButtonStyle.GREEN,
+            text: `Videre`,
+        };
+
+        const noOption = <DialogOption>{
+            buttonStyle: ButtonStyle.RED,
+            text: `Fortryd`,
+        };
+
+        if (!FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext()) && FSKUserUtil.userHasAuthorisations(this.moduleContext.getUserContext()) && visible && !this.canSee) {
+            const yesClicked = await PopupDialog.display(
+                PopupDialogKind.WARNING,
+                "Bekræft",
+                "<h4 style='font-size:18px'>Visning af livstestamente</h4><br>" +
+                "Livstestamente bør kun fremsøges såfremt<br><br>" +
+                "<ul style='list-style: inherit; padding-left:32px'>" +
+                "<li>Patienten er i en situation, hvor patienten er uafvendeligt døende</li>" +
+                "<li>Patienten varigt er ude af stand til at tage vare på sig selv fysisk og mentalt</li>" +
+                "</ul>" +
+                "<br>Bemærk: Tilgang til data for testamentet vil blive logget. Tilgang vil fremgå af patientens minlog.</li>",
+                noOption,
+                yesOption);
+            canSee = yesClicked === yesOption;
+            this.canSee = canSee;
+        }
+
         super.setVisible(visible);
 
-        if (this.shown === visible) {
+        if (this.shown === canSee) {
             // Debounce..
             return;
         }
 
-        if (visible) {
+        if (canSee) {
             this.addListeners();
             this.init();
             this.render();
@@ -155,20 +196,23 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
             this.removeListeners();
         }
 
-        this.shown = visible;
+        this.shown = canSee;
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
-        const hasTreatmentWillRights = FSKUserUtil.isFSKAdmin(userContext);
+        const hasLivingWillRights = FSKUserUtil.isFSKAdmin(userContext);
 
-        const hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !hasTreatmentWillRights;
-        return hasAuthAndNotAdmin || hasTreatmentWillRights;
+        const isTransplantCoordinator = FSKUserUtil.isFSKSupporter(userContext);
+        const hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !hasLivingWillRights && !isTransplantCoordinator;
+
+        return hasAuthAndNotAdmin || hasLivingWillRights;
     }
 
     public async applicationContextIdChanged(applicationContextId: string): Promise<void> {
         const livingWillDateSurpassed = this.hasLivingWillDateBeenSurpassed();
         const hasLivingWill = await this.livingWillCache.loadHasRegistration();
         const canView = !livingWillDateSurpassed || hasLivingWill;
+
         if (applicationContextId === "PATIENT" && canView) {
             this.moduleContext.showTab(this.ID);
         } else {

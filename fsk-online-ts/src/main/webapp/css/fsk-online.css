@@ -125,6 +125,13 @@ button.sds-button.primary:active {
     background-color: #004870;
 }
 
+button.sds-button.primary:disabled {
+    background-color: #BDBDBD;
+    opacity: 0.5;
+    color: black;
+    cursor: inherit;
+}
+
 button.sds-button.danger {
     background-color: #dc3545;
 }

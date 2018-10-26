@@ -12,6 +12,7 @@ import NoAccessPermissionPanel from "../panels/organdonor-panels/NoAccessPermiss
 import FSKService from "../services/FSKService";
 import SDSButton from "../elements/SDSButton";
 import ErrorUtil from "../util/ErrorUtil";
+import FSKUserUtil from "../util/FSKUserUtil";
 
 export default class OrganDonorRegistrationTab extends TemplateWidget implements TabbedPanel {
     private ID = "OrganDonorRegistrationTab_TS";
@@ -24,7 +25,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     private updateButton: SDSButton;
     private deleteButton: SDSButton;
 
-    private isAdminUser = this.moduleContext.getUserContext().isAdministratorLogin();
+    private isAdminUser = true; // this.moduleContext.getUserContext().isAdministratorLogin();
 
     private radioGroup: RadioGroup<Widget & IOrganDonor<FSKTypes.OrganDonorRegistrationType>>;
 
@@ -100,6 +101,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
 
         this.radioGroup.addValueChangeHandler(handler => {
             const value = handler.getValue();
+            this.createButton.setEnabled(!!value);
             this.radioGroup.getRadioButtons().forEach(radioButton => {
                 radioButton.getValue().setVisible(value === radioButton.getValue());
             });
@@ -107,10 +109,12 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
 
         this.createButton = new SDSButton("Opret registrering", "primary", async () => {
             try {
-                await this.fskService.createOrganDonorRegisterForPatient(
-                    this.moduleContext.getPatient().getCpr(),
-                    this.radioGroup.getValue().getValue());
-                this.updateCache(true);
+                if (this.radioGroup.getValue().getValue()) {
+                    await this.fskService.createOrganDonorRegisterForPatient(
+                        this.moduleContext.getPatient().getCpr(),
+                        this.radioGroup.getValue().getValue());
+                    this.updateCache(true);
+                }
             } catch (error) {
                 ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
             }
@@ -154,6 +158,8 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
             this.radioGroup.setValue(null);
         }
 
+        this.createButton.setEnabled(!!type);
+
         this.radioGroup.getRadioButtons().forEach(button => {
             if (button.getValue().getType() === type) {
                 this.radioGroup.setValue(button.getValue(), false);
@@ -176,9 +182,10 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     }
 
     public setCreateMode(isCreateMode: boolean) {
-        this.createButton.setVisible(isCreateMode);
-        this.updateButton.setVisible(!isCreateMode);
-        this.deleteButton.setVisible(!isCreateMode);
+        const isFSKAdmin = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
+        this.createButton.setVisible(isCreateMode && isFSKAdmin);
+        this.updateButton.setVisible(!isCreateMode && isFSKAdmin);
+        this.deleteButton.setVisible(!isCreateMode && isFSKAdmin);
     }
 
     public updateCache(hasRegistration: boolean) {
@@ -219,7 +226,10 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
-        return true;
+        const hasOrganDonorRigths = FSKUserUtil.isFSKAdmin(userContext);
+
+        const isCoodinator = FSKUserUtil.isFSKSupporter(userContext) && !hasOrganDonorRigths;
+        return isCoodinator || hasOrganDonorRigths;
     }
 
     public applicationContextIdChanged(applicationContextId: string): any {

@@ -9,7 +9,6 @@ import TreatmentWillCache from "../services/TreatmentWillCache";
 import FSKService from "../services/FSKService";
 import ErrorUtil from "../util/ErrorUtil";
 import FSKConfig from "../main/FSKConfig";
-import FSKOnlineModule from "../main/FSKOnlineModule";
 import LivingWillCache from "../services/LivingWillCache";
 import FSKUserUtil from "../util/FSKUserUtil";
 import TimelineUtil from "../util/TimelineUtil";
@@ -39,6 +38,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     private treatmentByForcePanel: TreatmentWillWishPanel;
 
     private canSee = false;
+    private hasAuthAndNotAdmin = false;
 
     public static deps = () => [IoC, "ModuleContext", "FSKConfig", LivingWillCache, TreatmentWillCache, FSKService, "RootElement"];
 
@@ -111,11 +111,16 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
 
         this.createButton = new SDSButton("Opret registrering", "primary", async () => {
             try {
+                if (this.livingWillCache.hasRegistration && (await this.livingWillCache.deleteRegistration())) {
+                    return;
+                }
+
                 await this.fskService.createTreatmentWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
                     this.getValue());
                 this.updateCache(true);
                 this.moduleContext.setApplicationContextId(`PATIENT`);
+
             } catch (error) {
                 ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
             }
@@ -215,7 +220,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             text: `Fortryd`,
         };
 
-        if (FSKUserUtil.userHasAuthorisations(this.moduleContext.getUserContext()) && visible && !this.canSee) {
+        if (!FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext()) && FSKUserUtil.userHasAuthorisations(this.moduleContext.getUserContext()) && visible && !this.canSee) {
             const yesClicked = await PopupDialog.display(
                 PopupDialogKind.WARNING,
                 "Bekræft",
@@ -255,8 +260,9 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
         }
 
         const hasTreatmentWillRights = FSKUserUtil.isFSKAdmin(userContext);
-
-        const hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !hasTreatmentWillRights;
+        const isTransplantCoordinator = FSKUserUtil.isFSKSupporter(userContext);
+        const hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !hasTreatmentWillRights && !isTransplantCoordinator;
+        this.hasAuthAndNotAdmin = hasAuthAndNotAdmin;
         return hasAuthAndNotAdmin || hasTreatmentWillRights;
     }
 
@@ -277,10 +283,10 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     }
 
     public setCreateMode(isCreateMode: boolean) {
-        const canWrite = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
-        this.createButton.setVisible(isCreateMode && canWrite);
-        this.updateButton.setVisible(!isCreateMode && canWrite);
-        this.deleteButton.setVisible(!isCreateMode && canWrite);
+        const permissionToWrite = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
+        this.createButton.setVisible(isCreateMode && permissionToWrite);
+        this.updateButton.setVisible(!isCreateMode && permissionToWrite);
+        this.deleteButton.setVisible(!isCreateMode && permissionToWrite);
     }
 
     public setData(treatmentWill: FSKTypes.TreatmentWillType): void {

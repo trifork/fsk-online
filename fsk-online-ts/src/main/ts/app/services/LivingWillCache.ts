@@ -35,4 +35,11 @@ export default class LivingWillCache {
     private async getRegistration(): Promise<LivingWillType> {
         return await this.fskService.getLivingWillForPatient(this.moduleContext.getPatient().getCpr());
     }
+
+    public async deleteRegistration(): Promise<boolean> {
+        if (this.hasRegistration) {
+            await this.fskService.deleteLivingWillForPatient(this.moduleContext.getPatient().getCpr());
+        }
+        return this.loadHasRegistration();
+    }
 }
