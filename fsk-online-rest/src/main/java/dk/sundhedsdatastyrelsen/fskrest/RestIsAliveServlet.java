@@ -14,8 +14,11 @@ import java.util.Set;
 public class RestIsAliveServlet extends CachingIsAliveServlet {
     private static final long serialVersionUID = 1L;
 
-    @Value("${isalive.fsk.url}")
-    private String fskWsUrl;
+    @Value("${isalive.odr.url}")
+    private String odrWsUrl;
+
+    @Value("${isalive.btr-ltr.url")
+    private String btr_ltr_WsUrl;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -25,6 +28,7 @@ public class RestIsAliveServlet extends CachingIsAliveServlet {
 
     @Override
     protected void addTasks(Set<IsAliveTask> tasks) {
-        tasks.add(new UrlRespondingTask(IntegrationPointTask.PointOfIntegration.INTERNAL, "FSK-WS", fskWsUrl));
+        tasks.add(new UrlRespondingTask(IntegrationPointTask.PointOfIntegration.INTERNAL, "ODR-WS", odrWsUrl));
+        tasks.add(new UrlRespondingTask(IntegrationPointTask.PointOfIntegration.INTERNAL, "BTR-WS", btr_ltr_WsUrl));
     }
 }

@@ -54,25 +54,6 @@ public class WsClientConfig {
     }
 
     @Bean
-    public IdentityTokenProvider identityTokenProvider(final HttpServletRequest req) {
-        String audienceName = env.getProperty("idws.audience");
-
-        return new IdentityTokenProvider() {
-            @Override
-            public String getIdentityToken() {
-
-                String identityTokenHeader = req.getHeader("X-WSC-Token-" + audienceName);
-                if (identityTokenHeader == null) {
-                    logger.info("No identity token found for user. Request: " + req.getRequestURI());
-                    return null;
-                }
-                byte[] decodedIdCardBytes = Base64.decodeBase64(identityTokenHeader);
-                return new String(decodedIdCardBytes, Charset.forName("UTF-8"));
-            }
-        };
-    }
-
-    @Bean
     public RequestedRoleProvider requestedRoleProvider(final HttpServletRequest req) {
         return new RequestedRoleProvider() {
             @Override
@@ -133,9 +114,9 @@ public class WsClientConfig {
         bean.setAddress(wsUrl);
         bean.setBus(cxf);
         bean.getHandlers().add(dgwsClientMessageHandler);
-        if (env.getProperty("odr.ws.message.content.logging", Boolean.class, true)) {
-            int maxLogBytes = env.getProperty("odr.ws.message.content.logging.max.length", Integer.class, 1000 * 1024);
-            logger.info("MinLogClient (DGWS) client: Logging of full message content enabled");
+        if (env.getProperty("ws.message.content.logging", Boolean.class, true)) {
+            int maxLogBytes = env.getProperty("ws.message.content.logging.max.length", Integer.class, 1000 * 1024);
+            logger.info("MinLogClient client: Logging of full message content enabled");
             bean.getInInterceptors().add(new LoggingInInterceptor(maxLogBytes));
             bean.getOutInterceptors().add(new LoggingOutInterceptor(maxLogBytes));
         }
