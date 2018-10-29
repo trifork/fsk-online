@@ -20,7 +20,8 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     private TITLE = "Behandlingstestamente";
     private shown: boolean;
     private initialized: boolean;
-
+    private isAdministratorUser: boolean;
+    private hasAuthAndNotAdmin: boolean;
     private treatmentWillChangeHandler: ValueChangeHandler<FSKTypes.TreatmentWillType>;
 
     private createButton: SDSButton;
@@ -38,7 +39,6 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     private treatmentByForcePanel: TreatmentWillWishPanel;
 
     private canSee = false;
-    private hasAuthAndNotAdmin = false;
 
     public static deps = () => [IoC, "ModuleContext", "FSKConfig", LivingWillCache, TreatmentWillCache, FSKService, "RootElement"];
 
@@ -83,7 +83,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
         };
     }
     public async setupBindings(): Promise<void> {
-        Widget.setVisible(this.getElementByVarName(`living-will-exists`), (await this.livingWillCache.loadHasRegistration() && FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext())));
+        this.warningIfLivingWillExist((await this.livingWillCache.loadHasRegistration() && this.isAdministratorUser));
 
         this.terminallyIllCheckbox = new CheckboxWrapper(this.getElementByVarName(`terminally-ill-checkbox`));
         this.terminallyIllPanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
@@ -149,13 +149,17 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
 
         this.hideButtons();
 
-        this.setEnabled(FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext()));
+        this.setEnabled(this.isAdministratorUser);
 
         this.addAndReplaceWidgetByVarName(this.createButton, `create-button`);
         this.addAndReplaceWidgetByVarName(this.updateButton, `update-button`);
         this.addAndReplaceWidgetByVarName(this.deleteButton, `delete-button`);
 
         this.rootElement.appendChild(this.element);
+    }
+
+    private warningIfLivingWillExist(livingWillExist: boolean) {
+        Widget.setVisible(this.getElementByVarName(`living-will-exists`), livingWillExist);
     }
 
     public hideButtons() {
@@ -220,7 +224,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             text: `Fortryd`,
         };
 
-        if (!FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext()) && FSKUserUtil.userHasAuthorisations(this.moduleContext.getUserContext()) && visible && !this.canSee) {
+        if (!this.isAdministratorUser && FSKUserUtil.userHasAuthorisations(this.moduleContext.getUserContext()) && visible && !this.canSee) {
             const yesClicked = await PopupDialog.display(
                 PopupDialogKind.WARNING,
                 "Bekræft",
@@ -236,6 +240,10 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             canSee = yesClicked === yesOption;
             this.canSee = canSee;
         }
+        if (! await this.livingWillCache.loadHasRegistration()) {
+            this.warningIfLivingWillExist(false);
+        }
+
         super.setVisible(canSee);
 
         if (this.shown === canSee) {
@@ -259,15 +267,19 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             return false;
         }
 
-        const hasTreatmentWillRights = FSKUserUtil.isFSKAdmin(userContext);
+        this.isAdministratorUser = FSKUserUtil.isFSKAdmin(userContext);
         const isTransplantCoordinator = FSKUserUtil.isFSKSupporter(userContext);
-        const hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !hasTreatmentWillRights && !isTransplantCoordinator;
-        this.hasAuthAndNotAdmin = hasAuthAndNotAdmin;
-        return hasAuthAndNotAdmin || hasTreatmentWillRights;
+        this.hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !this.isAdministratorUser && !isTransplantCoordinator;
+        return this.hasAuthAndNotAdmin || this.isAdministratorUser;
     }
 
-    public applicationContextIdChanged(applicationContextId: string): any {
-        if (applicationContextId === "PATIENT") {
+    public async applicationContextIdChanged(applicationContextId: string): Promise<void> {
+        const treatmentWillExist = await this.treatmentWillCache.loadHasRegistration();
+
+        const treatmentWillExistsForHealthcareProvider = !treatmentWillExist && this.hasAuthAndNotAdmin;
+        if (applicationContextId === "PATIENT" && treatmentWillExistsForHealthcareProvider) {
+            this.moduleContext.hideTab(this.ID);
+        } else if(applicationContextId === "PATIENT") {
             this.moduleContext.showTab(this.ID);
         } else {
             this.moduleContext.hideTab(this.ID);
@@ -283,10 +295,9 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     }
 
     public setCreateMode(isCreateMode: boolean) {
-        const permissionToWrite = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
-        this.createButton.setVisible(isCreateMode && permissionToWrite);
-        this.updateButton.setVisible(!isCreateMode && permissionToWrite);
-        this.deleteButton.setVisible(!isCreateMode && permissionToWrite);
+        this.createButton.setVisible(isCreateMode && this.isAdministratorUser);
+        this.updateButton.setVisible(!isCreateMode && this.isAdministratorUser);
+        this.deleteButton.setVisible(!isCreateMode && this.isAdministratorUser);
     }
 
     public setData(treatmentWill: FSKTypes.TreatmentWillType): void {

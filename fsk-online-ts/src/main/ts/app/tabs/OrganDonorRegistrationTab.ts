@@ -25,7 +25,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     private updateButton: SDSButton;
     private deleteButton: SDSButton;
 
-    private isAdminUser = true; // this.moduleContext.getUserContext().isAdministratorLogin();
+    private isAdminUser = this.moduleContext.getUserContext().isAdministratorLogin();
 
     private radioGroup: RadioGroup<Widget & IOrganDonor<FSKTypes.OrganDonorRegistrationType>>;
 
@@ -226,10 +226,10 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
-        const hasOrganDonorRigths = FSKUserUtil.isFSKAdmin(userContext);
+        const hasOrganDonorRights = FSKUserUtil.isFSKAdmin(userContext);
 
-        const isCoodinator = FSKUserUtil.isFSKSupporter(userContext) && !hasOrganDonorRigths;
-        return isCoodinator || hasOrganDonorRigths;
+        const isCoodinator = FSKUserUtil.isFSKSupporter(userContext) && !hasOrganDonorRights;
+        return isCoodinator || hasOrganDonorRights;
     }
 
     public applicationContextIdChanged(applicationContextId: string): any {

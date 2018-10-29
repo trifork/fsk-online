@@ -17,6 +17,8 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
     private TITLE = "Livstestamente";
     private shown: boolean;
     private initialized: boolean;
+    private isAdministratorUser = false;
+    private hasAuthAndNotAdmin = false;
 
     private livingWillChangeHandler: ValueChangeHandler<FSKTypes.LivingWillType>;
 
@@ -29,7 +31,6 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
 
     private canSee = false;
 
-    private hasAuthAndNotAdmin: boolean;
 
     public static deps = () => [IoC, "ModuleContext", "FSKConfig", LivingWillCache, FSKService, "RootElement"];
 
@@ -95,7 +96,7 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
                 this.severelyHandicappedCheckbox.setValue(false);
                 this.updateCache(false);
                 if (TimelineUtil.useTreatmentWill(this.fskConfig)) {
-                    this.moduleContext.hideTab(this.ID);
+                    this.moduleContext.setApplicationContextId(`PATIENT`);
                 }
             } catch (error) {
                 ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
@@ -103,7 +104,7 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         });
 
         this.hideButtons();
-        this.setEnabled(FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext()));
+        this.setEnabled(this.isAdministratorUser);
 
         this.addAndReplaceWidgetByVarName(this.createButton, `create-button`);
         this.addAndReplaceWidgetByVarName(this.updateButton, `update-button`);
@@ -119,14 +120,13 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
     }
 
     public setCreateMode(isCreateMode: boolean) {
-        const isFSKAdmin = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
-        this.createButton.setVisible(isCreateMode && isFSKAdmin && !TimelineUtil.useTreatmentWill(this.fskConfig));
-        this.updateButton.setVisible(!isCreateMode && isFSKAdmin && !TimelineUtil.useTreatmentWill(this.fskConfig));
-        const onlyPermissionToReadAfterDate = !isCreateMode && isFSKAdmin && TimelineUtil.useTreatmentWill(this.fskConfig);
+        this.createButton.setVisible(isCreateMode && this.isAdministratorUser && !TimelineUtil.useTreatmentWill(this.fskConfig));
+        this.updateButton.setVisible(!isCreateMode && this.isAdministratorUser && !TimelineUtil.useTreatmentWill(this.fskConfig));
+        const onlyPermissionToReadAfterDate = !isCreateMode && this.isAdministratorUser && TimelineUtil.useTreatmentWill(this.fskConfig);
         if (onlyPermissionToReadAfterDate) {
             this.setEnabled(false);
         }
-        this.deleteButton.setVisible(!isCreateMode && isFSKAdmin);
+        this.deleteButton.setVisible(!isCreateMode && this.isAdministratorUser);
     }
 
     public updateCache(hasRegistration: boolean) {
@@ -200,20 +200,24 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
-        const hasLivingWillRights = FSKUserUtil.isFSKAdmin(userContext);
+        if (FSKUserUtil.isFSKSupporter(userContext)) {
+            return false;
+        }
+        this.isAdministratorUser = FSKUserUtil.isFSKAdmin(userContext);
+        this.hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !this.isAdministratorUser;
 
-        const isTransplantCoordinator = FSKUserUtil.isFSKSupporter(userContext);
-        const hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !hasLivingWillRights && !isTransplantCoordinator;
-
-        return hasAuthAndNotAdmin || hasLivingWillRights;
+        return this.hasAuthAndNotAdmin || this.isAdministratorUser;
     }
 
     public async applicationContextIdChanged(applicationContextId: string): Promise<void> {
-        const livingWillDateSurpassed = this.hasLivingWillDateBeenSurpassed();
+        const livingWillDateSurpassed = TimelineUtil.useTreatmentWill(this.fskConfig);
+
         const hasLivingWill = await this.livingWillCache.loadHasRegistration();
         const canView = !livingWillDateSurpassed || hasLivingWill;
-
-        if (applicationContextId === "PATIENT" && canView) {
+        const livingWillExistsForHealthcareProvider = !hasLivingWill && this.hasAuthAndNotAdmin;
+        if (applicationContextId === "PATIENT" && livingWillExistsForHealthcareProvider) {
+            this.moduleContext.hideTab(this.ID);
+        } else if (applicationContextId === "PATIENT" && canView) {
             this.moduleContext.showTab(this.ID);
         } else {
             this.moduleContext.hideTab(this.ID);
@@ -223,19 +227,6 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
     public setEnabled(enabled: boolean): void {
         this.terminallyIllCheckbox.setEnabled(enabled);
         this.severelyHandicappedCheckbox.setEnabled(enabled);
-    }
-
-    private hasLivingWillDateBeenSurpassed(): boolean {
-        if (!this.fskConfig.TreatmentWillStartDate) {
-            return false;
-        }
-        const treatmentWillStartDate = new Date(this.fskConfig.TreatmentWillStartDate);
-
-        if (isNaN(treatmentWillStartDate.valueOf())) {
-            return false;
-        }
-
-        return new Date().valueOf() > treatmentWillStartDate.valueOf();
     }
 
     public showInitially(): boolean {
