@@ -6,8 +6,6 @@
     "awesome-typescript-loader": "^4.0.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
-    "babel-plugin-transform-es3-member-expression-literals": "^6.22.0",
-    "babel-plugin-transform-es3-property-literals": "^6.22.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "1.6.1",
     "cheerio": "^0.22.0",
@@ -35,16 +33,14 @@
   },
   "dependencies": {
     "babel-plugin-transform-runtime": "^6.23.0",
-    "fmko-ts-validation": "file:../../fmk-online2/fmko-ts-validation",
-    "fmko-ts-grid": "file:../../fmk-online2/fmko-ts-grid",
-    "fmko-ts-ioc": "file:../../fmk-online2/fmko-ts-ioc",
-    "fmko-ts-mvc": "file:../../fmk-online2/fmko-ts-mvc",
-    "fmko-ts-widgets": "file:../../fmk-online2/fmko-ts-widgets",
-    "fmko-ts-ws-api": "file:../../fmk-online2/fmko-ts-ws-api",
-    "fmko-typescript-common": "file:../../fmk-online2/fmko-typescript-common",
+    "fmko-typescript-common": "2.27.0-SNAPSHOT",
+    "fmko-ts-widgets": "2.27.0-SNAPSHOT",
+    "fmko-ts-ioc": "2.27.0-SNAPSHOT",
+    "fmko-ts-mvc": "2.27.0-SNAPSHOT",
+    "fmko-ts-grid": "2.27.0-SNAPSHOT",
+    "fmko-ts-validation": "2.27.0-SNAPSHOT",
     "moment": "^2.22.2",
-    "regenerator-runtime": "^0.12.1",
-    "pikaday": "1.4.0"
+    "regenerator-runtime": "^0.12.1"
   },
   "registry": "http://ci.fmk.netic.dk/nexus/content/groups/npm-fmk-all/"
 }

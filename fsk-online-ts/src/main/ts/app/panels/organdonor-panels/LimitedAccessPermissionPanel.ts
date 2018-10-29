@@ -3,6 +3,7 @@ import {IoC} from "fmko-ts-ioc";
 import loadTemplate from "../../main/TemplateLoader";
 import {Checkbox, HTML} from "fmko-ts-widgets";
 import {IOrganDonor} from "../../model/OrganDonorRegistrationType";
+import {Widget} from "fmko-typescript-common";
 import OrganDonorRegistration = FSKTypes.OrganDonorRegistrationType;
 
 export default class LimitedAccessPermissionPanel extends TemplateWidget implements IOrganDonor<FSKTypes.OrganDonorRegistrationType> {
@@ -34,7 +35,8 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
                     }
                     row = new HTML();
                     row.addStyleName(`row`);
-                    row.getCssStyle().marginBottom = `8px`;
+                    row.getCssStyle().paddingBottom = `8px`;
+                    row.getCssStyle().paddingLeft = `8px`;
                 }
 
                 this.wrapInRow(row, checkbox);
@@ -42,7 +44,7 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
         });
         this.appendWidgetOnVarName(row, `limited-access-checkboxes`);
 
-        this.addAndReplaceWidgetByVarName(checkboxes.requiresRelativeAcceptance, `family-consent`);
+        this.appendWidgetOnVarName(checkboxes.requiresRelativeAcceptance, `family-consent`, true);
     }
 
     public getType(): FSKTypes.OrganDonorPermissionType {
@@ -54,6 +56,11 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
     }
 
     public getValue(): FSKTypes.OrganDonorRegistrationType {
+        const isCheckboxChosen = this.isACheckboxChosen();
+        if (!isCheckboxChosen) {
+            this.showCheckboxError(!isCheckboxChosen);
+            return null;
+        }
         return <FSKTypes.OrganDonorRegistrationType>{
             permissionType: this.getType(),
             permissionForHeart: !!this.checkboxes.permissionForHeart.getValue(),
@@ -103,6 +110,23 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
         row.add(column);
     }
 
+    public isACheckboxChosen(): boolean {
+        return Object.entries(this.checkboxes)
+            .some(([key, checkbox]) => key !== `requiresRelativeAcceptance`
+                ? !!checkbox.getValue()
+                : false
+            );
+    }
+
+    public showCheckboxError(show: boolean): void {
+        if (show) {
+            this.getElementByVarName(`checkbox-container`).classList.add(`fsk-warning`);
+        } else {
+            this.getElementByVarName(`checkbox-container`).classList.remove(`fsk-warning`);
+        }
+        Widget.setVisible(this.getElementByVarName(`no-checkbox-selected`), show);
+    }
+
     public createCheckboxes(): OrganRegistrationCheckBoxes {
         const heartCheckbox = new Checkbox(false, `Hjerte`);
         const kidneyCheckbox = new Checkbox(false, `Nyrer`);
@@ -128,6 +152,14 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
 
         Object.values(this.checkboxes).forEach(currentCheckbox => {
             currentCheckbox.getCssStyle().fontSize = `14px`;
+            if (currentCheckbox !== consentCheckBox) {
+                currentCheckbox.addValueChangeHandler(handler => {
+                    const value = handler.getValue();
+                    if (value) {
+                        this.showCheckboxError(false);
+                    }
+                });
+            }
         });
 
         return this.checkboxes;

@@ -115,7 +115,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
                 if (this.livingWillCache.hasRegistration && (await this.livingWillCache.deleteRegistration())) {
                     return;
                 }
-
+                this.warningIfLivingWillExist(Promise.resolve(false), false);
                 await this.fskService.createTreatmentWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
                     this.getValue());
@@ -127,7 +127,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             }
         });
 
-        this.updateButton = new SDSButton("Opdatér", "primary", async () => {
+        this.updateButton = new SDSButton("Opdater", "primary", async () => {
             try {
                 await this.fskService.updateTreatmentWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
@@ -279,13 +279,23 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             return false;
         }
 
+        if (FSKUserUtil.isFSKSupporter(userContext)) {
+            return false;
+        }
+
         this.isAdministratorUser = FSKUserUtil.isFSKAdmin(userContext);
-        const isTransplantCoordinator = FSKUserUtil.isFSKSupporter(userContext);
-        this.hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !this.isAdministratorUser && !isTransplantCoordinator;
-        return this.hasAuthAndNotAdmin || this.isAdministratorUser;
+
+        this.hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !this.isAdministratorUser;
+        return (this.hasAuthAndNotAdmin || this.isAdministratorUser);
     }
 
     public async applicationContextIdChanged(applicationContextId: string): Promise<void> {
+
+        if (FSKUserUtil.isFSKSupporter(this.moduleContext.getUserContext())) {
+            this.moduleContext.hideTab(this.ID);
+            return;
+        }
+
         const treatmentWillExist = await this.treatmentWillCache.loadHasRegistration();
 
         const treatmentWillExistsForHealthcareProvider = !treatmentWillExist && this.hasAuthAndNotAdmin;
