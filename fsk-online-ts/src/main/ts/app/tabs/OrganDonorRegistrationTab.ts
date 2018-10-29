@@ -2,7 +2,15 @@ import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler, Widget} fro
 import {TemplateWidget} from "fmko-ts-mvc";
 import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
-import {ErrorDisplay, RadioButton, RadioGroup} from "fmko-ts-widgets";
+import {
+    ButtonStyle,
+    DialogOption,
+    ErrorDisplay,
+    PopupDialog,
+    PopupDialogKind,
+    RadioButton,
+    RadioGroup
+} from "fmko-ts-widgets";
 import LimitedAccessPermissionPanel from "../panels/organdonor-panels/LimitedAccessPermissionPanel";
 import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
 import FullAccessPermissionPanel from "../panels/organdonor-panels/FullAccessPermissionPanel";
@@ -134,12 +142,26 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         });
 
         this.deleteButton = new SDSButton("Slet registrering", "danger", async () => {
-            try {
-                await this.fskService.deleteOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr());
-                this.updateCache(false);
-            } catch (error) {
-                ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
-            }
+                try {
+                    const yesOption = <DialogOption>{
+                        buttonStyle: ButtonStyle.GREEN,
+                        text: `Slet`,
+                    };
+
+                    const noOption = <DialogOption>{
+                        buttonStyle: ButtonStyle.RED,
+                        text: `Fortryd`,
+                    };
+                    const yesIsClicked = await PopupDialog.display(PopupDialogKind.WARNING, "Bekræft sletning",
+                        "<p>Er du sikker på du vil slette patientens organdonorregistrering?</p>",
+                        noOption, yesOption);
+                    if (yesIsClicked === yesOption) {
+                        await this.fskService.deleteOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr());
+                        this.updateCache(false);
+                    }
+                } catch (error) {
+                    ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
+                }
         });
 
         this.hideButtons();

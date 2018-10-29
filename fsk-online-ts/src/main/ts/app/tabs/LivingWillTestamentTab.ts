@@ -91,12 +91,26 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
 
         this.deleteButton = new SDSButton("Slet registrering", "danger", async () => {
             try {
-                await this.fskService.deleteLivingWillForPatient(this.moduleContext.getPatient().getCpr());
-                this.terminallyIllCheckbox.setValue(false);
-                this.severelyHandicappedCheckbox.setValue(false);
-                this.updateCache(false);
-                if (TimelineUtil.useTreatmentWill(this.fskConfig)) {
-                    this.moduleContext.setApplicationContextId(`PATIENT`);
+                const yesOption = <DialogOption>{
+                    buttonStyle: ButtonStyle.GREEN,
+                    text: `Slet`,
+                };
+
+                const noOption = <DialogOption>{
+                    buttonStyle: ButtonStyle.RED,
+                    text: `Fortryd`,
+                };
+                const yesIsClicked = await PopupDialog.display(PopupDialogKind.WARNING, "Bekræft sletning",
+                    "<p>Er du sikker på du vil slette patientens livstestamenteregistrering?</p>",
+                    noOption, yesOption);
+                if (yesIsClicked == yesOption) {
+                    await this.fskService.deleteLivingWillForPatient(this.moduleContext.getPatient().getCpr());
+                    this.terminallyIllCheckbox.setValue(false);
+                    this.severelyHandicappedCheckbox.setValue(false);
+                    this.updateCache(false);
+                    if (TimelineUtil.useTreatmentWill(this.fskConfig)) {
+                        this.moduleContext.setApplicationContextId(`PATIENT`);
+                    }
                 }
             } catch (error) {
                 ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));

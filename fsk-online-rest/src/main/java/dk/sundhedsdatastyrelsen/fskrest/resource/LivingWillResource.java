@@ -31,7 +31,7 @@ public class LivingWillResource extends AbstractResource {
                     getComponents().get(0).getSection().getEntries().get(0).getObservation().getValues().get(0);
             return buildNonCacheableResponse(livingWill);
         } catch (Exception e) {
-            logger.error("Could not extract livingwill from getresponse: " +  e.getMessage());
+            logger.error("Error extracting livingwill from response: " +  e.getMessage());
             return Response.status(Response.Status.NO_CONTENT).build();
         }
     }

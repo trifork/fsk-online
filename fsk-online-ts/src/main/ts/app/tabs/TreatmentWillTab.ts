@@ -84,7 +84,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     }
 
     public async setupBindings(): Promise<void> {
-        this.warningIfLivingWillExist((await this.livingWillCache.loadHasRegistration() && this.isAdministratorUser));
+        this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), this.isAdministratorUser);
 
         this.terminallyIllCheckbox = new CheckboxWrapper(this.getElementByVarName(`terminally-ill-checkbox`));
         this.terminallyIllPanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
@@ -115,7 +115,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
                 if (this.livingWillCache.hasRegistration && (await this.livingWillCache.deleteRegistration())) {
                     return;
                 }
-                this.warningIfLivingWillExist(false);
+                this.warningIfLivingWillExist(Promise.resolve(false), false);
                 await this.fskService.createTreatmentWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
                     this.getValue());
@@ -140,9 +140,23 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
 
         this.deleteButton = new SDSButton("Slet registrering", "danger", async () => {
             try {
-                await this.fskService.deleteTreatmentWillForPatient(this.moduleContext.getPatient().getCpr());
-                this.updateCache(false);
-                this.moduleContext.setApplicationContextId(`PATIENT`);
+                const yesOption = <DialogOption>{
+                    buttonStyle: ButtonStyle.GREEN,
+                    text: `Slet`,
+                };
+
+                const noOption = <DialogOption>{
+                    buttonStyle: ButtonStyle.RED,
+                    text: `Fortryd`,
+                };
+                const yesIsClicked = await PopupDialog.display(PopupDialogKind.WARNING, "Bekræft sletning",
+                    "<p>Er du sikker på du vil slette patientens behandlingstestamenteregistrering?</p>",
+                    noOption, yesOption);
+                if (yesIsClicked == yesOption) {
+                    await this.fskService.deleteTreatmentWillForPatient(this.moduleContext.getPatient().getCpr());
+                    this.updateCache(false);
+                    this.moduleContext.setApplicationContextId(`PATIENT`);
+                }
             } catch (error) {
                 ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
             }
@@ -159,8 +173,8 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
         this.rootElement.appendChild(this.element);
     }
 
-    private warningIfLivingWillExist(livingWillExist: boolean) {
-        Widget.setVisible(this.getElementByVarName(`living-will-exists`), livingWillExist);
+    private async warningIfLivingWillExist(livingWillExist: Promise<boolean>, isAdmin: boolean) {
+        Widget.setVisible(this.getElementByVarName(`living-will-exists`), await livingWillExist && isAdmin);
     }
 
     public hideButtons() {
@@ -309,10 +323,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     }
 
     public async setData(treatmentWill: FSKTypes.TreatmentWillType): Promise<void> {
-        const hasLivingWill = this.livingWillCache.loadHasRegistration();
-        if (await hasLivingWill) {
-            this.warningIfLivingWillExist(await hasLivingWill);
-        }
+        this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), true);
         if (treatmentWill) {
             Object.entries(treatmentWill).forEach(([property, will]) => {
                 switch (property) {
@@ -368,7 +379,6 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             ? null
             : wishPanel.getValue();
     }
-
 
     private addListeners() {
         if (!this.treatmentWillChangeHandler) {

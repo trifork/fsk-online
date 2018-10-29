@@ -12,7 +12,6 @@ public class AccessControlImpl implements AccessControl {
 
     private final String ACCESS_DENIED_MESSAGE = "Ingen rettigheder til at udføre handling";
 
-
     @Override
     public void checkOdrReadAccess() {
         UserInfo userInfo = UserInfoHolder.get();
