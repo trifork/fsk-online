@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>dk.sundhedsdatastyrelsen.fsk</groupId>
+		<artifactId>fsk-online-parent</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>fsk-online-all</artifactId>
+	<packaging>ear</packaging>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-ear-plugin</artifactId>
+				<version>2.10</version>
+				<configuration>
+					<skinnyWars>true</skinnyWars>
+					<defaultLibBundleDir>lib</defaultLibBundleDir>
+					<modules>
+						<webModule>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>fsk-online-rest</artifactId>
+							<contextRoot>fsk-online</contextRoot>
+						</webModule>
+						<webModule>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>fsk-online-ts</artifactId>
+							<contextRoot>fsk-online-ts</contextRoot>
+						</webModule>
+					</modules>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<!-- FMK-Online dependency -->
+		<dependency>
+			<groupId>dk.fmkonline</groupId>
+			<artifactId>fmk-online-common</artifactId>
+			<version>${fmk.online.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dk.fmkonline</groupId>
+			<artifactId>fmk-tas-client</artifactId>
+			<version>${fmk.online.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>log4j-over-slf4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>dk.fmkonline</groupId>
+			<artifactId>fmk-online-tilskud-api</artifactId>
+			<version>${fmk.online.version}</version>
+		</dependency>
+
+		<!-- fsk-online-rest.war -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>fsk-online-rest</artifactId>
+			<version>${project.version}</version>
+			<type>war</type>
+		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>fsk-online-rest</artifactId>
+			<version>${project.version}</version>
+			<type>pom</type>
+		</dependency>
+
+		<!-- fsk-online-ts.war -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>fsk-online-ts</artifactId>
+			<version>${project.version}</version>
+			<type>war</type>
+		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>fsk-online-ts</artifactId>
+			<version>${project.version}</version>
+			<type>pom</type>
+		</dependency>
+	</dependencies>
+</project>

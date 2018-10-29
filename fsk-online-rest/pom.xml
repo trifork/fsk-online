@@ -14,7 +14,6 @@
     <name>fsk-online-rest</name>
 
     <properties>
-        <fmk.online.version>2.25.4</fmk.online.version>
         <spring.context.version>5.0.5.RELEASE</spring.context.version>
         <version.template.file>${project.build.sourceDirectory}/dk/sundhedsdatastyrelsen/fskrest/VersionTemplate.java</version.template.file>
         <version.generated.file>dk/sundhedsdatastyrelsen/fskrest/Version.java</version.generated.file>
