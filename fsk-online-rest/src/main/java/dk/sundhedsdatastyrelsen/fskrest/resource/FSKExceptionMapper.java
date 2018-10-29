@@ -53,10 +53,10 @@ public class FSKExceptionMapper implements ExceptionMapper<Exception> {
             vaccinationFault.setCode(WEBSERVICE_COMMUNICATION_ERROR);
 
          } else if (e instanceof AccessDeniedException) {
-             logger.warn("Problem communicating with webservice", e);
+             logger.warn("Problem communicating with webservice: No Access for user", e);
 
              vaccinationFault = new FSKFault();
-             vaccinationFault.setMessage("Fejl ved kommunikation med webservice: " + e.getMessage());
+             vaccinationFault.setMessage("Fejl ved kommunikation med webservice, ingen adgang: " + e.getMessage());
              vaccinationFault.setCode(ACCESS_DENIED_ERROR);
          } else {
              // Runtime errors

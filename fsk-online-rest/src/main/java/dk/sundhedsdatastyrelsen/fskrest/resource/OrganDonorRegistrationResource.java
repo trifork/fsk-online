@@ -31,7 +31,7 @@ public class OrganDonorRegistrationResource extends AbstractResource {
                     getComponents().get(0).getSection().getEntries().get(0).getObservation().getValues().get(0);
             return buildNonCacheableResponse(organDonorRegistration);
         } catch (Exception e) {
-            logger.error("Could not extract organdonor from getresponse: " +  e.getMessage());
+            logger.error("Error extracting organdonor from response: " +  e.getMessage());
             return Response.status(Response.Status.NO_CONTENT).build();
         }
     }
