@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AccessControlImpl implements AccessControl {
 
-    private final String ACCESS_DENIED_MESSAGE = "Rettigheder til at udføre handling, PET er tilkaldt";
+    private final String ACCESS_DENIED_MESSAGE = "Ingen rettigheder til at udføre handling";
 
 
     @Override

@@ -41,6 +41,7 @@ public class TreatmentWillResource extends AbstractResource {
     @Path("/hasTreatmentWill")
     @Produces(MediaType.APPLICATION_JSON)
     public Response hasTreatmentWill(@QueryParam("cpr") String cpr) {
+        accessControl.checkLtrBtrReadAccess();
         HasTreatmentWillRequest request = new HasTreatmentWillRequest();
         request.setId(getId(cpr));
         HasTreatmentWillResponse response = treatmentWillPortType.hasTreatmentWill20180501(request);
@@ -51,6 +52,7 @@ public class TreatmentWillResource extends AbstractResource {
     @Path("/createTreatmentWill")
     @Produces(MediaType.APPLICATION_JSON)
     public Response createTreatmentWill(@QueryParam("cpr") String cpr, TreatmentWill treatmentWill) {
+        accessControl.checkWriteAccess();
         CreateTreatmentWillRequest request = new CreateTreatmentWillRequest();
         request.setId(getId(cpr));
         request.setTreatmentWill(treatmentWill);
@@ -62,6 +64,7 @@ public class TreatmentWillResource extends AbstractResource {
     @Path("/updateTreatmentWill")
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateTreatmentWill(@QueryParam("cpr") String cpr, TreatmentWill treatmentWill) {
+        accessControl.checkWriteAccess();
         UpdateTreatmentWillRequest request = new UpdateTreatmentWillRequest();
         request.setId(getId(cpr));
         request.setTreatmentWill(treatmentWill);
@@ -73,6 +76,7 @@ public class TreatmentWillResource extends AbstractResource {
     @Path("/deleteTreatmentWill")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteTreatmentWill(@QueryParam("cpr") String cpr) {
+        accessControl.checkWriteAccess();
         DeleteTreatmentWillRequest request = new DeleteTreatmentWillRequest();
         request.setId(getId(cpr));
         DeleteTreatmentWillResponse response = treatmentWillPortType.deleteTreatmentWill20180501(request);

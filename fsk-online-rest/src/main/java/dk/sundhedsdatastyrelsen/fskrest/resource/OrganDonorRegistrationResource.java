@@ -22,6 +22,7 @@ public class OrganDonorRegistrationResource extends AbstractResource {
     @Path("/getOrganDonorRegistration")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getOrganDonorRegistration(@QueryParam("cpr") String cpr) {
+        accessControl.checkOdrReadAccess();
         GetOrganDonorRegistrationRequest request = new GetOrganDonorRegistrationRequest();
         request.setId(getId(cpr));
         GetOrganDonorRegistrationResponse response = organDonorRegistrationPortType.getOrganDonorRegistration20180501(request);
@@ -39,6 +40,7 @@ public class OrganDonorRegistrationResource extends AbstractResource {
     @Path("/hasOrganDonorRegistration")
     @Produces(MediaType.APPLICATION_JSON)
     public Response hasOrganDonorRegistration(@QueryParam("cpr") String cpr) {
+        accessControl.checkOdrReadAccess();
         HasOrganDonorRegistrationRequest request = new HasOrganDonorRegistrationRequest();
         request.setId(getId(cpr));
         HasOrganDonorRegistrationResponse response = organDonorRegistrationPortType.hasOrganDonorRegistration20180501(request);
@@ -49,6 +51,7 @@ public class OrganDonorRegistrationResource extends AbstractResource {
     @Path("/createOrganDonorRegistration")
     @Produces(MediaType.APPLICATION_JSON)
     public Response createOrganDonorRegistration(@QueryParam("cpr") String cpr, OrganDonorRegistration organDonorRegistration) {
+        accessControl.checkWriteAccess();
         CreateOrganDonorRegistrationRequest request = new CreateOrganDonorRegistrationRequest();
         request.setId(getId(cpr));
         request.setOrganDonorRegistration(organDonorRegistration);
@@ -60,6 +63,7 @@ public class OrganDonorRegistrationResource extends AbstractResource {
     @Path("/updateOrganDonorRegistration")
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateOrganDonorRegistration(@QueryParam("cpr") String cpr, OrganDonorRegistration organDonorRegistration) {
+        accessControl.checkWriteAccess();
         UpdateOrganDonorRegistrationRequest request = new UpdateOrganDonorRegistrationRequest();
         request.setId(getId(cpr));
         request.setOrganDonorRegistration(organDonorRegistration);
@@ -71,6 +75,7 @@ public class OrganDonorRegistrationResource extends AbstractResource {
     @Path("/deleteOrganDonorRegistration")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteOrganDonorRegistration(@QueryParam("cpr") String cpr) {
+        accessControl.checkWriteAccess();
         DeleteOrganDonorRegistrationRequest request = new DeleteOrganDonorRegistrationRequest();
         request.setId(getId(cpr));
         DeleteOrganDonorRegistrationResponse response = organDonorRegistrationPortType.deleteOrganDonorRegistration20180501(request);

@@ -22,6 +22,7 @@ public class LivingWillResource extends AbstractResource {
     @Path("/getLivingWill")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getLivingWill(@QueryParam("cpr") String cpr) {
+        accessControl.checkLtrBtrReadAccess();
         GetLivingWillRequest request = new GetLivingWillRequest();
         request.setId(getId(cpr));
         GetLivingWillResponse response = livingWillPortType.getLivingWill20180501(request);
@@ -39,6 +40,7 @@ public class LivingWillResource extends AbstractResource {
     @Path("/hasLivingWill")
     @Produces(MediaType.APPLICATION_JSON)
     public Response hasLivingWill(@QueryParam("cpr") String cpr) {
+        accessControl.checkLtrBtrReadAccess();
         HasLivingWillRequest request = new HasLivingWillRequest();
         request.setId(getId(cpr));
         HasLivingWillResponse response = livingWillPortType.hasLivingWill20180501(request);
@@ -49,6 +51,7 @@ public class LivingWillResource extends AbstractResource {
     @Path("/createLivingWill")
     @Produces(MediaType.APPLICATION_JSON)
     public Response createLivingWill(@QueryParam("cpr") String cpr, LivingWill livingWill) {
+        accessControl.checkWriteAccess();
         CreateLivingWillRequest request = new CreateLivingWillRequest();
         request.setId(getId(cpr));
         request.setLivingWill(livingWill);
@@ -60,6 +63,7 @@ public class LivingWillResource extends AbstractResource {
     @Path("/updateLivingWill")
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateLivingWill(@QueryParam("cpr") String cpr, LivingWill livingWill) {
+        accessControl.checkWriteAccess();
         UpdateLivingWillRequest request = new UpdateLivingWillRequest();
         request.setId(getId(cpr));
         request.setLivingWill(livingWill);
@@ -71,6 +75,7 @@ public class LivingWillResource extends AbstractResource {
     @Path("/deleteLivingWill")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteLivingWill(@QueryParam("cpr") String cpr) {
+        accessControl.checkWriteAccess();
         DeleteLivingWillRequest request = new DeleteLivingWillRequest();
         request.setId(getId(cpr));
         DeleteLivingWillResponse response = livingWillPortType.deleteLivingWill20180501(request);
