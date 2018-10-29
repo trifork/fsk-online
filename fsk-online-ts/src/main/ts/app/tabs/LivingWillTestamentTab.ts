@@ -78,7 +78,7 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
             }
         });
 
-        this.updateButton = new SDSButton("Opdatér", "primary", async () => {
+        this.updateButton = new SDSButton("Opdater", "primary", async () => {
             try {
                 await this.fskService.updateLivingWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
@@ -148,7 +148,7 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
     }
 
     public async setVisible(visible: boolean): Promise<void> {
-        if(!this.moduleContext.getPatient()) {
+        if (!this.moduleContext.getPatient()) {
             return;
         }
 
@@ -203,22 +203,31 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         if (FSKUserUtil.isFSKSupporter(userContext)) {
             return false;
         }
+
+        if (FSKUserUtil.isFSKSupporter(userContext)) {
+            return false;
+        }
+
         this.isAdministratorUser = FSKUserUtil.isFSKAdmin(userContext);
         this.hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !this.isAdministratorUser;
 
-        return this.hasAuthAndNotAdmin || this.isAdministratorUser;
+        return (this.hasAuthAndNotAdmin || this.isAdministratorUser);
     }
 
     public async applicationContextIdChanged(applicationContextId: string): Promise<void> {
         const livingWillDateSurpassed = TimelineUtil.useTreatmentWill(this.fskConfig);
 
-        const hasLivingWill = await this.livingWillCache.loadHasRegistration();
-        const canView = !livingWillDateSurpassed || hasLivingWill;
-        const livingWillExistsForHealthcareProvider = !hasLivingWill && this.hasAuthAndNotAdmin;
-        if (applicationContextId === "PATIENT" && livingWillExistsForHealthcareProvider) {
-            this.moduleContext.hideTab(this.ID);
-        } else if (applicationContextId === "PATIENT" && canView) {
-            this.moduleContext.showTab(this.ID);
+        if (!FSKUserUtil.isFSKSupporter(this.moduleContext.getUserContext())) {
+            const hasLivingWill = await this.livingWillCache.loadHasRegistration();
+            const canView = !livingWillDateSurpassed || hasLivingWill;
+            const livingWillExistsForHealthcareProvider = !hasLivingWill && this.hasAuthAndNotAdmin;
+            if (applicationContextId === "PATIENT" && livingWillExistsForHealthcareProvider) {
+                this.moduleContext.hideTab(this.ID);
+            } else if (applicationContextId === "PATIENT" && canView) {
+                this.moduleContext.showTab(this.ID);
+            } else {
+                this.moduleContext.hideTab(this.ID);
+            }
         } else {
             this.moduleContext.hideTab(this.ID);
         }

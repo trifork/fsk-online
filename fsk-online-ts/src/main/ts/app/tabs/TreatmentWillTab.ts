@@ -82,6 +82,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             $: isChecked
         };
     }
+
     public async setupBindings(): Promise<void> {
         this.warningIfLivingWillExist((await this.livingWillCache.loadHasRegistration() && this.isAdministratorUser));
 
@@ -114,7 +115,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
                 if (this.livingWillCache.hasRegistration && (await this.livingWillCache.deleteRegistration())) {
                     return;
                 }
-
+                this.warningIfLivingWillExist(false);
                 await this.fskService.createTreatmentWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
                     this.getValue());
@@ -126,7 +127,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             }
         });
 
-        this.updateButton = new SDSButton("Opdatér", "primary", async () => {
+        this.updateButton = new SDSButton("Opdater", "primary", async () => {
             try {
                 await this.fskService.updateTreatmentWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
@@ -208,7 +209,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     }
 
     public async setVisible(visible: boolean): Promise<void> {
-        if(!this.moduleContext.getPatient()) {
+        if (!this.moduleContext.getPatient()) {
             return;
         }
 
@@ -240,9 +241,6 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             canSee = yesClicked === yesOption;
             this.canSee = canSee;
         }
-        if (! await this.livingWillCache.loadHasRegistration()) {
-            this.warningIfLivingWillExist(false);
-        }
 
         super.setVisible(canSee);
 
@@ -267,19 +265,29 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             return false;
         }
 
+        if (FSKUserUtil.isFSKSupporter(userContext)) {
+            return false;
+        }
+
         this.isAdministratorUser = FSKUserUtil.isFSKAdmin(userContext);
-        const isTransplantCoordinator = FSKUserUtil.isFSKSupporter(userContext);
-        this.hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !this.isAdministratorUser && !isTransplantCoordinator;
-        return this.hasAuthAndNotAdmin || this.isAdministratorUser;
+
+        this.hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !this.isAdministratorUser;
+        return (this.hasAuthAndNotAdmin || this.isAdministratorUser);
     }
 
     public async applicationContextIdChanged(applicationContextId: string): Promise<void> {
+
+        if (FSKUserUtil.isFSKSupporter(this.moduleContext.getUserContext())) {
+            this.moduleContext.hideTab(this.ID);
+            return;
+        }
+
         const treatmentWillExist = await this.treatmentWillCache.loadHasRegistration();
 
         const treatmentWillExistsForHealthcareProvider = !treatmentWillExist && this.hasAuthAndNotAdmin;
         if (applicationContextId === "PATIENT" && treatmentWillExistsForHealthcareProvider) {
             this.moduleContext.hideTab(this.ID);
-        } else if(applicationContextId === "PATIENT") {
+        } else if (applicationContextId === "PATIENT") {
             this.moduleContext.showTab(this.ID);
         } else {
             this.moduleContext.hideTab(this.ID);
@@ -300,7 +308,11 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
         this.deleteButton.setVisible(!isCreateMode && this.isAdministratorUser);
     }
 
-    public setData(treatmentWill: FSKTypes.TreatmentWillType): void {
+    public async setData(treatmentWill: FSKTypes.TreatmentWillType): Promise<void> {
+        const hasLivingWill = this.livingWillCache.loadHasRegistration();
+        if (await hasLivingWill) {
+            this.warningIfLivingWillExist(await hasLivingWill);
+        }
         if (treatmentWill) {
             Object.entries(treatmentWill).forEach(([property, will]) => {
                 switch (property) {

@@ -120,12 +120,14 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
             }
         });
 
-        this.updateButton = new SDSButton("Opdatér", "primary", async () => {
+        this.updateButton = new SDSButton("Opdater", "primary", async () => {
             try {
-                await this.fskService.updateOrganDonorRegisterForPatient(
-                    this.moduleContext.getPatient().getCpr(),
-                    this.radioGroup.getValue().getValue());
-                this.updateCache(true);
+                if (this.radioGroup.getValue().getValue()) {
+                    await this.fskService.updateOrganDonorRegisterForPatient(
+                        this.moduleContext.getPatient().getCpr(),
+                        this.radioGroup.getValue().getValue());
+                    this.updateCache(true);
+                }
             } catch (error) {
                 ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
             }
