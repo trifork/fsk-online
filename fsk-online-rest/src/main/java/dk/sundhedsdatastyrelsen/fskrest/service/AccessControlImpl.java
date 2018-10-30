@@ -4,13 +4,17 @@ import com.trifork.web.security.userinfo.UserInfo;
 import com.trifork.web.security.userinfo.UserInfoHolder;
 import dk.fmkonline.common.shared.Role;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.cxf.interceptor.security.AccessDeniedException;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
 @Component
 public class AccessControlImpl implements AccessControl {
-    public static String SYSTEM_NAME = "FSK";
-    private final String ACCESS_DENIED_MESSAGE = "Ingen rettigheder til at udføre handling";
+    private static Logger logger = Logger.getLogger(AccessControlImpl.class);
+
+    private static String SYSTEM_NAME = "FSK";
 
     @Override
     public void checkOdrReadAccess() {
@@ -20,7 +24,9 @@ public class AccessControlImpl implements AccessControl {
                 && userInfo.requestedRoleSystemRestrictionList.contains(SYSTEM_NAME);
 
         if (!isAuthorized) {
-            throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+            logger.info("Denying access to read organdonorregistration for user " + userInfo.cpr + " in role "
+                    + userInfo.requestedRole);
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
     }
 
@@ -32,7 +38,9 @@ public class AccessControlImpl implements AccessControl {
                 && userInfo.requestedRoleSystemRestrictionList.contains(SYSTEM_NAME);
 
         if (!isAuthorized) {
-            throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+            logger.info("Denying access to read livingwill / treatmentwill for user " + userInfo.cpr + " in role "
+                    + userInfo.requestedRole);
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
     }
 
@@ -43,7 +51,9 @@ public class AccessControlImpl implements AccessControl {
                 && userInfo.requestedRoleSystemRestrictionList.contains(SYSTEM_NAME);
 
         if (!isAuthorized) {
-            throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+            logger.info("Denying access to write for user " + userInfo.cpr + " in role "
+                    + userInfo.requestedRole);
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
     }
 }
