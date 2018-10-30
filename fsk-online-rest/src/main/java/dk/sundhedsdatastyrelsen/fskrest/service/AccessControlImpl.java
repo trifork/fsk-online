@@ -9,14 +9,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AccessControlImpl implements AccessControl {
-
+    public static String SYSTEM_NAME = "FSK";
     private final String ACCESS_DENIED_MESSAGE = "Ingen rettigheder til at udføre handling";
 
     @Override
     public void checkOdrReadAccess() {
         UserInfo userInfo = UserInfoHolder.get();
-        final boolean isAuthorized = Role.Supporter.getName().equals(userInfo.requestedRole)
-                || Role.WebAdmin.getName().equals(userInfo.requestedRole);
+        final boolean isAuthorized = (Role.Supporter.getName().equals(userInfo.requestedRole)
+                || Role.WebAdmin.getName().equals(userInfo.requestedRole))
+                && userInfo.requestedRoleSystemRestrictionList.contains(SYSTEM_NAME);
 
         if (!isAuthorized) {
             throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
@@ -26,8 +27,9 @@ public class AccessControlImpl implements AccessControl {
     @Override
     public void checkLtrBtrReadAccess() {
         UserInfo userInfo = UserInfoHolder.get();
-        final boolean isAuthorized = Role.WebAdmin.getName().equals(userInfo.requestedRole)
-                || !StringUtils.isBlank(userInfo.authNo);
+        final boolean isAuthorized = (Role.WebAdmin.getName().equals(userInfo.requestedRole)
+                || !StringUtils.isBlank(userInfo.authNo))
+                && userInfo.requestedRoleSystemRestrictionList.contains(SYSTEM_NAME);
 
         if (!isAuthorized) {
             throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
@@ -37,7 +39,8 @@ public class AccessControlImpl implements AccessControl {
     @Override
     public void checkWriteAccess() {
         UserInfo userInfo = UserInfoHolder.get();
-        final boolean isAuthorized = Role.WebAdmin.getName().equals(userInfo.requestedRole);
+        final boolean isAuthorized = Role.WebAdmin.getName().equals(userInfo.requestedRole)
+                && userInfo.requestedRoleSystemRestrictionList.contains(SYSTEM_NAME);
 
         if (!isAuthorized) {
             throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
