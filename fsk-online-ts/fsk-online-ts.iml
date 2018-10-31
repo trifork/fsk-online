@@ -26,6 +26,9 @@
     <orderEntry type="library" name="Maven: dk.fmkonline:fmk-online-common:2.26.0" level="project" />
     <orderEntry type="library" name="Maven: dk.fmkonline:fmk-stamdata-schema:2.26.0" level="project" />
     <orderEntry type="library" name="Maven: com.trifork:websecurity:1.31" level="project" />
+    <orderEntry type="library" name="Maven: dk.fmkonline:fmk-online-common:2.27.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: dk.fmkonline:fmk-stamdata-schema:2.27.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.trifork:websecurity:1.32" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.glassfish.jaxb:jaxb-runtime:2.2.11" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.jvnet.staxex:stax-ex:1.7.7" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.sun.xml.fastinfoset:FastInfoset:1.2.13" level="project" />

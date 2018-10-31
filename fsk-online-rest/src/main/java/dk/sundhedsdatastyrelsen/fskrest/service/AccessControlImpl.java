@@ -19,9 +19,11 @@ public class AccessControlImpl implements AccessControl {
     @Override
     public void checkOdrReadAccess() {
         UserInfo userInfo = UserInfoHolder.get();
-        final boolean isAuthorized = (Role.Supporter.getName().equals(userInfo.requestedRole)
-                || Role.WebAdmin.getName().equals(userInfo.requestedRole))
-                && userInfo.requestedRoleSystemRestrictionList.contains(SYSTEM_NAME);
+        boolean isAuthorized = (Role.Supporter.getName().equals(userInfo.requestedRole)
+                || Role.WebAdmin.getName().equals(userInfo.requestedRole));
+        if (isAuthorized) {
+            isAuthorized &= userInfo.requestedRoleSystemRestrictionList.contains(SYSTEM_NAME);
+        }
 
         if (!isAuthorized) {
             logger.info("Denying access to read organdonorregistration for user " + userInfo.cpr + " in role "
@@ -33,9 +35,12 @@ public class AccessControlImpl implements AccessControl {
     @Override
     public void checkLtrBtrReadAccess() {
         UserInfo userInfo = UserInfoHolder.get();
-        final boolean isAuthorized = (Role.WebAdmin.getName().equals(userInfo.requestedRole)
-                || !StringUtils.isBlank(userInfo.authNo))
-                && userInfo.requestedRoleSystemRestrictionList.contains(SYSTEM_NAME);
+        boolean isAdmin = Role.WebAdmin.getName().equals(userInfo.requestedRole);
+        boolean isAuthorized = isAdmin
+                || !StringUtils.isBlank(userInfo.authNo);
+        if (isAdmin) {
+            isAuthorized &= userInfo.requestedRoleSystemRestrictionList.contains(SYSTEM_NAME);
+        }
 
         if (!isAuthorized) {
             logger.info("Denying access to read livingwill / treatmentwill for user " + userInfo.cpr + " in role "
@@ -47,8 +52,10 @@ public class AccessControlImpl implements AccessControl {
     @Override
     public void checkWriteAccess() {
         UserInfo userInfo = UserInfoHolder.get();
-        final boolean isAuthorized = Role.WebAdmin.getName().equals(userInfo.requestedRole)
-                && userInfo.requestedRoleSystemRestrictionList.contains(SYSTEM_NAME);
+        boolean isAuthorized = Role.WebAdmin.getName().equals(userInfo.requestedRole);
+        if (isAuthorized) {
+            isAuthorized &= userInfo.requestedRoleSystemRestrictionList.contains(SYSTEM_NAME);
+        }
 
         if (!isAuthorized) {
             logger.info("Denying access to write for user " + userInfo.cpr + " in role "
