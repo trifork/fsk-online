@@ -12,23 +12,36 @@ export default class FSKOrganDonorCache {
     public hasRegistration: boolean;
 
     public readonly organDonorRegister = new AsyncValueHolder<OrganDonorRegistrationType>(async () => {
-        if (this.hasRegistration) {
+        if (await this.loadHasRegistration()) {
             return this.getRegistration();
         } else {
-            if (await this.loadHasRegistration()) {
-                return this.getRegistration();
-            } else {
-                return undefined;
-            }
+            return undefined;
         }
     }, error => {
         // Ignore
     });
 
+    public setStale(removeRegistration: boolean) {
+        if (removeRegistration === true) {
+            this.hasRegistration = undefined;
+        }
+        this.organDonorRegister.setStale();
+    }
+
+    public clear(removeRegistration: boolean) {
+        if (removeRegistration === true) {
+            this.hasRegistration = undefined;
+        }
+        this.organDonorRegister.clear();
+    }
+
     private async loadHasRegistration(): Promise<boolean> {
+        if (typeof this.hasRegistration === `boolean`) {
+            return this.hasRegistration;
+        }
         this.hasRegistration = this.moduleContext.getPatient()
             ? (await this.fskService.hasOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr())).registrationExists
-            : await false;
+            : await undefined;
         return this.hasRegistration;
     }
 

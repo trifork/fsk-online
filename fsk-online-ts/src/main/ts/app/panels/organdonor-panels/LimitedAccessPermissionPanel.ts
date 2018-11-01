@@ -4,6 +4,7 @@ import loadTemplate from "../../main/TemplateLoader";
 import {Checkbox, HTML} from "fmko-ts-widgets";
 import {IOrganDonor} from "../../model/OrganDonorRegistrationType";
 import {Widget} from "fmko-typescript-common";
+import SDSButton from "../../elements/SDSButton";
 import OrganDonorRegistration = FSKTypes.OrganDonorRegistrationType;
 
 export default class LimitedAccessPermissionPanel extends TemplateWidget implements IOrganDonor<FSKTypes.OrganDonorRegistrationType> {
@@ -11,6 +12,7 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
     public static deps = () => [IoC];
 
     private checkboxes: OrganRegistrationCheckBoxes;
+    private updateButton: SDSButton;
 
     public constructor(protected container: IoC) {
         super(container);
@@ -53,6 +55,10 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
 
     public setEnabled(enabled: boolean): void {
         Object.values(this.checkboxes).forEach(checkbox => checkbox.setEnabled(enabled));
+    }
+
+    public setUpdateButton(updateButton: SDSButton) {
+        this.updateButton = updateButton;
     }
 
     public getValue(): FSKTypes.OrganDonorRegistrationType {
@@ -152,14 +158,18 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
 
         Object.values(this.checkboxes).forEach(currentCheckbox => {
             currentCheckbox.getCssStyle().fontSize = `14px`;
-            if (currentCheckbox !== consentCheckBox) {
-                currentCheckbox.addValueChangeHandler(handler => {
+            currentCheckbox.addValueChangeHandler(handler => {
+                if (currentCheckbox !== consentCheckBox) {
                     const value = handler.getValue();
                     if (value) {
                         this.showCheckboxError(false);
                     }
-                });
-            }
+                }
+
+                if (this.updateButton) {
+                    this.updateButton.setEnabled(true);
+                }
+            });
         });
 
         return this.checkboxes;

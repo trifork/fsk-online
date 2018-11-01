@@ -3,14 +3,16 @@ import {TemplateWidget} from "fmko-ts-mvc";
 import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
 import {ButtonStyle, CheckboxWrapper, DialogOption, ErrorDisplay, PopupDialog, PopupDialogKind} from "fmko-ts-widgets";
-import SDSButton from "../elements/SDSButton";
 import FSKService from "../services/FSKService";
 import LivingWillCache from "../services/LivingWillCache";
 import ErrorUtil from "../util/ErrorUtil";
 import FSKConfig from "../main/FSKConfig";
 import FSKUserUtil from "../util/FSKUserUtil";
 import TimelineUtil from "../util/TimelineUtil";
+import {ButtonStrategy} from "../model/ButtonStrategy";
+import FSKButtonStrategy from "../model/FSKButtonStrategy";
 import LivingWillType = FSKTypes.LivingWillType;
+import SnackBar from "../elements/SnackBar";
 
 export default class LivingWillTestamentTab extends TemplateWidget implements TabbedPanel {
     private ID = "LivingWillTestamentTab_TS";
@@ -22,14 +24,12 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
 
     private livingWillChangeHandler: ValueChangeHandler<FSKTypes.LivingWillType>;
 
-    private createButton: SDSButton;
-    private updateButton: SDSButton;
-    private deleteButton: SDSButton;
-
     private terminallyIllCheckbox: CheckboxWrapper;
     private severelyHandicappedCheckbox: CheckboxWrapper;
 
     private canSee = false;
+
+    private buttonStrategy: ButtonStrategy;
 
 
     public static deps = () => [IoC, "ModuleContext", "FSKConfig", LivingWillCache, FSKService, "RootElement"];
@@ -64,32 +64,58 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
     }
 
     public setupBindings(): void {
+        this.setupButtons();
         this.terminallyIllCheckbox = new CheckboxWrapper(this.getElementByVarName(`terminally-ill-checkbox`));
+        this.terminallyIllCheckbox.addValueChangeHandler(() => {
+            this.buttonStrategy.updateButton.setEnabled(true);
+        });
         this.severelyHandicappedCheckbox = new CheckboxWrapper(this.getElementByVarName(`severely-handicapped-checkbox`));
+        this.severelyHandicappedCheckbox.addValueChangeHandler(() => {
+            this.buttonStrategy.updateButton.setEnabled(true);
+        });
 
-        this.createButton = new SDSButton("Opret registrering", "primary", async () => {
+        this.buttonStrategy.hideButtons();
+        this.setEnabled(this.isAdministratorUser);
+
+        this.addAndReplaceWidgetByVarName(this.buttonStrategy.createButton, `create-button`);
+        this.addAndReplaceWidgetByVarName(this.buttonStrategy.updateButton, `update-button`);
+        this.addAndReplaceWidgetByVarName(this.buttonStrategy.deleteButton, `delete-button`);
+
+        const onlyPermissionToReadAfterDate = this.isAdministratorUser && TimelineUtil.useTreatmentWill(this.fskConfig);
+        if (onlyPermissionToReadAfterDate) {
+            this.setEnabled(false);
+        }
+
+        this.rootElement.appendChild(this.element);
+    }
+
+    public setupButtons(): void {
+        this.buttonStrategy = new FSKButtonStrategy(this.moduleContext.getUserContext());
+        const createHandler = async () => {
             try {
+                this.buttonStrategy.disableButtons();
                 await this.fskService.createLivingWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
                     this.getValue());
-                this.updateCache(true);
+                this.updateCache(true, `Livstestamente oprettet`);
             } catch (error) {
                 ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
             }
-        });
+        };
 
-        this.updateButton = new SDSButton("Opdater", "primary", async () => {
+        const updateHandler = async () => {
             try {
+                this.buttonStrategy.disableButtons();
                 await this.fskService.updateLivingWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
                     this.getValue());
-                this.updateCache(true);
+                this.updateCache(true, `Livstestamente opdateret`);
             } catch (error) {
                 ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
             }
-        });
+        };
 
-        this.deleteButton = new SDSButton("Slet registrering", "danger", async () => {
+        const deleteHandler = async () => {
             try {
                 const yesOption = <DialogOption>{
                     buttonStyle: ButtonStyle.GREEN,
@@ -104,10 +130,11 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
                     "<p>Er du sikker på du vil slette patientens livstestamenteregistrering?</p>",
                     noOption, yesOption);
                 if (yesIsClicked == yesOption) {
+                    this.buttonStrategy.disableButtons();
                     await this.fskService.deleteLivingWillForPatient(this.moduleContext.getPatient().getCpr());
                     this.terminallyIllCheckbox.setValue(false);
                     this.severelyHandicappedCheckbox.setValue(false);
-                    this.updateCache(false);
+                    this.updateCache(false, `Livstestamente slettet`);
                     if (TimelineUtil.useTreatmentWill(this.fskConfig)) {
                         this.moduleContext.setApplicationContextId(`PATIENT`);
                     }
@@ -115,38 +142,22 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
             } catch (error) {
                 ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
             }
-        });
+        };
+        this.buttonStrategy.updateButton.setEnabled(false);
+        this.buttonStrategy.addHandlerForCreateButton(() => createHandler());
+        this.buttonStrategy.addHandlerForEditButton(() => updateHandler());
+        this.buttonStrategy.addHandlerForDeleteButton(() => deleteHandler());
 
-        this.hideButtons();
-        this.setEnabled(this.isAdministratorUser);
-
-        this.addAndReplaceWidgetByVarName(this.createButton, `create-button`);
-        this.addAndReplaceWidgetByVarName(this.updateButton, `update-button`);
-        this.addAndReplaceWidgetByVarName(this.deleteButton, `delete-button`);
-
-        this.rootElement.appendChild(this.element);
     }
 
-    public hideButtons() {
-        this.createButton.setVisible(false);
-        this.updateButton.setVisible(false);
-        this.deleteButton.setVisible(false);
-    }
-
-    public setCreateMode(isCreateMode: boolean) {
-        this.createButton.setVisible(isCreateMode && this.isAdministratorUser && !TimelineUtil.useTreatmentWill(this.fskConfig));
-        this.updateButton.setVisible(!isCreateMode && this.isAdministratorUser && !TimelineUtil.useTreatmentWill(this.fskConfig));
-        const onlyPermissionToReadAfterDate = !isCreateMode && this.isAdministratorUser && TimelineUtil.useTreatmentWill(this.fskConfig);
-        if (onlyPermissionToReadAfterDate) {
-            this.setEnabled(false);
-        }
-        this.deleteButton.setVisible(!isCreateMode && this.isAdministratorUser);
-    }
-
-    public updateCache(hasRegistration: boolean) {
+    public updateCache(hasRegistration: boolean, snackbarText: string) {
         this.livingWillCache.hasRegistration = hasRegistration;
-        this.setCreateMode(!hasRegistration);
+        hasRegistration
+            ? this.buttonStrategy.setEditMode(!TimelineUtil.useTreatmentWill(this.fskConfig))
+            : this.buttonStrategy.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));
         this.livingWillCache.livingWill.setStale();
+        this.buttonStrategy.enableButtons();
+        SnackBar.show(snackbarText);
     };
 
     public tearDownBindings(): void {
@@ -218,10 +229,6 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
             return false;
         }
 
-        if (FSKUserUtil.isFSKSupporter(userContext)) {
-            return false;
-        }
-
         this.isAdministratorUser = FSKUserUtil.isFSKAdmin(userContext);
         this.hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !this.isAdministratorUser;
 
@@ -265,7 +272,9 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
             this.terminallyIllCheckbox.setValue(livingWill.noLifeProlongingIfDying);
             this.severelyHandicappedCheckbox.setValue(livingWill.noLifeProlongingIfSeverelyDegraded);
         }
-        this.setCreateMode(!livingWill);
+        livingWill
+            ? this.buttonStrategy.setEditMode(!TimelineUtil.useTreatmentWill(this.fskConfig))
+            : this.buttonStrategy.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));
     }
 
     public render() {

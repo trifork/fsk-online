@@ -12,23 +12,36 @@ export default class TreatmentWillCache {
     public hasRegistration: boolean;
 
     public readonly treatmentWill = new AsyncValueHolder<TreatmentWillType>(async () => {
-        if (this.hasRegistration) {
+        if (await this.loadHasRegistration()) {
             return this.getRegistration();
         } else {
-            if (await this.loadHasRegistration()) {
-                return this.getRegistration();
-            } else {
-                return undefined;
-            }
+            return null;
         }
     }, error => {
         // Ignore
     });
 
+    public setStale(removeRegistration: boolean) {
+        if (removeRegistration === true) {
+            this.hasRegistration = undefined;
+        }
+        this.treatmentWill.setStale();
+    }
+
+    public clear(removeRegistration: boolean) {
+        if (removeRegistration === true) {
+            this.hasRegistration = undefined;
+        }
+        this.treatmentWill.clear();
+    }
+
     public async loadHasRegistration(): Promise<boolean> {
+        if (typeof this.hasRegistration === `boolean`) {
+            return this.hasRegistration;
+        }
         this.hasRegistration = this.moduleContext.getPatient()
             ? (await this.fskService.hasTreatmentWillForPatient(this.moduleContext.getPatient().getCpr())).willExists
-            : await false;
+            : await undefined;
         return this.hasRegistration;
     }
 

@@ -12,23 +12,36 @@ export default class LivingWillCache {
     public hasRegistration: boolean;
 
     public readonly livingWill = new AsyncValueHolder<LivingWillType>(async () => {
-        if (this.hasRegistration) {
+        if (await this.loadHasRegistration()) {
             return this.getRegistration();
         } else {
-            if (await this.loadHasRegistration()) {
-                return this.getRegistration();
-            } else {
-                return undefined;
-            }
+            return null;
         }
     }, error => {
         // Ignore
     });
 
+    public setStale(removeRegistration: boolean) {
+        if (removeRegistration === true) {
+            this.hasRegistration = undefined;
+        }
+        this.livingWill.setStale();
+    }
+
+    public clear(removeRegistration: boolean) {
+        if (removeRegistration === true) {
+            this.hasRegistration = undefined;
+        }
+        this.livingWill.clear();
+    }
+
     public async loadHasRegistration(): Promise<boolean> {
+        if (typeof this.hasRegistration === `boolean`) {
+            return this.hasRegistration;
+        }
         this.hasRegistration = this.moduleContext.getPatient()
             ? (await this.fskService.hasLivingWillForPatient(this.moduleContext.getPatient().getCpr())).willExists
-            : await false;
+            : await undefined;
         return this.hasRegistration;
     }
 
@@ -39,6 +52,7 @@ export default class LivingWillCache {
     public async deleteRegistration(): Promise<boolean> {
         if (this.hasRegistration) {
             await this.fskService.deleteLivingWillForPatient(this.moduleContext.getPatient().getCpr());
+            this.hasRegistration = false;
         }
         return this.loadHasRegistration();
     }

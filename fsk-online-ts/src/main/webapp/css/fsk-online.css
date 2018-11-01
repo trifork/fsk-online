@@ -125,13 +125,6 @@ button.sds-button.primary:active {
     background-color: #004870;
 }
 
-button.sds-button.primary:disabled {
-    background-color: #BDBDBD;
-    opacity: 0.5;
-    color: black;
-    cursor: inherit;
-}
-
 button.sds-button.danger {
     background-color: #dc3545;
 }
@@ -142,6 +135,20 @@ button.sds-button.danger:hover {
 
 button.sds-button.danger:active {
     background-color: #C62A38;
+}
+
+button.sds-button:disabled {
+    background-color: #BDBDBD;
+    opacity: 0.5;
+    color: black;
+    cursor: inherit;
+}
+
+button.sds-button:hover:disabled {
+    background-color: #BDBDBD;
+    opacity: 0.5;
+    color: black;
+    cursor: inherit;
 }
 
 button.sds-outline-button {
@@ -263,8 +270,59 @@ button.sds-outline-button.danger:active {
 }
 
 .fsk-warning-header {
-    font-size:22px;
+    font-size: 22px;
     font-family: sans-serif;
     margin-bottom: 8px;
     font-weight: 500;
+}
+
+.snack-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    opacity: 0;
+    font-size: 14px;
+    z-index: 200;
+    color: white;
+    background-color: #313131;
+    margin: 24px;
+    min-height: 48px;
+    line-height: 48px;
+    border-radius: 4px;
+    min-width: 288px;
+    transition: opacity 0.33s ease;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.snack-bar.visible {
+    opacity: 1;
+}
+
+.snackbar-action {
+    position: relative;
+    right: 8px;
+    color: #bfe600;
+    background-color: #313131;
+    text-transform: uppercase;
+    min-width: 64px;
+    height: 36px;
+    line-height: 32px;
+    border-radius: 2px;
+    cursor: pointer;
+    white-space: normal;
+    border: none;
+    word-wrap: break-word;
+}
+
+.snack-bar-span {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.snackbar-action:hover {
+    color: #ACC500;
+}
+
+.snackbar-action:active {
+    color: #99B800;
 }

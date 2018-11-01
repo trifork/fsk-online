@@ -2,15 +2,7 @@ import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler, Widget} fro
 import {TemplateWidget} from "fmko-ts-mvc";
 import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
-import {
-    ButtonStyle,
-    DialogOption,
-    ErrorDisplay,
-    PopupDialog,
-    PopupDialogKind,
-    RadioButton,
-    RadioGroup
-} from "fmko-ts-widgets";
+import {ButtonStyle, DialogOption, ErrorDisplay, PopupDialog, PopupDialogKind, RadioButton, RadioGroup} from "fmko-ts-widgets";
 import LimitedAccessPermissionPanel from "../panels/organdonor-panels/LimitedAccessPermissionPanel";
 import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
 import FullAccessPermissionPanel from "../panels/organdonor-panels/FullAccessPermissionPanel";
@@ -18,9 +10,11 @@ import {IOrganDonor} from "../model/OrganDonorRegistrationType";
 import DontKnowAccessPermissionPanel from "../panels/organdonor-panels/DontKnowAccessPermissionPanel";
 import NoAccessPermissionPanel from "../panels/organdonor-panels/NoAccessPermissionPanel";
 import FSKService from "../services/FSKService";
-import SDSButton from "../elements/SDSButton";
 import ErrorUtil from "../util/ErrorUtil";
 import FSKUserUtil from "../util/FSKUserUtil";
+import SnackBar from "../elements/SnackBar";
+import {ButtonStrategy} from "../model/ButtonStrategy";
+import FSKButtonStrategy from "../model/FSKButtonStrategy";
 
 export default class OrganDonorRegistrationTab extends TemplateWidget implements TabbedPanel {
     private ID = "OrganDonorRegistrationTab_TS";
@@ -29,11 +23,9 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     private initialized: boolean;
     private organRegistrationChangeHandler: ValueChangeHandler<FSKTypes.OrganDonorRegistrationType>;
 
-    private createButton: SDSButton;
-    private updateButton: SDSButton;
-    private deleteButton: SDSButton;
+    private buttonStrategy: ButtonStrategy;
 
-    private isAdminUser = this.moduleContext.getUserContext().isAdministratorLogin();
+    private isAdminUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
 
     private radioGroup: RadioGroup<Widget & IOrganDonor<FSKTypes.OrganDonorRegistrationType>>;
 
@@ -61,9 +53,12 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     }
 
     public setupBindings(): void {
+        this.setupButtons();
+
         const fullAccessPermissionPanel = new FullAccessPermissionPanel();
         fullAccessPermissionPanel.setVisible(false);
         fullAccessPermissionPanel.setEnabled(this.isAdminUser);
+        fullAccessPermissionPanel.setUpdateButton(this.buttonStrategy.updateButton);
         fullAccessPermissionPanel.addStyleName('organ-donor-panel');
         const fullPermissionRadioButton = new RadioButton(fullAccessPermissionPanel, ``);
         fullPermissionRadioButton.setEnabled(this.isAdminUser);
@@ -75,6 +70,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         const limitedAccessPanel = this.container.resolve<LimitedAccessPermissionPanel>(LimitedAccessPermissionPanel);
         limitedAccessPanel.setVisible(false);
         limitedAccessPanel.setEnabled(this.isAdminUser);
+        limitedAccessPanel.setUpdateButton(this.buttonStrategy.updateButton);
         limitedAccessPanel.addStyleName('organ-donor-panel');
         const limitedPermissionRadioButton = new RadioButton(limitedAccessPanel, ``);
         limitedPermissionRadioButton.setEnabled(this.isAdminUser);
@@ -109,70 +105,84 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
 
         this.radioGroup.addValueChangeHandler(handler => {
             const value = handler.getValue();
-            this.createButton.setEnabled(!!value);
+            this.buttonStrategy.createButton.setEnabled(!!value);
             this.radioGroup.getRadioButtons().forEach(radioButton => {
                 radioButton.getValue().setVisible(value === radioButton.getValue());
+                this.buttonStrategy.updateButton.setEnabled(true);
             });
         });
 
-        this.createButton = new SDSButton("Opret registrering", "primary", async () => {
-            try {
-                if (this.radioGroup.getValue().getValue()) {
-                    await this.fskService.createOrganDonorRegisterForPatient(
-                        this.moduleContext.getPatient().getCpr(),
-                        this.radioGroup.getValue().getValue());
-                    this.updateCache(true);
-                }
-            } catch (error) {
-                ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
-            }
-        });
 
-        this.updateButton = new SDSButton("Opdater", "primary", async () => {
-            try {
-                if (this.radioGroup.getValue().getValue()) {
-                    await this.fskService.updateOrganDonorRegisterForPatient(
-                        this.moduleContext.getPatient().getCpr(),
-                        this.radioGroup.getValue().getValue());
-                    this.updateCache(true);
-                }
-            } catch (error) {
-                ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
-            }
-        });
-
-        this.deleteButton = new SDSButton("Slet registrering", "danger", async () => {
-                try {
-                    const yesOption = <DialogOption>{
-                        buttonStyle: ButtonStyle.GREEN,
-                        text: `Slet`,
-                    };
-
-                    const noOption = <DialogOption>{
-                        buttonStyle: ButtonStyle.RED,
-                        text: `Fortryd`,
-                    };
-                    const yesIsClicked = await PopupDialog.display(PopupDialogKind.WARNING, "Bekræft sletning",
-                        "<p>Er du sikker på du vil slette patientens organdonorregistrering?</p>",
-                        noOption, yesOption);
-                    if (yesIsClicked === yesOption) {
-                        await this.fskService.deleteOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr());
-                        this.updateCache(false);
-                    }
-                } catch (error) {
-                    ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
-                }
-        });
-
-        this.hideButtons();
+        this.buttonStrategy.hideButtons();
 
         if (this.isAdminUser) {
-            this.addAndReplaceWidgetByVarName(this.createButton, `create-button`);
-            this.addAndReplaceWidgetByVarName(this.updateButton, `update-button`);
-            this.addAndReplaceWidgetByVarName(this.deleteButton, `delete-button`);
+            this.addAndReplaceWidgetByVarName(this.buttonStrategy.createButton, `create-button`);
+            this.addAndReplaceWidgetByVarName(this.buttonStrategy.updateButton, `update-button`);
+            this.addAndReplaceWidgetByVarName(this.buttonStrategy.deleteButton, `delete-button`);
         }
 
         this.rootElement.appendChild(this.element);
+    }
+
+    public setupButtons(): void {
+        this.buttonStrategy = new FSKButtonStrategy(this.moduleContext.getUserContext());
+
+        const createHandler = async () => {
+            try {
+                if (this.radioGroup.getValue().getValue()) {
+                    this.buttonStrategy.disableButtons();
+                    await this.fskService.createOrganDonorRegisterForPatient(
+                        this.moduleContext.getPatient().getCpr(),
+                        this.radioGroup.getValue().getValue());
+                    this.updateCache(true, `Organdonorregistering oprettet`);
+                }
+            } catch (error) {
+                ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
+            }
+        };
+
+        const updateHandler = async () => {
+            try {
+                if (this.radioGroup.getValue().getValue()) {
+                    this.buttonStrategy.disableButtons();
+                    await this.fskService.updateOrganDonorRegisterForPatient(
+                        this.moduleContext.getPatient().getCpr(),
+                        this.radioGroup.getValue().getValue());
+                    this.updateCache(true, "Organdonorregistering opdateret");
+                }
+            } catch (error) {
+                ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
+            }
+        };
+
+        const deleteHandler = async () => {
+            try {
+                const yesOption = <DialogOption>{
+                    buttonStyle: ButtonStyle.GREEN,
+                    text: `Slet`,
+                };
+
+                const noOption = <DialogOption>{
+                    buttonStyle: ButtonStyle.RED,
+                    text: `Fortryd`,
+                };
+                const yesIsClicked = await PopupDialog.display(PopupDialogKind.WARNING, "Bekræft sletning",
+                    "<p>Er du sikker på du vil slette patientens organdonorregistrering?</p>",
+                    noOption, yesOption);
+                if (yesIsClicked === yesOption) {
+                    this.buttonStrategy.disableButtons();
+                    await this.fskService.deleteOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr());
+                    this.updateCache(false, `Organdonorregistering slettet`);
+                }
+            } catch (error) {
+                ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
+            }
+        };
+
+        this.buttonStrategy.updateButton.setEnabled(false);
+        this.buttonStrategy.addHandlerForCreateButton(() => createHandler());
+        this.buttonStrategy.addHandlerForEditButton(() => updateHandler());
+        this.buttonStrategy.addHandlerForDeleteButton(() => deleteHandler());
     }
 
     public setData(organDonorRegistration: FSKTypes.OrganDonorRegistrationType): void {
@@ -182,7 +192,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
             this.radioGroup.setValue(null);
         }
 
-        this.createButton.setEnabled(!!type);
+        this.buttonStrategy.createButton.setEnabled(!!type);
 
         this.radioGroup.getRadioButtons().forEach(button => {
             if (button.getValue().getType() === type) {
@@ -196,26 +206,15 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
                 button.getInput().checked = false;
             }
         });
-        this.setCreateMode(!organDonorRegistration);
+        organDonorRegistration ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
     }
 
-    public hideButtons() {
-        this.createButton.setVisible(false);
-        this.updateButton.setVisible(false);
-        this.deleteButton.setVisible(false);
-    }
-
-    public setCreateMode(isCreateMode: boolean) {
-        const isFSKAdmin = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
-        this.createButton.setVisible(isCreateMode && isFSKAdmin);
-        this.updateButton.setVisible(!isCreateMode && isFSKAdmin);
-        this.deleteButton.setVisible(!isCreateMode && isFSKAdmin);
-    }
-
-    public updateCache(hasRegistration: boolean) {
+    public updateCache(hasRegistration: boolean, snackbarText: string) {
         this.fskOrganDonorCache.hasRegistration = hasRegistration;
-        this.setCreateMode(!hasRegistration);
+        hasRegistration ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
         this.fskOrganDonorCache.organDonorRegister.setStale();
+        SnackBar.show(snackbarText);
+        this.buttonStrategy.enableButtons();
     };
 
     public tearDownBindings(): void {
@@ -252,8 +251,8 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
         const hasOrganDonorRights = FSKUserUtil.isFSKAdmin(userContext);
 
-        const isCoodinator = FSKUserUtil.isFSKSupporter(userContext) && !hasOrganDonorRights;
-        return isCoodinator || hasOrganDonorRights;
+        const isCoordinator = FSKUserUtil.isFSKSupporter(userContext) && !hasOrganDonorRights;
+        return isCoordinator || hasOrganDonorRights;
     }
 
     public applicationContextIdChanged(applicationContextId: string): any {

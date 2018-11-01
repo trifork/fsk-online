@@ -4,7 +4,6 @@ import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
 import {ButtonStyle, CheckboxWrapper, DialogOption, ErrorDisplay, PopupDialog, PopupDialogKind} from "fmko-ts-widgets";
 import TreatmentWillWishPanel from "../panels/treatment-will-testament-panels/TreatmentWillWishPanel";
-import SDSButton from "../elements/SDSButton";
 import TreatmentWillCache from "../services/TreatmentWillCache";
 import FSKService from "../services/FSKService";
 import ErrorUtil from "../util/ErrorUtil";
@@ -12,6 +11,9 @@ import FSKConfig from "../main/FSKConfig";
 import LivingWillCache from "../services/LivingWillCache";
 import FSKUserUtil from "../util/FSKUserUtil";
 import TimelineUtil from "../util/TimelineUtil";
+import FSKButtonStrategy from "../model/FSKButtonStrategy";
+import {ButtonStrategy} from "../model/ButtonStrategy";
+import SnackBar from "../elements/SnackBar";
 import TreatmentWillType = FSKTypes.TreatmentWillType;
 import TreatmentWillValueType = FSKTypes.TreatmentWillValueType;
 
@@ -24,10 +26,6 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     private hasAuthAndNotAdmin: boolean;
     private treatmentWillChangeHandler: ValueChangeHandler<FSKTypes.TreatmentWillType>;
 
-    private createButton: SDSButton;
-    private updateButton: SDSButton;
-    private deleteButton: SDSButton;
-
     private terminallyIllCheckbox: CheckboxWrapper;
     private illNoImprovementCheckbox: CheckboxWrapper;
     private illWithPermanentPainCheckbox: CheckboxWrapper;
@@ -37,6 +35,8 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     private illNoImprovementPanel: TreatmentWillWishPanel;
     private illWithPermanentPainPanel: TreatmentWillWishPanel;
     private treatmentByForcePanel: TreatmentWillWishPanel;
+
+    private buttonStrategy: ButtonStrategy;
 
     private canSee = false;
 
@@ -84,61 +84,81 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     }
 
     public async setupBindings(): Promise<void> {
+        this.setupButtons();
         this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), this.isAdministratorUser);
 
         this.terminallyIllCheckbox = new CheckboxWrapper(this.getElementByVarName(`terminally-ill-checkbox`));
         this.terminallyIllPanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
+        this.terminallyIllPanel.setUpdateButton(this.buttonStrategy.updateButton);
         this.addHandlerForCheckboxAndPanel(this.terminallyIllCheckbox, this.terminallyIllPanel);
 
         this.addAndReplaceWidgetByVarName(this.terminallyIllPanel, `terminally-ill-panel`);
 
         this.illNoImprovementCheckbox = new CheckboxWrapper(this.getElementByVarName(`ill-no-improvement-checkbox`));
         this.illNoImprovementPanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
+        this.illNoImprovementPanel.setUpdateButton(this.buttonStrategy.updateButton);
         this.addHandlerForCheckboxAndPanel(this.illNoImprovementCheckbox, this.illNoImprovementPanel);
 
         this.addAndReplaceWidgetByVarName(this.illNoImprovementPanel, `ill-no-improvement-panel`);
 
         this.illWithPermanentPainCheckbox = new CheckboxWrapper(this.getElementByVarName(`ill-with-permanent-pain-checkbox`));
         this.illWithPermanentPainPanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
+        this.illWithPermanentPainPanel.setUpdateButton(this.buttonStrategy.updateButton);
         this.addHandlerForCheckboxAndPanel(this.illWithPermanentPainCheckbox, this.illWithPermanentPainPanel);
 
         this.addAndReplaceWidgetByVarName(this.illWithPermanentPainPanel, `ill-with-permanent-pain-panel`);
 
         this.treatmentByForceCheckbox = new CheckboxWrapper(this.getElementByVarName(`treatment-by-force-checkbox`));
         this.treatmentByForcePanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
+        this.treatmentByForcePanel.setUpdateButton(this.buttonStrategy.updateButton);
         this.addHandlerForCheckboxAndPanel(this.treatmentByForceCheckbox, this.treatmentByForcePanel);
 
         this.addAndReplaceWidgetByVarName(this.treatmentByForcePanel, `treatment-by-force-panel`);
 
-        this.createButton = new SDSButton("Opret registrering", "primary", async () => {
+        this.buttonStrategy.hideButtons();
+
+        this.setEnabled(this.isAdministratorUser);
+
+        this.addAndReplaceWidgetByVarName(this.buttonStrategy.createButton, `create-button`);
+        this.addAndReplaceWidgetByVarName(this.buttonStrategy.updateButton, `update-button`);
+        this.addAndReplaceWidgetByVarName(this.buttonStrategy.deleteButton, `delete-button`);
+
+        this.rootElement.appendChild(this.element);
+    }
+
+    public setupButtons(): void {
+        this.buttonStrategy = new FSKButtonStrategy(this.moduleContext.getUserContext());
+        const createHandler = async () => {
             try {
                 if (this.livingWillCache.hasRegistration && (await this.livingWillCache.deleteRegistration())) {
                     return;
                 }
                 this.warningIfLivingWillExist(Promise.resolve(false), false);
+                this.buttonStrategy.disableButtons();
                 await this.fskService.createTreatmentWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
                     this.getValue());
-                this.updateCache(true);
+                this.updateCache(true, `Behandlingstestamente oprettet`);
                 this.moduleContext.setApplicationContextId(`PATIENT`);
 
             } catch (error) {
                 ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
             }
-        });
+        };
 
-        this.updateButton = new SDSButton("Opdater", "primary", async () => {
+        const updateHandler = async () => {
             try {
+                this.buttonStrategy.disableButtons();
                 await this.fskService.updateTreatmentWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
                     this.getValue());
-                this.updateCache(true);
+                this.updateCache(true, `Behandlingstestamente opdateret`);
             } catch (error) {
                 ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
             }
-        });
+        };
 
-        this.deleteButton = new SDSButton("Slet registrering", "danger", async () => {
+        const deleteHandler = async () => {
             try {
                 const yesOption = <DialogOption>{
                     buttonStyle: ButtonStyle.GREEN,
@@ -153,47 +173,40 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
                     "<p>Er du sikker på du vil slette patientens behandlingstestamenteregistrering?</p>",
                     noOption, yesOption);
                 if (yesIsClicked == yesOption) {
+                    this.buttonStrategy.disableButtons();
                     await this.fskService.deleteTreatmentWillForPatient(this.moduleContext.getPatient().getCpr());
-                    this.updateCache(false);
+                    this.updateCache(false, `Behandlingstestamente slettet`);
                     this.moduleContext.setApplicationContextId(`PATIENT`);
                 }
             } catch (error) {
                 ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
             }
-        });
+        };
 
-        this.hideButtons();
-
-        this.setEnabled(this.isAdministratorUser);
-
-        this.addAndReplaceWidgetByVarName(this.createButton, `create-button`);
-        this.addAndReplaceWidgetByVarName(this.updateButton, `update-button`);
-        this.addAndReplaceWidgetByVarName(this.deleteButton, `delete-button`);
-
-        this.rootElement.appendChild(this.element);
+        this.buttonStrategy.updateButton.setEnabled(false);
+        this.buttonStrategy.addHandlerForCreateButton(() => createHandler());
+        this.buttonStrategy.addHandlerForEditButton(() => updateHandler());
+        this.buttonStrategy.addHandlerForDeleteButton(() => deleteHandler());
     }
 
     private async warningIfLivingWillExist(livingWillExist: Promise<boolean>, isAdmin: boolean) {
         Widget.setVisible(this.getElementByVarName(`living-will-exists`), await livingWillExist && isAdmin);
     }
 
-    public hideButtons() {
-        this.createButton.setVisible(false);
-        this.updateButton.setVisible(false);
-        this.deleteButton.setVisible(false);
-    }
-
     private addHandlerForCheckboxAndPanel(checkBox: CheckboxWrapper, panel: Widget) {
         checkBox.addValueChangeHandler(handler => {
             const value = handler.getValue();
             panel.setVisible(value);
+            this.buttonStrategy.updateButton.setEnabled(true);
         });
     }
 
-    public updateCache(hasRegistration: boolean) {
+    public updateCache(hasRegistration: boolean, snackbarText: string) {
         this.treatmentWillCache.hasRegistration = hasRegistration;
-        this.setCreateMode(!hasRegistration);
+        hasRegistration ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
         this.treatmentWillCache.treatmentWill.setStale();
+        this.buttonStrategy.enableButtons();
+        SnackBar.show(snackbarText);
     }
 
     public setEnabled(enabled: boolean) {
@@ -224,6 +237,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
 
     public async setVisible(visible: boolean): Promise<void> {
         if (!this.moduleContext.getPatient()) {
+            super.setVisible(visible);
             return;
         }
 
@@ -296,6 +310,11 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             return;
         }
 
+        if(this.fskConfig.TreatmentWillStartDate && new Date().valueOf() < new Date(this.fskConfig.TreatmentWillStartDate).valueOf()){
+            this.moduleContext.hideTab(this.ID);
+            return;
+        }
+
         const treatmentWillExist = await this.treatmentWillCache.loadHasRegistration();
 
         const treatmentWillExistsForHealthcareProvider = !treatmentWillExist && this.hasAuthAndNotAdmin;
@@ -314,12 +333,6 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
 
     public getLeftToRightPriority(): number {
         return 203;
-    }
-
-    public setCreateMode(isCreateMode: boolean) {
-        this.createButton.setVisible(isCreateMode && this.isAdministratorUser);
-        this.updateButton.setVisible(!isCreateMode && this.isAdministratorUser);
-        this.deleteButton.setVisible(!isCreateMode && this.isAdministratorUser);
     }
 
     public async setData(treatmentWill: FSKTypes.TreatmentWillType): Promise<void> {
@@ -355,7 +368,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             this.treatmentByForcePanel.setValue(null);
             this.treatmentByForceCheckbox.setValue(null, true);
         }
-        this.setCreateMode(!treatmentWill);
+        treatmentWill ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
     }
 
     public render() {

@@ -9,6 +9,9 @@ export default class FSKOnlineConfigurationFactory {
             FSKUrlBase: `/fmk/fsk-online/rest`,
             TreatmentWillStartDate: `2018-01-31T23:00:00.000Z`
         };
-        return DEFAULTS;
+
+        const fskConfig = moduleContext.getModuleConfiguration();
+
+        return Object.assign({}, DEFAULTS, fskConfig);
     }
 }

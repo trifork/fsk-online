@@ -2,6 +2,7 @@ import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
 import loadTemplate from "../../main/TemplateLoader";
 import {RadioButton, RadioGroup} from "fmko-ts-widgets";
+import SDSButton from "../../elements/SDSButton";
 import TreatmentWillAcceptanceType = FSKTypes.TreatmentWillAcceptanceType;
 
 export default class TreatmentWillWishPanel extends TemplateWidget {
@@ -16,6 +17,8 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
     private radioGroup: RadioGroup<TreatmentWillAcceptanceTypeAndNoAccept>;
 
     public static NO_ACCEPT_PROPERTY = `noAccept`;
+
+    private updateButton: SDSButton;
 
     public constructor(protected container: IoC) {
         super(container);
@@ -34,6 +37,10 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
 
     public setVisible(visible: boolean): void {
         this.element.setAttribute("aria-hidden", `${!visible}`);
+    }
+
+    public setUpdateButton(updateButton: SDSButton) {
+        this.updateButton = updateButton;
     }
 
     public setValue(value: TreatmentWillAcceptanceType) {
@@ -60,6 +67,11 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
                 .map(([type, text], index) => new RadioButton<TreatmentWillAcceptanceTypeAndNoAccept>(type, text, index === 0));
 
         this.radioGroup = new RadioGroup<TreatmentWillAcceptanceTypeAndNoAccept>(radioButtons, this.idSynthesizer);
+        this.radioGroup.addValueChangeHandler(() => {
+            if (this.updateButton) {
+                this.updateButton.setEnabled(true);
+            }
+        });
         this.addAndReplaceWidgetByVarName(this.radioGroup, `consent-radio-group`);
     }
 

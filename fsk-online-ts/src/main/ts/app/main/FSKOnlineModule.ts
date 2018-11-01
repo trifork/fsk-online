@@ -90,9 +90,9 @@ export default class FSKOnlineModule extends DefaultModule {
             this.treatmentWillCache.treatmentWill.setStale();
 
         } else if (!patient) {
-            this.organDonorCache.organDonorRegister.clear();
-            this.livingWillCache.livingWill.clear();
-            this.treatmentWillCache.treatmentWill.clear();
+            this.organDonorCache.clear(true);
+            this.livingWillCache.clear(true);
+            this.treatmentWillCache.clear(true);
         }
         return result;
     }

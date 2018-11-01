@@ -37,8 +37,6 @@
     "fmko-ts-widgets": "2.27.0-SNAPSHOT",
     "fmko-ts-ioc": "2.27.0-SNAPSHOT",
     "fmko-ts-mvc": "2.27.0-SNAPSHOT",
-    "fmko-ts-grid": "2.27.0-SNAPSHOT",
-    "fmko-ts-validation": "2.27.0-SNAPSHOT",
     "moment": "^2.22.2",
     "regenerator-runtime": "^0.12.1"
   },
