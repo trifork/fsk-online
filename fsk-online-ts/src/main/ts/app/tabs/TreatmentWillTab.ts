@@ -299,7 +299,9 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
 
         this.isAdministratorUser = FSKUserUtil.isFSKAdmin(userContext);
 
-        this.hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !this.isAdministratorUser;
+        const isDoctorOrNurse = (userContext.getEducations() || []).some(education => education === "læge" || education === "sygeplejerske");
+        this.hasAuthAndNotAdmin = isDoctorOrNurse && !this.isAdministratorUser;
+
         return (this.hasAuthAndNotAdmin || this.isAdministratorUser);
     }
 
