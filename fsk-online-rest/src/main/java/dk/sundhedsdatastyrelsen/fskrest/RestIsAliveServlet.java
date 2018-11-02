@@ -17,7 +17,7 @@ public class RestIsAliveServlet extends CachingIsAliveServlet {
     @Value("${isalive.odr.url}")
     private String odrWsUrl;
 
-    @Value("${isalive.btr-ltr.url")
+    @Value("${isalive.btr-ltr.url}")
     private String btr_ltr_WsUrl;
 
     @Override
