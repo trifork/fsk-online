@@ -65,7 +65,7 @@ export default class FSKOnlineModule extends DefaultModule {
         const treatmentWillTestamentTab = <TreatmentWillTab>this.container.resolve(TreatmentWillTab);
         this.addTabbedPanel(treatmentWillTestamentTab);
 //       this.loadLocalStylesheet("fsk-online/css/pikaday.css");
-        this.loadLocalStylesheet("fsk-online-ts/css/fsk-online.css");
+        this.loadLocalStylesheet("/fsk-online-ts/css/fsk-online.css");
     }
 
     public setModuleContext(moduleContext: ModuleContext) {
