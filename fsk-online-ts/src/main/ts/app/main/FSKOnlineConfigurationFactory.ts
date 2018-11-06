@@ -6,7 +6,7 @@ export default class FSKOnlineConfigurationFactory {
 
         const DEFAULTS: FSKConfig = {
             RemoteExceptionLoggingEnabled: true,
-            FSKUrlBase: `/fmk/fsk-online/rest`,
+            FSKUrlBase: `/fmk/p/fsk-online/rest`,
             TreatmentWillStartDate: `2018-01-31T23:00:00.000Z`
         };
 

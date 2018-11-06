@@ -1,4 +1,3 @@
-// Polyfill for element.remove()
 import {
     AsyncResponse,
     DefaultModule,
@@ -97,11 +96,14 @@ export default class FSKOnlineModule extends DefaultModule {
         return result;
     }
 
-    private loadLocalStylesheet(cssFile: string) {
+    private loadLocalStylesheet(pathToCssFile: string) {
+        const location = window.location;
+        const origin = location.origin || `${location.protocol}//${location.hostname}:${location.port}`;
+
         const fileref = document.createElement("link");
         fileref.setAttribute("rel", "stylesheet");
         fileref.setAttribute("type", "text/css");
-        fileref.setAttribute("href", cssFile);
+        fileref.setAttribute("href", `${origin}${pathToCssFile}`);
         document.getElementsByTagName("head")[0].appendChild(fileref);
     }
 }
