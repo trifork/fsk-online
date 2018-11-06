@@ -231,7 +231,9 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         }
 
         this.isAdministratorUser = FSKUserUtil.isFSKAdmin(userContext);
-        this.hasAuthAndNotAdmin = (userContext.getAuthorisations() || []).length > 0 && !this.isAdministratorUser;
+
+        const isDoctorOrNurse = (userContext.getEducations() || []).some(education => education === "læge" || education === "sygeplejerske");
+        this.hasAuthAndNotAdmin = isDoctorOrNurse && !this.isAdministratorUser;
 
         return (this.hasAuthAndNotAdmin || this.isAdministratorUser);
     }
@@ -320,5 +322,4 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
             this.livingWillChangeHandler = undefined;
         }
     }
-
-}
+ }
