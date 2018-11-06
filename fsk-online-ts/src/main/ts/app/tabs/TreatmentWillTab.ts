@@ -272,17 +272,17 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
 
         super.setVisible(canSee);
 
-        if (this.shown === canSee) {
-            // Debounce..
-            return;
-        }
-
         if (canSee) {
             this.addListeners();
             this.init();
             this.render();
         } else {
             this.removeListeners();
+        }
+
+        if (this.shown === canSee) {
+            // Debounce..
+            return;
         }
 
         this.shown = canSee;

@@ -2,7 +2,15 @@ import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler, Widget} fro
 import {TemplateWidget} from "fmko-ts-mvc";
 import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
-import {ButtonStyle, DialogOption, ErrorDisplay, PopupDialog, PopupDialogKind, RadioButton, RadioGroup} from "fmko-ts-widgets";
+import {
+    ButtonStyle,
+    DialogOption,
+    ErrorDisplay,
+    PopupDialog,
+    PopupDialogKind,
+    RadioButton,
+    RadioGroup
+} from "fmko-ts-widgets";
 import LimitedAccessPermissionPanel from "../panels/organdonor-panels/LimitedAccessPermissionPanel";
 import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
 import FullAccessPermissionPanel from "../panels/organdonor-panels/FullAccessPermissionPanel";
@@ -26,6 +34,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     private buttonStrategy: ButtonStrategy;
 
     private isAdminUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
+    private isOdrCoordinator = FSKUserUtil.isFSKSupporter(this.moduleContext.getUserContext()) && !this.isAdminUser;
 
     private radioGroup: RadioGroup<Widget & IOrganDonor<FSKTypes.OrganDonorRegistrationType>>;
 
@@ -197,11 +206,12 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         this.radioGroup.getRadioButtons().forEach(button => {
             if (button.getValue().getType() === type) {
                 this.radioGroup.setValue(button.getValue(), false);
-                button.getValue().setValue(organDonorRegistration);
+                button.getValue().setValue(organDonorRegistration, this.isOdrCoordinator);
                 button.getValue().setVisible(true);
+                button.setEnabled(true);
                 button.getInput().checked = true;
             } else {
-                button.getValue().setValue(null);
+                button.getValue().setValue(null, this.isOdrCoordinator);
                 button.getValue().setVisible(false);
                 button.getInput().checked = false;
             }
@@ -249,10 +259,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
-        const hasOrganDonorRights = FSKUserUtil.isFSKAdmin(userContext);
-
-        const isCoordinator = FSKUserUtil.isFSKSupporter(userContext) && !hasOrganDonorRights;
-        return isCoordinator || hasOrganDonorRights;
+        return this.isOdrCoordinator || this.isAdminUser;
     }
 
     public applicationContextIdChanged(applicationContextId: string): any {

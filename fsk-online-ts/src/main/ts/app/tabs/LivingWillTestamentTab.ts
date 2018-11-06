@@ -11,8 +11,8 @@ import FSKUserUtil from "../util/FSKUserUtil";
 import TimelineUtil from "../util/TimelineUtil";
 import {ButtonStrategy} from "../model/ButtonStrategy";
 import FSKButtonStrategy from "../model/FSKButtonStrategy";
-import LivingWillType = FSKTypes.LivingWillType;
 import SnackBar from "../elements/SnackBar";
+import LivingWillType = FSKTypes.LivingWillType;
 
 export default class LivingWillTestamentTab extends TemplateWidget implements TabbedPanel {
     private ID = "LivingWillTestamentTab_TS";
@@ -66,25 +66,33 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
     public setupBindings(): void {
         this.setupButtons();
         this.terminallyIllCheckbox = new CheckboxWrapper(this.getElementByVarName(`terminally-ill-checkbox`));
+
+
         this.terminallyIllCheckbox.addValueChangeHandler(() => {
             this.buttonStrategy.updateButton.setEnabled(true);
         });
+
         this.severelyHandicappedCheckbox = new CheckboxWrapper(this.getElementByVarName(`severely-handicapped-checkbox`));
         this.severelyHandicappedCheckbox.addValueChangeHandler(() => {
             this.buttonStrategy.updateButton.setEnabled(true);
         });
 
+        if (!this.isAdministratorUser) {
+            this.terminallyIllCheckbox.getInput().onclick = (function () {
+                return false;
+            });
+            this.severelyHandicappedCheckbox.getInput().onclick = (function () {
+                return false;
+            });
+        }
+
+
         this.buttonStrategy.hideButtons();
-        this.setEnabled(this.isAdministratorUser);
+        this.setEnabled();
 
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.createButton, `create-button`);
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.updateButton, `update-button`);
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.deleteButton, `delete-button`);
-
-        const onlyPermissionToReadAfterDate = this.isAdministratorUser && TimelineUtil.useTreatmentWill(this.fskConfig);
-        if (onlyPermissionToReadAfterDate) {
-            this.setEnabled(false);
-        }
 
         this.rootElement.appendChild(this.element);
     }
@@ -153,7 +161,7 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
     public updateCache(hasRegistration: boolean, snackbarText: string) {
         this.livingWillCache.hasRegistration = hasRegistration;
         hasRegistration
-            ? this.buttonStrategy.setEditMode(!TimelineUtil.useTreatmentWill(this.fskConfig))
+            ? this.buttonStrategy.setEditMode()
             : this.buttonStrategy.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));
         this.livingWillCache.livingWill.setStale();
         this.buttonStrategy.enableButtons();
@@ -256,9 +264,9 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         }
     }
 
-    public setEnabled(enabled: boolean): void {
-        this.terminallyIllCheckbox.setEnabled(enabled);
-        this.severelyHandicappedCheckbox.setEnabled(enabled);
+    public setEnabled(): void {
+        this.terminallyIllCheckbox.setEnabled(true);
+        this.severelyHandicappedCheckbox.setEnabled(true);
     }
 
     public showInitially(): boolean {
@@ -275,7 +283,7 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
             this.severelyHandicappedCheckbox.setValue(livingWill.noLifeProlongingIfSeverelyDegraded);
         }
         livingWill
-            ? this.buttonStrategy.setEditMode(!TimelineUtil.useTreatmentWill(this.fskConfig))
+            ? this.buttonStrategy.setEditMode()
             : this.buttonStrategy.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));
     }
 
