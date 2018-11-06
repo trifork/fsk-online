@@ -15,6 +15,7 @@ import FSKUserUtil from "../util/FSKUserUtil";
 import SnackBar from "../elements/SnackBar";
 import {ButtonStrategy} from "../model/ButtonStrategy";
 import FSKButtonStrategy from "../model/FSKButtonStrategy";
+import PatientUtil from "../util/PatientUtil";
 
 export default class OrganDonorRegistrationTab extends TemplateWidget implements TabbedPanel {
     private ID = "OrganDonorRegistrationTab_TS";
@@ -191,6 +192,10 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         if (!type) {
             this.radioGroup.setValue(null);
         }
+        const isAdmin = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
+        Widget.setVisible(this.getElementByVarName(`main-panel`), isAdmin || !!type);
+        Widget.setVisible(this.getElementByVarName(`empty-panel`), !isAdmin && !type);
+        this.getElementByVarName(`empty-state-patient`).innerText = PatientUtil.getFullName(this.moduleContext.getPatient());
 
         this.buttonStrategy.createButton.setEnabled(!!type);
 
@@ -249,10 +254,9 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
-        const hasOrganDonorRights = FSKUserUtil.isFSKAdmin(userContext);
-
-        const isCoordinator = FSKUserUtil.isFSKSupporter(userContext) && !hasOrganDonorRights;
-        return isCoordinator || hasOrganDonorRights;
+        const isFskAdmin = FSKUserUtil.isFSKAdmin(userContext);
+        const isCoordinator = FSKUserUtil.isFSKSupporter(userContext);
+        return isCoordinator || isFskAdmin;
     }
 
     public applicationContextIdChanged(applicationContextId: string): any {

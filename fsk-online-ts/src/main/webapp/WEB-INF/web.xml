@@ -6,7 +6,7 @@
 
 	<filter>
 		<filter-name>MustRevalidateFilter</filter-name>
-		<filter-class>dk.fmkonline.common.server.AddHeaderFilter</filter-class>
+		<filter-class>filter.AddHeaderFilter</filter-class>
 		<init-param>
 			<param-name>header-name</param-name>
 			<param-value>Cache-Control</param-value>

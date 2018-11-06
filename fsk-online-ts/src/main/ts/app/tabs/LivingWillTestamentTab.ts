@@ -1,4 +1,4 @@
-import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler} from "fmko-typescript-common";
+import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler, Widget} from "fmko-typescript-common";
 import {TemplateWidget} from "fmko-ts-mvc";
 import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
@@ -11,8 +11,9 @@ import FSKUserUtil from "../util/FSKUserUtil";
 import TimelineUtil from "../util/TimelineUtil";
 import {ButtonStrategy} from "../model/ButtonStrategy";
 import FSKButtonStrategy from "../model/FSKButtonStrategy";
-import LivingWillType = FSKTypes.LivingWillType;
 import SnackBar from "../elements/SnackBar";
+import PatientUtil from "../util/PatientUtil";
+import LivingWillType = FSKTypes.LivingWillType;
 
 export default class LivingWillTestamentTab extends TemplateWidget implements TabbedPanel {
     private ID = "LivingWillTestamentTab_TS";
@@ -271,7 +272,16 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         if (livingWill) {
             this.terminallyIllCheckbox.setValue(livingWill.noLifeProlongingIfDying);
             this.severelyHandicappedCheckbox.setValue(livingWill.noLifeProlongingIfSeverelyDegraded);
+        } else {
+            this.terminallyIllCheckbox.setValue(false);
+            this.severelyHandicappedCheckbox.setValue(false);
         }
+
+        const isAdmin = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
+        Widget.setVisible(this.getElementByVarName(`main-panel`), isAdmin || !!livingWill);
+        Widget.setVisible(this.getElementByVarName(`empty-panel`), !isAdmin && !livingWill);
+        this.getElementByVarName(`empty-state-patient`).innerText = PatientUtil.getFullName(this.moduleContext.getPatient());
+
         livingWill
             ? this.buttonStrategy.setEditMode(!TimelineUtil.useTreatmentWill(this.fskConfig))
             : this.buttonStrategy.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));
