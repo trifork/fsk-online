@@ -34,7 +34,7 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
     }
 
     public setupBindings(): any {
-        const _pipe = (f, g) => args => f(g(args));
+        const _pipe = (f, g) => args => g(f(args));
         const pipe = (fns: Function[]) => fns.reduce(_pipe);
         const addInRowAndCol = pipe([this.wrapInColumn, this.wrapInRow]);
 

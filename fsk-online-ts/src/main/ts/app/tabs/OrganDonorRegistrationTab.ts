@@ -236,7 +236,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         return this.TITLE;
     }
 
-    setVisible(visible: boolean): any {
+    public setVisible(visible: boolean): any {
         super.setVisible(visible);
 
         if (this.shown === visible) {
@@ -247,7 +247,6 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         if (visible) {
             this.addListeners();
             this.init();
-            this.render();
         } else {
             this.removeListeners();
         }
@@ -299,6 +298,9 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
                 }
             });
             this.fskOrganDonorCache.organDonorRegister.addValueChangeHandler(this.organRegistrationChangeHandler);
+            if (this.fskOrganDonorCache.organDonorRegister.getValue()) {
+                this.setData(this.fskOrganDonorCache.organDonorRegister.getValue());
+            }
         }
     }
 
@@ -306,6 +308,10 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         if (this.organRegistrationChangeHandler) {
             this.fskOrganDonorCache.organDonorRegister.removeValueChangeHandler(this.organRegistrationChangeHandler);
             this.organRegistrationChangeHandler = undefined;
+        }
+        if (this.initialized) {
+            Widget.setVisible(this.getElementByVarName(`main-panel`), false);
+            Widget.setVisible(this.getElementByVarName(`empty-panel`), false);
         }
     }
 

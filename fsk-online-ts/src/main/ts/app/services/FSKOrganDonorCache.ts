@@ -15,7 +15,7 @@ export default class FSKOrganDonorCache {
         if (await this.loadHasRegistration()) {
             return this.getRegistration();
         } else {
-            return undefined;
+            return null;
         }
     }, error => {
         // Ignore
