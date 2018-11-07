@@ -54,7 +54,10 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
     }
 
     public setEnabled(enabled: boolean): void {
-        Object.values(this.checkboxes).forEach(checkbox => checkbox.setEnabled(enabled));
+        if (!enabled) {
+            Object.values(this.checkboxes).forEach(checkbox => checkbox.getInput().onclick = ( () => false));
+        }
+        Object.values(this.checkboxes).forEach(checkbox => checkbox.setEnabled(true));
     }
 
     public setUpdateButton(updateButton: SDSButton) {
@@ -81,7 +84,7 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
         };
     }
 
-    public setValue(value: FSKTypes.OrganDonorRegistrationType): void {
+    public setValue(value: FSKTypes.OrganDonorRegistrationType, isFSKSupporter: boolean): void {
         if (value) {
             Object.entries(value).forEach(([key, value]) => {
                 if ([
@@ -96,6 +99,13 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
                         `requiresRelativeAcceptance`
                     ].includes(key)) {
                     this.checkboxes[key].setValue(value);
+                    if (isFSKSupporter) {
+                        if (value) {
+                            this.checkboxes[key].getInput().onclick = ( () => false);
+                        } else {
+                            this.checkboxes[key].setEnabled(false);
+                        }
+                    }
                 }
             });
         } else {

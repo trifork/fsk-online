@@ -1,7 +1,6 @@
 import {Widget} from "fmko-typescript-common";
 import {IOrganDonor} from "../../model/OrganDonorRegistrationType";
-import {Checkbox} from "fmko-ts-widgets";
-import {Tag} from "fmko-ts-widgets";
+import {Checkbox, Tag} from "fmko-ts-widgets";
 import SDSButton from "../../elements/SDSButton";
 
 export default class FullAccessPermissionPanel extends Widget implements IOrganDonor<FSKTypes.OrganDonorRegistrationType> {
@@ -39,15 +38,19 @@ export default class FullAccessPermissionPanel extends Widget implements IOrganD
         this.updateButton = updateButton;
     }
 
-    public setEnabled(enabled: boolean) {
-        this.fullPermissionCheckBox.setEnabled(enabled);
+    public setEnabled() {
+        this.fullPermissionCheckBox.setEnabled(true);
     }
 
-    public setValue(organDonorRegistation: FSKTypes.OrganDonorRegistrationType) {
+    public setValue(organDonorRegistation: FSKTypes.OrganDonorRegistrationType, isFSKSupporter: boolean) {
         this.fullPermissionCheckBox.setValue(!!organDonorRegistation && !!organDonorRegistation.requiresRelativeAcceptance);
+        if (isFSKSupporter) {
+            this.fullPermissionCheckBox.getInput().onclick = ( () => false);
+        }
     }
 
     public getType(): FSKTypes.OrganDonorPermissionType {
         return "FULL";
     }
+
 }

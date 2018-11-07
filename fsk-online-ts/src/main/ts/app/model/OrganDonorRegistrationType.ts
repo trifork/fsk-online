@@ -5,5 +5,5 @@ export interface IOrganDonor<T> {
 
     getValue(): T;
 
-    setValue(value: T): void;
+    setValue(value: T, isFSKSupporter: boolean): void;
 }

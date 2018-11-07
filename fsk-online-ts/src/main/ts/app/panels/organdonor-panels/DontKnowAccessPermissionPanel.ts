@@ -21,4 +21,5 @@ export default class DontKnowAccessPermissionPanel extends Widget implements IOr
     public getType(): FSKTypes.OrganDonorPermissionType {
         return "DONT_KNOW";
     }
+
 }

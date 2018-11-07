@@ -238,7 +238,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
 
     public async setVisible(visible: boolean): Promise<void> {
         if (!this.moduleContext.getPatient()) {
-            super.setVisible(visible);
+            super.setVisible(false);
             return;
         }
 
@@ -271,7 +271,12 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             this.canSee = canSee;
         }
 
-        super.setVisible(canSee);
+        super.setVisible(visible);
+
+        if (this.shown === canSee) {
+            // Debounce..
+            return;
+        }
 
         if (canSee) {
             this.addListeners();
@@ -279,11 +284,6 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             this.render();
         } else {
             this.removeListeners();
-        }
-
-        if (this.shown === canSee) {
-            // Debounce..
-            return;
         }
 
         this.shown = canSee;
@@ -307,7 +307,6 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     }
 
     public async applicationContextIdChanged(applicationContextId: string): Promise<void> {
-
         if (FSKUserUtil.isFSKSupporter(this.moduleContext.getUserContext())) {
             this.moduleContext.hideTab(this.ID);
             return;

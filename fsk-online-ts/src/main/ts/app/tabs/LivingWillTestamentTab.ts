@@ -12,8 +12,8 @@ import TimelineUtil from "../util/TimelineUtil";
 import {ButtonStrategy} from "../model/ButtonStrategy";
 import FSKButtonStrategy from "../model/FSKButtonStrategy";
 import SnackBar from "../elements/SnackBar";
-import LivingWillType = FSKTypes.LivingWillType;
 import PatientUtil from "../util/PatientUtil";
+import LivingWillType = FSKTypes.LivingWillType;
 
 export default class LivingWillTestamentTab extends TemplateWidget implements TabbedPanel {
     private ID = "LivingWillTestamentTab_TS";
@@ -79,12 +79,8 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         });
 
         if (!this.isAdministratorUser) {
-            this.terminallyIllCheckbox.getInput().onclick = (function () {
-                return false;
-            });
-            this.severelyHandicappedCheckbox.getInput().onclick = (function () {
-                return false;
-            });
+            this.terminallyIllCheckbox.getInput().onclick = ( () => false);
+            this.severelyHandicappedCheckbox.getInput().onclick = ( () => false);
         }
 
         this.buttonStrategy.hideButtons();
@@ -182,6 +178,7 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
 
     public async setVisible(visible: boolean): Promise<void> {
         if (!this.moduleContext.getPatient()) {
+            super.setVisible(false);
             return;
         }
 
