@@ -20,4 +20,18 @@ export default class FSKUserUtil {
 
         return (userContext.getAuthorisations() || []).length > 0;
     }
+
+    public static isDoctorOrNurseWithoutElevatedRights(userContext: UserContext): boolean {
+        if (!userContext) {
+            return false;
+        }
+        if(userContext.isAdministratorLogin()){
+            return false;
+        }
+        if(userContext.isSupporterLogin()){
+            return false;
+        }
+        const userHasEducation = education => ["læge", "sygeplejerske"].includes(education);
+        return (userContext.getEducations() || []).some(userHasEducation);
+    }
 }

@@ -15,6 +15,7 @@ import TreatmentWillTab from "../tabs/TreatmentWillTab";
 import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
 import TreatmentWillCache from "../services/TreatmentWillCache";
 import LivingWillCache from "../services/LivingWillCache";
+import DoctorOrNurseWillTab from "../tabs/DoctorOrNurseWillTab";
 
 if (!("remove" in Element.prototype)) {
     Element.prototype[`remove`] = function () {
@@ -37,7 +38,6 @@ export default class FSKOnlineModule extends DefaultModule {
     public constructor(private container: FSKOnlineContainer) {
         super(FSKOnlineModule.MODULE_IDENTIFIER);
     }
-
 
     public register(): void {
         ModuleRegistryFactory.getInstance().setupModuleContext(FSKOnlineModule.MODULE_IDENTIFIER, this);
@@ -63,7 +63,8 @@ export default class FSKOnlineModule extends DefaultModule {
         this.addTabbedPanel(livingWillTestament);
         const treatmentWillTestamentTab = <TreatmentWillTab>this.container.resolve(TreatmentWillTab);
         this.addTabbedPanel(treatmentWillTestamentTab);
-//       this.loadLocalStylesheet("fsk-online/css/pikaday.css");
+        const doctorOrNurseWillTab = <DoctorOrNurseWillTab>this.container.resolve(DoctorOrNurseWillTab);
+        this.addTabbedPanel(doctorOrNurseWillTab);
         this.loadLocalStylesheet("/fsk-online-ts/css/fsk-online.css");
     }
 
@@ -100,10 +101,10 @@ export default class FSKOnlineModule extends DefaultModule {
         const location = window.location;
         const origin = location.origin || `${location.protocol}//${location.hostname}:${location.port}`;
 
-        const fileref = document.createElement("link");
-        fileref.setAttribute("rel", "stylesheet");
-        fileref.setAttribute("type", "text/css");
-        fileref.setAttribute("href", `${origin}${pathToCssFile}`);
-        document.getElementsByTagName("head")[0].appendChild(fileref);
+        const styleSheet = document.createElement("link");
+        styleSheet.setAttribute("rel", "stylesheet");
+        styleSheet.setAttribute("type", "text/css");
+        styleSheet.setAttribute("href", `${origin}${pathToCssFile}`);
+        document.getElementsByTagName("head")[0].appendChild(styleSheet);
     }
 }

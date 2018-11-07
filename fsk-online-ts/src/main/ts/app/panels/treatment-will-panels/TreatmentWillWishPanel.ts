@@ -28,7 +28,7 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
     }
 
     public getTemplate(): string {
-        return loadTemplate(`panels/treatment-will-testament-panels/treatmentWillWishPanel.html`);
+        return loadTemplate(`panels/treatment-will-panels/treatmentWillWishPanel.html`);
     }
 
     public getValue(): TreatmentWillAcceptanceTypeAndNoAccept {

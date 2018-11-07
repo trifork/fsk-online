@@ -1,5 +1,7 @@
 import {AsyncValueHolder, ModuleContext} from "fmko-typescript-common";
 import FSKService from "./FSKService";
+import {RegistrationState} from "../model/RegistrationState";
+import RegistrationStateUtil from "../util/RegistrationStateUtil";
 import LivingWillType = FSKTypes.LivingWillType;
 
 export default class LivingWillCache {
@@ -9,10 +11,10 @@ export default class LivingWillCache {
 
     }
 
-    public hasRegistration: boolean;
+    public registrationState: RegistrationState = RegistrationState.UNCHECKED;
 
     public readonly livingWill = new AsyncValueHolder<LivingWillType>(async () => {
-        if (await this.loadHasRegistration()) {
+        if (await this.loadHasRegistration() === RegistrationState.REGISTERED) {
             return this.getRegistration();
         } else {
             return null;
@@ -23,37 +25,42 @@ export default class LivingWillCache {
 
     public setStale(removeRegistration: boolean) {
         if (removeRegistration === true) {
-            this.hasRegistration = undefined;
+            this.registrationState = RegistrationState.UNCHECKED;
         }
         this.livingWill.setStale();
     }
 
     public clear(removeRegistration: boolean) {
         if (removeRegistration === true) {
-            this.hasRegistration = undefined;
+            this.registrationState = RegistrationState.UNCHECKED;
         }
         this.livingWill.clear();
     }
 
-    public async loadHasRegistration(): Promise<boolean> {
-        if (typeof this.hasRegistration === `boolean`) {
-            return this.hasRegistration;
+    public async loadHasRegistration(): Promise<RegistrationState> {
+        if (this.registrationState !== RegistrationState.UNCHECKED) {
+            return this.registrationState;
         }
-        this.hasRegistration = this.moduleContext.getPatient()
-            ? (await this.fskService.hasLivingWillForPatient(this.moduleContext.getPatient().getCpr())).willExists
+        const willValue = this.moduleContext.getPatient()
+            ? (await this.fskService.hasLivingWillForPatient(this.getPatientCpr())).willExists
             : await undefined;
-        return this.hasRegistration;
+        this.registrationState = RegistrationStateUtil.registrationStateMapper(willValue);
+        return this.registrationState;
     }
 
     private async getRegistration(): Promise<LivingWillType> {
-        return await this.fskService.getLivingWillForPatient(this.moduleContext.getPatient().getCpr());
+        return await this.fskService.getLivingWillForPatient(this.getPatientCpr());
     }
 
-    public async deleteRegistration(): Promise<boolean> {
-        if (this.hasRegistration) {
-            await this.fskService.deleteLivingWillForPatient(this.moduleContext.getPatient().getCpr());
-            this.hasRegistration = false;
+    public async deleteRegistration(): Promise<RegistrationState> {
+        if (this.registrationState === RegistrationState.REGISTERED) {
+            await this.fskService.deleteLivingWillForPatient(this.getPatientCpr());
+            this.registrationState = RegistrationState.NOT_REGISTERED;
         }
         return this.loadHasRegistration();
+    }
+
+    private getPatientCpr(): string{
+        return this.moduleContext.getPatient().getCpr();
     }
 }
