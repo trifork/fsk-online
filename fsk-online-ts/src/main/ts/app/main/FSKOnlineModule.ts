@@ -35,6 +35,10 @@ export default class FSKOnlineModule extends DefaultModule {
     private treatmentWillCache: TreatmentWillCache;
     private livingWillCache: LivingWillCache;
 
+    private organDonorRegisterTab: OrganDonorRegistrationTab;
+    private livingWillTestamentTab: LivingWillTestamentTab;
+    private treatmentWillTestamentTab: TreatmentWillTab;
+
     public constructor(private container: FSKOnlineContainer) {
         super(FSKOnlineModule.MODULE_IDENTIFIER);
     }
@@ -57,12 +61,12 @@ export default class FSKOnlineModule extends DefaultModule {
     }
 
     public initAfterModuleRegistered() {
-        const organDonorRegister = <OrganDonorRegistrationTab>this.container.resolve(OrganDonorRegistrationTab);
-        this.addTabbedPanel(organDonorRegister);
-        const livingWillTestament = <LivingWillTestamentTab>this.container.resolve(LivingWillTestamentTab);
-        this.addTabbedPanel(livingWillTestament);
-        const treatmentWillTestamentTab = <TreatmentWillTab>this.container.resolve(TreatmentWillTab);
-        this.addTabbedPanel(treatmentWillTestamentTab);
+        this.organDonorRegisterTab = <OrganDonorRegistrationTab>this.container.resolve(OrganDonorRegistrationTab);
+        this.addTabbedPanel(this.organDonorRegisterTab);
+        this.livingWillTestamentTab = <LivingWillTestamentTab>this.container.resolve(LivingWillTestamentTab);
+        this.addTabbedPanel(this.livingWillTestamentTab);
+        this.treatmentWillTestamentTab = <TreatmentWillTab>this.container.resolve(TreatmentWillTab);
+        this.addTabbedPanel(this.treatmentWillTestamentTab);
         const doctorOrNurseWillTab = <DoctorOrNurseWillTab>this.container.resolve(DoctorOrNurseWillTab);
         this.addTabbedPanel(doctorOrNurseWillTab);
         this.loadLocalStylesheet("/fsk-online-ts/css/fsk-online.css");
@@ -95,6 +99,17 @@ export default class FSKOnlineModule extends DefaultModule {
             this.treatmentWillCache.clear(true);
         }
         return result;
+    }
+
+    public refreshPatient() {
+        const foundVisibleTab = [
+            this.organDonorRegisterTab,
+            this.livingWillTestamentTab,
+            this.treatmentWillTestamentTab
+        ].find(tab => tab.isVisible());
+        if(foundVisibleTab){
+            foundVisibleTab.setVisible(true);
+        }
     }
 
     private loadLocalStylesheet(pathToCssFile: string) {

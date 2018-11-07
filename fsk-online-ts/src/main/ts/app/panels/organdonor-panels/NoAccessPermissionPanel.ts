@@ -21,4 +21,5 @@ export default class NoAccessPermissionPanel extends Widget implements IOrganDon
     public getType(): FSKTypes.OrganDonorPermissionType {
         return "NONE";
     }
+
 }

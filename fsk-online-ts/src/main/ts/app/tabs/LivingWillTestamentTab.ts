@@ -74,12 +74,7 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
-        if (FSKUserUtil.isFSKSupporter(userContext)) {
-            return false;
-        }
-
         this.isAdministratorUser = FSKUserUtil.isFSKAdmin(userContext);
-
         return this.isAdministratorUser;
     }
 

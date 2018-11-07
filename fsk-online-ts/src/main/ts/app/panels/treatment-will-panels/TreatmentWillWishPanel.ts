@@ -1,20 +1,22 @@
 import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
 import loadTemplate from "../../main/TemplateLoader";
-import {RadioButton, RadioGroup} from "fmko-ts-widgets";
+import {Checkbox, HTML} from "fmko-ts-widgets";
 import SDSButton from "../../elements/SDSButton";
+import {Widget} from "fmko-typescript-common";
 import TreatmentWillAcceptanceType = FSKTypes.TreatmentWillAcceptanceType;
 
 export default class TreatmentWillWishPanel extends TemplateWidget {
 
     public static deps = () => [IoC];
 
-    public static NO_ACCEPT = `Altid`;
+    //public static NO_ACCEPT = `Altid`;
     public static FAMILY_ACCEPT = `Hvis patientens nærmeste pårørende meddeler sin accept i den konkrete situation`;
     public static GUARDIAN_ACCEPT = `Hvis patientens værge meddeler sin accept i den konkrete situation`;
     public static TRUSTED_AGENT_ACCEPT = `Hvis patientens fremtidsfulmægtige meddeler sin accept i den konkrete situation`;
-
-    private radioGroup: RadioGroup<TreatmentWillAcceptanceTypeAndNoAccept>;
+    private noCheckBoxClicked: boolean = false;
+    private checkboxes: TreatmentWillCheckBoxes;
+    private value: TreatmentWillAcceptanceType;
 
     public static NO_ACCEPT_PROPERTY = `noAccept`;
 
@@ -31,8 +33,43 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
         return loadTemplate(`panels/treatment-will-panels/treatmentWillWishPanel.html`);
     }
 
-    public getValue(): TreatmentWillAcceptanceTypeAndNoAccept {
-        return this.radioGroup.getValue();
+    public setupBindings(): any {
+        const _pipe = (f, g) => args => f(g(args));
+        const pipe = (fns: Function[]) => fns.reduce(_pipe);
+        const addInRowAndCol = pipe([this.wrapInColumn, this.wrapInRow]);
+
+        const checkboxes = this.createCheckboxes();
+        checkboxes.forEach(checkbox => {
+            this.appendWidgetOnVarName(addInRowAndCol(checkbox), `consent-checkboxes`);
+        });
+    }
+
+    public createCheckboxes(): Checkbox[] {
+        const weakMap = new WeakMap<Checkbox, TreatmentWillAcceptanceType>();
+        const checkboxArray = Object.entries(this.treatmentType).map(([key, value]) => {
+            const currentCheckBox = new Checkbox(false, value);
+            weakMap.set(currentCheckBox, key as TreatmentWillAcceptanceType);
+            return currentCheckBox;
+        });
+
+        checkboxArray.forEach(checkbox => {
+            checkbox.addClickHandler(event => {
+                checkboxArray.forEach(innerCheckBox => {
+                    const isClicked = event.target === innerCheckBox.getInput();
+                    if (isClicked) {
+                        const thisValue = checkbox.getValue() ? weakMap.get(checkbox) : null;
+                        this.setValue(thisValue);
+                    } else {
+                        innerCheckBox.setValue(false);
+                    }
+                });
+            });
+        });
+        return checkboxArray;
+    }
+
+    public getValue(): TreatmentWillAcceptanceType {
+        return this.value;
     }
 
     public setVisible(visible: boolean): void {
@@ -44,47 +81,36 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
     }
 
     public setValue(value: TreatmentWillAcceptanceType) {
-        this.radioGroup.setValue(value);
-
-        this.radioGroup.getRadioButtons().forEach(button => {
-            if (!value && button.getValue() === TreatmentWillWishPanel.NO_ACCEPT_PROPERTY) {
-                button.getInput().checked = true;
-            } else {
-                button.getInput().checked = button.getValue() === value;
-            }
-        });
+        this.value = value;
     }
 
     public setEnabled(enabled: boolean) {
-        this.radioGroup.getRadioButtons().forEach(button => {
-            button.setEnabled(enabled);
-        });
     }
 
-    public setupBindings(): any {
-        const radioButtons =
-            Object.entries(this.treatmentType)
-                .map(([type, text], index) => new RadioButton<TreatmentWillAcceptanceTypeAndNoAccept>(type, text, index === 0));
-
-        this.radioGroup = new RadioGroup<TreatmentWillAcceptanceTypeAndNoAccept>(radioButtons, this.idSynthesizer);
-        this.radioGroup.addValueChangeHandler(() => {
-            if (this.updateButton) {
-                this.updateButton.setEnabled(true);
-            }
-        });
-        this.addAndReplaceWidgetByVarName(this.radioGroup, `consent-radio-group`);
-    }
 
     public tearDownBindings(): any {
         // Unused
     }
 
-    private treatmentType: {[K in TreatmentWillAcceptanceTypeAndNoAccept]: string} = {
-        noAccept: TreatmentWillWishPanel.NO_ACCEPT,
+    private wrapInColumn(element: Widget): HTML {
+        const col = new HTML();
+        col.addStyleName(`col-12`);
+        col.add(element);
+        return col;
+    }
+
+    private wrapInRow(element: Widget): HTML {
+        const row = new HTML();
+        row.addStyleName(`row`);
+        row.add(element);
+        return row;
+    }
+
+    private treatmentType: {[K in TreatmentWillAcceptanceType]: string} = {
         guardianAcceptanceRequired: TreatmentWillWishPanel.GUARDIAN_ACCEPT,
         relativeAcceptanceRequired: TreatmentWillWishPanel.FAMILY_ACCEPT,
         trustedAgentAcceptanceRequired: TreatmentWillWishPanel.TRUSTED_AGENT_ACCEPT
     };
 }
 
-type TreatmentWillAcceptanceTypeAndNoAccept = FSKTypes.TreatmentWillAcceptanceType | string;
+type TreatmentWillCheckBoxes = {[K in keyof TreatmentWillAcceptanceType]: Checkbox};

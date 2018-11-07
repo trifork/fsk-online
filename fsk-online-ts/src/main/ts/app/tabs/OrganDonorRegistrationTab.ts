@@ -27,6 +27,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     private buttonStrategy: ButtonStrategy;
 
     private isAdminUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
+    private isOdrCoordinator = FSKUserUtil.isFSKSupporter(this.moduleContext.getUserContext());
 
     private radioGroup: RadioGroup<Widget & IOrganDonor<FSKTypes.OrganDonorRegistrationType>>;
 
@@ -58,7 +59,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
 
         const fullAccessPermissionPanel = new FullAccessPermissionPanel();
         fullAccessPermissionPanel.setVisible(false);
-        fullAccessPermissionPanel.setEnabled(this.isAdminUser);
+        fullAccessPermissionPanel.setEnabled();
         fullAccessPermissionPanel.setUpdateButton(this.buttonStrategy.updateButton);
         fullAccessPermissionPanel.addStyleName('organ-donor-panel');
         const fullPermissionRadioButton = new RadioButton(fullAccessPermissionPanel, ``);
@@ -202,11 +203,12 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         this.radioGroup.getRadioButtons().forEach(button => {
             if (button.getValue().getType() === type) {
                 this.radioGroup.setValue(button.getValue(), false);
-                button.getValue().setValue(organDonorRegistration);
+                button.getValue().setValue(organDonorRegistration, this.isOdrCoordinator);
                 button.getValue().setVisible(true);
+                button.setEnabled(true);
                 button.getInput().checked = true;
             } else {
-                button.getValue().setValue(null);
+                button.getValue().setValue(null, this.isOdrCoordinator);
                 button.getValue().setVisible(false);
                 button.getInput().checked = false;
             }
@@ -254,9 +256,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
-        const isFskAdmin = FSKUserUtil.isFSKAdmin(userContext);
-        const isCoordinator = FSKUserUtil.isFSKSupporter(userContext);
-        return isCoordinator || isFskAdmin;
+        return this.isOdrCoordinator || this.isAdminUser;
     }
 
     public applicationContextIdChanged(applicationContextId: string): any {

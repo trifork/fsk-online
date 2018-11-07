@@ -44,6 +44,7 @@ export default class LivingWillPanel extends TemplateWidget {
 
     public setupBindings(): any {
         this.setupButtons();
+
         this.terminallyIllCheckbox = new CheckboxWrapper(this.getElementByVarName(`terminally-ill-checkbox`));
         this.terminallyIllCheckbox.addValueChangeHandler(() => {
             this.buttonStrategy.updateButton.setEnabled(true);
@@ -52,6 +53,10 @@ export default class LivingWillPanel extends TemplateWidget {
         this.severelyHandicappedCheckbox.addValueChangeHandler(() => {
             this.buttonStrategy.updateButton.setEnabled(true);
         });
+        if (!this.isAdministratorUser) {
+            this.terminallyIllCheckbox.getInput().onclick = (() => false);
+            this.severelyHandicappedCheckbox.getInput().onclick = (() => false);
+        }
 
         this.buttonStrategy.hideButtons();
         this.setEnabled(this.isAdministratorUser);
