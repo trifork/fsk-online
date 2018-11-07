@@ -14,6 +14,7 @@ import TimelineUtil from "../util/TimelineUtil";
 import FSKButtonStrategy from "../model/FSKButtonStrategy";
 import {ButtonStrategy} from "../model/ButtonStrategy";
 import SnackBar from "../elements/SnackBar";
+import PatientUtil from "../util/PatientUtil";
 import TreatmentWillType = FSKTypes.TreatmentWillType;
 import TreatmentWillValueType = FSKTypes.TreatmentWillValueType;
 
@@ -312,17 +313,12 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             return;
         }
 
-        if(this.fskConfig.TreatmentWillStartDate && new Date().valueOf() < new Date(this.fskConfig.TreatmentWillStartDate).valueOf()){
+        if (this.fskConfig.TreatmentWillStartDate && new Date().valueOf() < new Date(this.fskConfig.TreatmentWillStartDate).valueOf()) {
             this.moduleContext.hideTab(this.ID);
             return;
         }
 
-        const treatmentWillExist = await this.treatmentWillCache.loadHasRegistration();
-
-        const treatmentWillExistsForHealthcareProvider = !treatmentWillExist && this.hasAuthAndNotAdmin;
-        if (applicationContextId === "PATIENT" && treatmentWillExistsForHealthcareProvider) {
-            this.moduleContext.hideTab(this.ID);
-        } else if (applicationContextId === "PATIENT") {
+        if (applicationContextId === "PATIENT") {
             this.moduleContext.showTab(this.ID);
         } else {
             this.moduleContext.hideTab(this.ID);
@@ -338,6 +334,10 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     }
 
     public async setData(treatmentWill: FSKTypes.TreatmentWillType): Promise<void> {
+        const isAdmin = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
+        Widget.setVisible(this.getElementByVarName(`main-panel`), isAdmin || !!treatmentWill);
+        Widget.setVisible(this.getElementByVarName(`empty-panel`), !isAdmin && !treatmentWill);
+        this.getElementByVarName(`empty-state-patient`).innerText = PatientUtil.getFullName(this.moduleContext.getPatient());
         this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), true);
         if (treatmentWill) {
             Object.entries(treatmentWill).forEach(([property, will]) => {

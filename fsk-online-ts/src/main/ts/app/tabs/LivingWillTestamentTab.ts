@@ -1,4 +1,4 @@
-import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler} from "fmko-typescript-common";
+import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler, Widget} from "fmko-typescript-common";
 import {TemplateWidget} from "fmko-ts-mvc";
 import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
@@ -13,6 +13,7 @@ import {ButtonStrategy} from "../model/ButtonStrategy";
 import FSKButtonStrategy from "../model/FSKButtonStrategy";
 import SnackBar from "../elements/SnackBar";
 import LivingWillType = FSKTypes.LivingWillType;
+import PatientUtil from "../util/PatientUtil";
 
 export default class LivingWillTestamentTab extends TemplateWidget implements TabbedPanel {
     private ID = "LivingWillTestamentTab_TS";
@@ -85,7 +86,6 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
                 return false;
             });
         }
-
 
         this.buttonStrategy.hideButtons();
         this.setEnabled();
@@ -281,7 +281,16 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         if (livingWill) {
             this.terminallyIllCheckbox.setValue(livingWill.noLifeProlongingIfDying);
             this.severelyHandicappedCheckbox.setValue(livingWill.noLifeProlongingIfSeverelyDegraded);
+        } else {
+            this.terminallyIllCheckbox.setValue(false);
+            this.severelyHandicappedCheckbox.setValue(false);
         }
+
+        const isAdmin = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
+        Widget.setVisible(this.getElementByVarName(`main-panel`), isAdmin || !!livingWill);
+        Widget.setVisible(this.getElementByVarName(`empty-panel`), !isAdmin && !livingWill);
+        this.getElementByVarName(`empty-state-patient`).innerText = PatientUtil.getFullName(this.moduleContext.getPatient());
+
         livingWill
             ? this.buttonStrategy.setEditMode()
             : this.buttonStrategy.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));

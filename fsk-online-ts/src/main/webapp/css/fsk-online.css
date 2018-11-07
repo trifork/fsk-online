@@ -138,16 +138,7 @@ button.sds-button.danger:active {
 }
 
 button.sds-button:disabled {
-    background-color: #BDBDBD;
-    opacity: 0.5;
-    color: black;
-    cursor: inherit;
-}
-
-button.sds-button:hover:disabled {
-    background-color: #BDBDBD;
-    opacity: 0.5;
-    color: black;
+    opacity: 0.38;
     cursor: inherit;
 }
 
@@ -325,4 +316,19 @@ button.sds-outline-button.danger:active {
 
 .snackbar-action:active {
     color: #99B800;
+}
+
+.empty-state {
+    padding: 0 0 0 16px;
+}
+
+.empty-state-header {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 16px;
+}
+
+.empty-state-body {
+    font-size: 16px;
+    font-weight: 400;
 }

@@ -111,16 +111,5 @@
         </plugins>
     </build>
     <dependencies>
-        <dependency>
-            <groupId>dk.fmkonline</groupId>
-            <artifactId>fmk-online-common</artifactId>
-            <version>${fmk.online.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>dk.fmkonline</groupId>
-                    <artifactId>fmk-server-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
     </dependencies>
 </project>
