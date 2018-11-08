@@ -33,6 +33,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
 
     private buttonStrategy: ButtonStrategy;
     private isAdministratorUser: boolean;
+    private isReadOnlySet: boolean;
 
     public static deps = () => [IoC, "ModuleContext", "FSKConfig", LivingWillCache, TreatmentWillCache, FSKService];
 
@@ -182,9 +183,12 @@ export default class TreatmentWillPanel extends TemplateWidget {
 
     private addHandlerForCheckboxAndPanel(checkBox: CheckboxWrapper, panel: Widget) {
         checkBox.addValueChangeHandler(handler => {
-            const value = handler.getValue();
-            panel.setVisible(value);
-            this.buttonStrategy.updateButton.setEnabled(true);
+            // If you are administrator you can do whatever, otherwise you can only set it to tru, which is in the initial
+            if (this.isAdministratorUser || handler.getValue()) {
+                const value = handler.getValue();
+                panel.setVisible(value);
+                this.buttonStrategy.updateButton.setEnabled(true);
+            }
         });
     }
 
@@ -196,18 +200,26 @@ export default class TreatmentWillPanel extends TemplateWidget {
         SnackBar.show(snackbarText);
     }
 
-    public setEnabled() {
+    public setEnabled(): void {
         if (!this.isAdministratorUser) {
             this.terminallyIllCheckbox.setEnabled(this.terminallyIllCheckbox.getValue());
-            this.terminallyIllCheckbox.getInput().onclick = () => false;
+            this.terminallyIllCheckbox.getInput().addEventListener('click', event => {
+                event.preventDefault();
+            }, true);
             this.illNoImprovementCheckbox.setEnabled((this.illNoImprovementCheckbox.getValue()));
-            this.illNoImprovementCheckbox.getInput().onclick = () => false;
+            this.illNoImprovementCheckbox.getInput().addEventListener('click', event => {
+                event.preventDefault();
+            }, true);
             this.illWithPermanentPainCheckbox.setEnabled((this.illWithPermanentPainCheckbox.getValue()));
-            this.illWithPermanentPainCheckbox.getInput().onclick = () => false;
+            this.illWithPermanentPainCheckbox.getInput().addEventListener('click', event => {
+                event.preventDefault();
+            }, true);
             this.treatmentByForceCheckbox.setEnabled((this.treatmentByForceCheckbox.getValue()));
-            this.treatmentByForceCheckbox.getInput().onclick = () => false;
+            this.treatmentByForceCheckbox.getInput().addEventListener('click', event => {
+                event.preventDefault();
+            }, true);
         }
-
+        this.isReadOnlySet = true;
     }
 
     public async setData(treatmentWill: FSKTypes.TreatmentWillType): Promise<void> {
@@ -246,7 +258,9 @@ export default class TreatmentWillPanel extends TemplateWidget {
             this.treatmentByForcePanel.setValue(null);
             this.treatmentByForceCheckbox.setValue(null, true);
         }
-        this.setEnabled();
+        if (!this.isReadOnlySet) {
+            this.setEnabled();
+        }
         treatmentWill ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
     }
 }
