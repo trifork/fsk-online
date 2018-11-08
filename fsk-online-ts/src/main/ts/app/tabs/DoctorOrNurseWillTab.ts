@@ -68,6 +68,9 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
 
         // Check if we the user has clicked accept on the dialog
         if (visible && this.livingWillCache.registrationState === RegistrationState.UNCHECKED) {
+            if (this.initialized) {
+                this.cleanChildrenOnVarName(`will-container`);
+            }
             this.showLogDialog();
         }
 

@@ -38,6 +38,7 @@ export default class FSKOnlineModule extends DefaultModule {
     private organDonorRegisterTab: OrganDonorRegistrationTab;
     private livingWillTestamentTab: LivingWillTestamentTab;
     private treatmentWillTestamentTab: TreatmentWillTab;
+    private doctorOrNurseWillTab: DoctorOrNurseWillTab;
 
     public constructor(private container: FSKOnlineContainer) {
         super(FSKOnlineModule.MODULE_IDENTIFIER);
@@ -67,8 +68,8 @@ export default class FSKOnlineModule extends DefaultModule {
         this.addTabbedPanel(this.livingWillTestamentTab);
         this.treatmentWillTestamentTab = <TreatmentWillTab>this.container.resolve(TreatmentWillTab);
         this.addTabbedPanel(this.treatmentWillTestamentTab);
-        const doctorOrNurseWillTab = <DoctorOrNurseWillTab>this.container.resolve(DoctorOrNurseWillTab);
-        this.addTabbedPanel(doctorOrNurseWillTab);
+        this.doctorOrNurseWillTab = <DoctorOrNurseWillTab>this.container.resolve(DoctorOrNurseWillTab);
+        this.addTabbedPanel(this.doctorOrNurseWillTab);
         this.loadLocalStylesheet("/fsk-online-ts/css/fsk-online.css");
     }
 
@@ -105,9 +106,10 @@ export default class FSKOnlineModule extends DefaultModule {
         const foundVisibleTab = [
             this.organDonorRegisterTab,
             this.livingWillTestamentTab,
-            this.treatmentWillTestamentTab
+            this.treatmentWillTestamentTab,
+            this.doctorOrNurseWillTab
         ].find(tab => tab.isVisible());
-        if(foundVisibleTab){
+        if (foundVisibleTab) {
             foundVisibleTab.setVisible(true);
         }
     }

@@ -2,7 +2,15 @@ import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler, Widget} fro
 import {TemplateWidget} from "fmko-ts-mvc";
 import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
-import {ButtonStyle, DialogOption, ErrorDisplay, PopupDialog, PopupDialogKind, RadioButton, RadioGroup} from "fmko-ts-widgets";
+import {
+    ButtonStyle,
+    DialogOption,
+    ErrorDisplay,
+    PopupDialog,
+    PopupDialogKind,
+    RadioButton,
+    RadioGroup
+} from "fmko-ts-widgets";
 import LimitedAccessPermissionPanel from "../panels/organdonor-panels/LimitedAccessPermissionPanel";
 import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
 import FullAccessPermissionPanel from "../panels/organdonor-panels/FullAccessPermissionPanel";
@@ -236,7 +244,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         return this.TITLE;
     }
 
-    setVisible(visible: boolean): any {
+    public setVisible(visible: boolean): any {
         super.setVisible(visible);
 
         if (this.shown === visible) {
@@ -247,7 +255,6 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         if (visible) {
             this.addListeners();
             this.init();
-            this.render();
         } else {
             this.removeListeners();
         }
@@ -299,6 +306,9 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
                 }
             });
             this.fskOrganDonorCache.organDonorRegister.addValueChangeHandler(this.organRegistrationChangeHandler);
+            if (this.fskOrganDonorCache.organDonorRegister.getValue()) {
+                this.setData(this.fskOrganDonorCache.organDonorRegister.getValue());
+            }
         }
     }
 
@@ -306,6 +316,10 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         if (this.organRegistrationChangeHandler) {
             this.fskOrganDonorCache.organDonorRegister.removeValueChangeHandler(this.organRegistrationChangeHandler);
             this.organRegistrationChangeHandler = undefined;
+        }
+        if (this.initialized) {
+            Widget.setVisible(this.getElementByVarName(`main-panel`), false);
+            Widget.setVisible(this.getElementByVarName(`empty-panel`), false);
         }
     }
 
