@@ -45,6 +45,23 @@
         </repository>
     </repositories>
 
+	<distributionManagement>
+		<snapshotRepository>
+			<id>trifork.snapshots</id>
+			<name>Trifork internal snapshot Nexus</name>
+			<url>http://ci.fmk.netic.dk/nexus/content/repositories/snapshots/</url>
+			<snapshots>
+				<updatePolicy>never</updatePolicy>
+			</snapshots>
+		</snapshotRepository>
+
+		<repository>
+			<id>trifork.releases</id>
+			<name>Trifork internal releases Nexus</name>
+			<url>http://ci.fmk.netic.dk/nexus/content/repositories/releases</url>
+		</repository>
+	</distributionManagement>
+
     <build>
         <plugins>
             <plugin>
