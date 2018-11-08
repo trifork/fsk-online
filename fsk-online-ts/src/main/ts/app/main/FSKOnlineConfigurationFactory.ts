@@ -5,7 +5,6 @@ export default class FSKOnlineConfigurationFactory {
     public static createInstance(moduleContext: ModuleContext): FSKConfig {
 
         const DEFAULTS: FSKConfig = {
-            RemoteExceptionLoggingEnabled: true,
             FSKUrlBase: `/fmk/p/fsk-online/rest`,
             TreatmentWillStartDate: `2018-01-31T23:00:00.000Z`
         };

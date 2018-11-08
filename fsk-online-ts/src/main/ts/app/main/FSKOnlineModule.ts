@@ -1,12 +1,4 @@
-import {
-    AsyncResponse,
-    DefaultModule,
-    getVersionInfo,
-    ModuleContext,
-    ModuleRegistryFactory,
-    PersonInfo,
-    VersionImpl
-} from "fmko-typescript-common";
+import {AsyncResponse, DefaultModule, getVersionInfo, ModuleRegistryFactory, PersonInfo, VersionImpl} from "fmko-typescript-common";
 import FSKOnlineContainer from "./FSKOnlineContainer";
 import FSKConfig from "./FSKConfig";
 import OrganDonorRegistrationTab from "../tabs/OrganDonorRegistrationTab";
@@ -16,6 +8,7 @@ import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
 import TreatmentWillCache from "../services/TreatmentWillCache";
 import LivingWillCache from "../services/LivingWillCache";
 import DoctorOrNurseWillTab from "../tabs/DoctorOrNurseWillTab";
+import RemoteLogService from "fmko-typescript-common/target/lib/ts/remotelog/RemoteLogService";
 
 if (!("remove" in Element.prototype)) {
     Element.prototype[`remove`] = function () {
@@ -28,7 +21,6 @@ if (!("remove" in Element.prototype)) {
 export default class FSKOnlineModule extends DefaultModule {
 
     public static SYSTEM_NAME = "FSK";
-    public static FSK_ONLINE_CTX_ID = "FSK_ONLINE";
     private static MODULE_IDENTIFIER = "fsk";
 
     private organDonorCache: FSKOrganDonorCache;
@@ -47,13 +39,6 @@ export default class FSKOnlineModule extends DefaultModule {
     public register(): void {
         ModuleRegistryFactory.getInstance().setupModuleContext(FSKOnlineModule.MODULE_IDENTIFIER, this);
 
-        // Setup remote exception logging if enabled
-        const configuration = this.container.resolve("FSKConfig") as FSKConfig;
-        /*        if (configuration.RemoteExceptionLoggingEnabled) {
-                    const remoteLogService = this.container.resolve(RemoteLogService) as RemoteLogService;
-                    remoteLogService.setupErrorHandler(false);
-                }
-        */
         this.organDonorCache = <FSKOrganDonorCache>this.container.resolve(FSKOrganDonorCache);
         this.treatmentWillCache = <TreatmentWillCache>this.container.resolve(TreatmentWillCache);
         this.livingWillCache = <LivingWillCache>this.container.resolve(LivingWillCache);
@@ -70,16 +55,7 @@ export default class FSKOnlineModule extends DefaultModule {
         this.addTabbedPanel(this.treatmentWillTestamentTab);
         this.doctorOrNurseWillTab = <DoctorOrNurseWillTab>this.container.resolve(DoctorOrNurseWillTab);
         this.addTabbedPanel(this.doctorOrNurseWillTab);
-        this.loadLocalStylesheet("/fsk-online-ts/css/fsk-online.css");
-    }
-
-    public setModuleContext(moduleContext: ModuleContext) {
-        super.setModuleContext(moduleContext);
-//        this.initAfterModuleRegistered();
-    }
-
-    public applicationContextIdChanged(applicationContextId: String) {
-        //
+        FSKOnlineModule.loadLocalStylesheet("/fsk-online-ts/css/fsk-online.css");
     }
 
     public getVersionInfo(): string {
@@ -114,7 +90,7 @@ export default class FSKOnlineModule extends DefaultModule {
         }
     }
 
-    private loadLocalStylesheet(pathToCssFile: string) {
+    private static loadLocalStylesheet(pathToCssFile: string) {
         const location = window.location;
         const origin = location.origin || `${location.protocol}//${location.hostname}:${location.port}`;
 

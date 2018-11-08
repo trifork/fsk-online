@@ -10,13 +10,11 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
 
     public static deps = () => [IoC];
 
-    //public static NO_ACCEPT = `Altid`;
     public static FAMILY_ACCEPT = `Hvis patientens nærmeste pårørende meddeler sin accept i den konkrete situation`;
     public static GUARDIAN_ACCEPT = `Hvis patientens værge meddeler sin accept i den konkrete situation`;
     public static TRUSTED_AGENT_ACCEPT = `Hvis patientens fremtidsfulmægtige meddeler sin accept i den konkrete situation`;
-    private noCheckBoxClicked: boolean = false;
-    private checkboxes: TreatmentWillCheckBoxes;
     private value: TreatmentWillAcceptanceType;
+    private checkboxes: Checkbox[];
 
     public static NO_ACCEPT_PROPERTY = `noAccept`;
 
@@ -35,8 +33,8 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
 
     public setupBindings(): any {
         const _pipe = (f, g) => args => g(f(args));
-        const pipe = (fns: Function[]) => fns.reduce(_pipe);
-        const addInRowAndCol = pipe([this.wrapInColumn, this.wrapInRow]);
+        const pipe = (...fns: Function[]) => fns.reduce(_pipe);
+        const addInRowAndCol = pipe(this.wrapInColumn, this.wrapInRow);
 
         const checkboxes = this.createCheckboxes();
         checkboxes.forEach(checkbox => {
@@ -46,15 +44,16 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
 
     public createCheckboxes(): Checkbox[] {
         const weakMap = new WeakMap<Checkbox, TreatmentWillAcceptanceType>();
-        const checkboxArray = Object.entries(this.treatmentType).map(([key, value]) => {
+        this.checkboxes = Object.entries(this.treatmentType).map(([key, value]) => {
             const currentCheckBox = new Checkbox(false, value);
             weakMap.set(currentCheckBox, key as TreatmentWillAcceptanceType);
             return currentCheckBox;
         });
 
-        checkboxArray.forEach(checkbox => {
+        this.checkboxes.forEach(checkbox => {
             checkbox.addClickHandler(event => {
-                checkboxArray.forEach(innerCheckBox => {
+                this.updateButton.setEnabled(true);
+                this.checkboxes.forEach(innerCheckBox => {
                     const isClicked = event.target === innerCheckBox.getInput();
                     if (isClicked) {
                         const thisValue = checkbox.getValue() ? weakMap.get(checkbox) : null;
@@ -65,7 +64,7 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
                 });
             });
         });
-        return checkboxArray;
+        return this.checkboxes;
     }
 
     public getValue(): TreatmentWillAcceptanceType {
@@ -85,18 +84,14 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
     }
 
     public setEnabled(enabled: boolean) {
+        this.checkboxes.forEach(checkbox => {
+            checkbox.setEnabled(enabled);
+        });
     }
 
 
     public tearDownBindings(): any {
         // Unused
-    }
-
-    private wrapInColumn(element: Widget): HTML {
-        const col = new HTML();
-        col.addStyleName(`col-12`);
-        col.add(element);
-        return col;
     }
 
     private wrapInRow(element: Widget): HTML {
@@ -106,11 +101,16 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
         return row;
     }
 
+    private wrapInColumn(element: Widget): HTML {
+        const col = new HTML();
+        col.addStyleName(`col-12`);
+        col.add(element);
+        return col;
+    }
+
     private treatmentType: {[K in TreatmentWillAcceptanceType]: string} = {
         guardianAcceptanceRequired: TreatmentWillWishPanel.GUARDIAN_ACCEPT,
         relativeAcceptanceRequired: TreatmentWillWishPanel.FAMILY_ACCEPT,
         trustedAgentAcceptanceRequired: TreatmentWillWishPanel.TRUSTED_AGENT_ACCEPT
     };
 }
-
-type TreatmentWillCheckBoxes = {[K in keyof TreatmentWillAcceptanceType]: Checkbox};

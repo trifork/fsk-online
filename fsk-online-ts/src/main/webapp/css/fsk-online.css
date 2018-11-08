@@ -332,3 +332,52 @@ button.sds-outline-button.danger:active {
     font-size: 16px;
     font-weight: 400;
 }
+
+/*
+ONLY WORKS IN NEWER BROWSERS
+#fskMain input[type=checkbox] {
+    margin-right: 5px;
+    font-size: 14px;
+    width: 18px;
+    height: 18px;
+    position: relative;
+    line-height: 14px;
+    visibility: hidden;
+    box-sizing: border-box;
+}
+
+#fskMain input[type=checkbox]:after {
+    width: 18px;
+    cursor: pointer;
+    height: 18px;
+    content: " ";
+    background-color: white;
+    border: 2px solid #8a8a8a;
+    color: #fff;
+    text-align:center;
+    display: inline-block;
+    visibility: visible;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+#fskMain input[type=checkbox]:checked:after {
+    content: "\2713";
+    font-size: 12px;
+    font-weight:600;
+    border: 2px solid #005a8d;
+    background-color: #005a8d;
+}
+
+#fskMain input[type=checkbox]:disabled:after {
+    opacity:0.5;
+    cursor: inherit;
+}
+
+#fskMain input[type=checkbox]:disabled:checked:after {
+    content: "\2713";
+    border: 2px solid #8a8a8a;
+    background-color: #8a8a8a;
+    cursor: inherit;
+}*/
