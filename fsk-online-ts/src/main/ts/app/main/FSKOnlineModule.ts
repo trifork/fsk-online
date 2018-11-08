@@ -91,9 +91,6 @@ export default class FSKOnlineModule extends DefaultModule {
     }
 
     private static loadLocalStylesheet(pathToCssFile: string) {
-        const location = window.location;
-        const origin = location.origin || `${location.protocol}//${location.hostname}:${location.port}`;
-
         const styleSheet = document.createElement("link");
         styleSheet.setAttribute("rel", "stylesheet");
         styleSheet.setAttribute("type", "text/css");
