@@ -97,6 +97,7 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
     private wrapInRow(element: Widget): HTML {
         const row = new HTML();
         row.addStyleName(`row`);
+        row.getCssStyle().marginBottom = `8px`;
         row.add(element);
         return row;
     }

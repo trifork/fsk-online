@@ -128,7 +128,7 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
             "<li>Patienten ligger for døden (dvs. er uafvendeligt døende)</li>" +
             "<li>Patienten er hjælpeløs pga. sygdom, ulykke mv., og der ikke er tegn på bedring</li>" +
             "</ul>" +
-            "<br>Bemærk: Tilgang til data for testamentet vil blive logget. Tilgang vil fremgå af patientens minlog.</li>",
+            "<br>Bemærk: Tilgang til data for testamentet vil blive logget, givet at der er data. Tilgang vil fremgå af patientens minlog.</li>",
             noOption,
             yesOption);
         if (yesClicked === yesOption) {

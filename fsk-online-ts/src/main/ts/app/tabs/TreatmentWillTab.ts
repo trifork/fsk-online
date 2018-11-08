@@ -59,6 +59,12 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
 
     public async setVisible(visible: boolean): Promise<void> {
         super.setVisible(visible);
+
+        if (this.shown === visible) {
+            // Debounce..
+            return;
+        }
+
         if (visible) {
             this.addListeners();
             this.init();

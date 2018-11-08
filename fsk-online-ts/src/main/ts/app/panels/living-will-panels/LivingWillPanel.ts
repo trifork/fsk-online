@@ -53,22 +53,22 @@ export default class LivingWillPanel extends TemplateWidget {
         this.severelyHandicappedCheckbox.addValueChangeHandler(() => {
             this.buttonStrategy.updateButton.setEnabled(true);
         });
+
         if (!this.isAdministratorUser) {
             this.terminallyIllCheckbox.getInput().onclick = (() => false);
             this.severelyHandicappedCheckbox.getInput().onclick = (() => false);
         }
 
         this.buttonStrategy.hideButtons();
-        this.setEnabled(this.isAdministratorUser);
 
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.createButton, `create-button`);
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.updateButton, `update-button`);
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.deleteButton, `delete-button`);
 
-        const onlyPermissionToReadAfterDate = this.isAdministratorUser && TimelineUtil.useTreatmentWill(this.fskConfig);
+        /*const onlyPermissionToReadAfterDate = this.isAdministratorUser && TimelineUtil.useTreatmentWill(this.fskConfig);
         if (onlyPermissionToReadAfterDate) {
             this.setEnabled(false);
-        }
+        }*/
     }
 
     public tearDownBindings(): any {
@@ -145,22 +145,25 @@ export default class LivingWillPanel extends TemplateWidget {
     public updateCache(hasRegistration: boolean, snackbarText: string) {
         this.livingWillCache.registrationState = RegistrationStateUtil.registrationStateMapper(hasRegistration);
         hasRegistration
-            ? this.buttonStrategy.setEditMode(!TimelineUtil.useTreatmentWill(this.fskConfig))
+            ? this.buttonStrategy.setEditMode()
             : this.buttonStrategy.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));
         this.livingWillCache.livingWill.setStale();
         this.buttonStrategy.enableButtons();
         SnackBar.show(snackbarText);
     }
 
-    public setEnabled(enabled: boolean) {
-        this.terminallyIllCheckbox.setEnabled(enabled);
-        this.severelyHandicappedCheckbox.setEnabled(enabled);
+    public setEnabled(illCheckBoxCondition : boolean, handicapCheckBoxCondition: boolean) {
+        this.terminallyIllCheckbox.setEnabled(!!illCheckBoxCondition);
+        this.severelyHandicappedCheckbox.setEnabled(!!handicapCheckBoxCondition);
     }
 
     public async setData(livingWill: LivingWillType) {
         if (livingWill) {
             this.terminallyIllCheckbox.setValue(livingWill.noLifeProlongingIfDying);
             this.severelyHandicappedCheckbox.setValue(livingWill.noLifeProlongingIfSeverelyDegraded);
+            if (!this.isAdministratorUser) {
+                this.handleCheckBoxes(livingWill.noLifeProlongingIfDying, livingWill.noLifeProlongingIfSeverelyDegraded);
+            }
         } else {
             this.terminallyIllCheckbox.setValue(false);
             this.severelyHandicappedCheckbox.setValue(false);
@@ -171,8 +174,21 @@ export default class LivingWillPanel extends TemplateWidget {
         this.getElementByVarName(`empty-state-patient`).innerText = PatientUtil.getFullName(this.moduleContext.getPatient());
 
         livingWill
-            ? this.buttonStrategy.setEditMode(!TimelineUtil.useTreatmentWill(this.fskConfig))
+            ? this.buttonStrategy.setEditMode()
             : this.buttonStrategy.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));
     }
 
+    private handleCheckBoxes(noLifeProlongingIfDying: boolean, noLifeProlongingIfSeverelyDegraded: boolean) {
+        this.setEnabled(noLifeProlongingIfDying, noLifeProlongingIfSeverelyDegraded);
+
+        /*if (noLifeProlongingIfDying && noLifeProlongingIfSeverelyDegraded) {
+            this.setEnabled();
+        }  else if (noLifeProlongingIfDying && !noLifeProlongingIfSeverelyDegraded) {
+            this.setEnabled(noLifeProlongingIfDying, noLifeProlongingIfSeverelyDegraded);
+        } else if (!noLifeProlongingIfDying && noLifeProlongingIfSeverelyDegraded) {
+            this.setEnabled(noLifeProlongingIfDying);
+        } else if (!noLifeProlongingIfDying && !noLifeProlongingIfSeverelyDegraded) {
+            this.setEnabled(noLifeProlongingIfDying, noLifeProlongingIfSeverelyDegraded);
+        }*/
+    }
 }
