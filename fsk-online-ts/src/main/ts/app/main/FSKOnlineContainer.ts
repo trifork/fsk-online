@@ -31,11 +31,10 @@ export default class FSKOnlineContainer {
             .withFactoryFunction((resolve) => FSKOnlineConfigurationFactory.createInstance(resolve("ModuleContext")))
             .scopedAs(SINGLETON);
         this._ioc.bind("RootElement")
-            .withFactoryFunction((resolve) => document.getElementById(ROOT_ELEMENT_ID))
+            .withFactoryFunction(() => document.getElementById(ROOT_ELEMENT_ID))
             .scopedAs(SINGLETON);
         this._ioc.bind(IdSynthesizer)
             .withFactoryFunction((resolve) => {
-                const mc = resolve("ModuleContext");
                 return new IdSynthesizer("fsk-online_");
             }).scopedAs(SINGLETON);
         this._ioc.bind(`Version`)
@@ -44,7 +43,6 @@ export default class FSKOnlineContainer {
             })
             .scopedAs(SINGLETON);
 
-        this._ioc.bind(RemoteLogService).scopedAs(SINGLETON);
         this._ioc.bind(FSKOrganDonorCache).scopedAs(SINGLETON);
         this._ioc.bind(TreatmentWillCache).scopedAs(SINGLETON);
         this._ioc.bind(LivingWillCache).scopedAs(SINGLETON);

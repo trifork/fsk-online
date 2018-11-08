@@ -44,7 +44,7 @@ export default class FSKButtonStrategy implements ButtonStrategy {
         const isFSKAdmin = FSKUserUtil.isFSKAdmin(this.userContext);
         this.createButton.setVisible(false);
         this.updateButton.setVisible(isFSKAdmin && updateButtonCondition);
-        //this.updateButton.setEnabled(false);
+        this.updateButton.setEnabled(false);
         this.deleteButton.setVisible(isFSKAdmin && deleteButtonCondition);
     }
 

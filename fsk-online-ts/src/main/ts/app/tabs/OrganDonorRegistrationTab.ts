@@ -291,6 +291,9 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     }
 
     private addListeners() {
+        if (this.fskOrganDonorCache.organDonorRegister.getValue() !== undefined) {
+            this.render();
+        }
         if (!this.organRegistrationChangeHandler) {
             this.organRegistrationChangeHandler = (() => {
                 if (this.isVisible()) {
@@ -298,9 +301,6 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
                 }
             });
             this.fskOrganDonorCache.organDonorRegister.addValueChangeHandler(this.organRegistrationChangeHandler);
-            if (this.fskOrganDonorCache.organDonorRegister.getValue()) {
-                this.setData(this.fskOrganDonorCache.organDonorRegister.getValue());
-            }
         }
     }
 
