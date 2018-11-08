@@ -2,15 +2,7 @@ import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler, Widget} fro
 import {TemplateWidget} from "fmko-ts-mvc";
 import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
-import {
-    ButtonStyle,
-    DialogOption,
-    ErrorDisplay,
-    PopupDialog,
-    PopupDialogKind,
-    RadioButton,
-    RadioGroup
-} from "fmko-ts-widgets";
+import {ButtonStyle, DialogOption, ErrorDisplay, PopupDialog, PopupDialogKind, RadioButton, RadioGroup} from "fmko-ts-widgets";
 import LimitedAccessPermissionPanel from "../panels/organdonor-panels/LimitedAccessPermissionPanel";
 import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
 import FullAccessPermissionPanel from "../panels/organdonor-panels/FullAccessPermissionPanel";
@@ -299,6 +291,9 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     }
 
     private addListeners() {
+        if (this.fskOrganDonorCache.organDonorRegister.getValue() !== undefined) {
+            this.render();
+        }
         if (!this.organRegistrationChangeHandler) {
             this.organRegistrationChangeHandler = (() => {
                 if (this.isVisible()) {
@@ -306,9 +301,6 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
                 }
             });
             this.fskOrganDonorCache.organDonorRegister.addValueChangeHandler(this.organRegistrationChangeHandler);
-            if (this.fskOrganDonorCache.organDonorRegister.getValue()) {
-                this.setData(this.fskOrganDonorCache.organDonorRegister.getValue());
-            }
         }
     }
 
