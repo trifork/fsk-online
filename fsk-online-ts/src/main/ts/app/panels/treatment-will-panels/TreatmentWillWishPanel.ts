@@ -3,26 +3,30 @@ import {IoC} from "fmko-ts-ioc";
 import loadTemplate from "../../main/TemplateLoader";
 import {Checkbox, HTML} from "fmko-ts-widgets";
 import SDSButton from "../../elements/SDSButton";
-import {Widget} from "fmko-typescript-common";
+import {ModuleContext, Widget} from "fmko-typescript-common";
+import FSKUserUtil from "../../util/FSKUserUtil";
 import TreatmentWillAcceptanceType = FSKTypes.TreatmentWillAcceptanceType;
 
 export default class TreatmentWillWishPanel extends TemplateWidget {
 
-    public static deps = () => [IoC];
+    public static deps = () => [IoC, "ModuleContext"];
 
     public static FAMILY_ACCEPT = `Hvis patientens nærmeste pårørende meddeler sin accept i den konkrete situation`;
     public static GUARDIAN_ACCEPT = `Hvis patientens værge meddeler sin accept i den konkrete situation`;
     public static TRUSTED_AGENT_ACCEPT = `Hvis patientens fremtidsfulmægtige meddeler sin accept i den konkrete situation`;
     private value: TreatmentWillAcceptanceType;
     private checkboxes: Checkbox[];
+    private isAdministratorUser: boolean;
 
     public static NO_ACCEPT_PROPERTY = `noAccept`;
 
     private updateButton: SDSButton;
 
-    public constructor(protected container: IoC) {
+    public constructor(protected container: IoC,
+                       private moduleContext: ModuleContext) {
         super(container);
         this.element = document.createElement(`div`);
+        this.isAdministratorUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
         this.init();
         this.setVisible(false);
     }
@@ -51,6 +55,10 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
         });
 
         this.checkboxes.forEach(checkbox => {
+            if (!this.isAdministratorUser) {
+                this.setReadOnly();
+                this.setEnabled(checkbox.getValue());
+            }
             checkbox.addClickHandler(event => {
                 this.updateButton.setEnabled(true);
                 this.checkboxes.forEach(innerCheckBox => {
@@ -85,7 +93,13 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
 
     public setEnabled(enabled: boolean) {
         this.checkboxes.forEach(checkbox => {
-            checkbox.setEnabled(enabled);
+            checkbox.setEnabled(!!enabled);
+        });
+    }
+
+    public setReadOnly() {
+        this.checkboxes.forEach(checkbox => {
+            checkbox.getInput().onclick = (() => false);
         });
     }
 

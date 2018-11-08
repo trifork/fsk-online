@@ -85,7 +85,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
 
         this.buttonStrategy.hideButtons();
 
-        this.setEnabled(this.isAdminUser);
+        this.setEnabled(true);
 
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.createButton, `create-button`);
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.updateButton, `update-button`);

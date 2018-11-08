@@ -64,11 +64,6 @@ export default class LivingWillPanel extends TemplateWidget {
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.createButton, `create-button`);
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.updateButton, `update-button`);
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.deleteButton, `delete-button`);
-
-        /*const onlyPermissionToReadAfterDate = this.isAdministratorUser && TimelineUtil.useTreatmentWill(this.fskConfig);
-        if (onlyPermissionToReadAfterDate) {
-            this.setEnabled(false);
-        }*/
     }
 
     public tearDownBindings(): any {
