@@ -97,7 +97,7 @@ export default class FSKOnlineModule extends DefaultModule {
         const styleSheet = document.createElement("link");
         styleSheet.setAttribute("rel", "stylesheet");
         styleSheet.setAttribute("type", "text/css");
-        styleSheet.setAttribute("href", `${origin}${pathToCssFile}`);
+        styleSheet.setAttribute("href", `${pathToCssFile}`);
         document.getElementsByTagName("head")[0].appendChild(styleSheet);
     }
 }
