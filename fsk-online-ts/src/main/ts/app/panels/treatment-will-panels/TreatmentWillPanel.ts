@@ -32,7 +32,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
     private treatmentByForcePanel: TreatmentWillWishPanel;
 
     private buttonStrategy: ButtonStrategy;
-    private isAdminUser: boolean;
+    private isAdministratorUser: boolean;
 
     public static deps = () => [IoC, "ModuleContext", "FSKConfig", LivingWillCache, TreatmentWillCache, FSKService];
 
@@ -43,7 +43,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
                 private treatmentWillCache: TreatmentWillCache,
                 private fskService: FSKService) {
         super(container);
-        this.isAdminUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
+        this.isAdministratorUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
         this.init();
     }
 
@@ -53,7 +53,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
 
     public setupBindings(): any {
         this.setupButtons();
-        this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), this.isAdminUser);
+        this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), this.isAdministratorUser);
 
         this.terminallyIllCheckbox = new CheckboxWrapper(this.getElementByVarName(`terminally-ill-checkbox`));
         this.terminallyIllPanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
@@ -85,8 +85,6 @@ export default class TreatmentWillPanel extends TemplateWidget {
 
         this.buttonStrategy.hideButtons();
 
-        this.setEnabled(true);
-
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.createButton, `create-button`);
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.updateButton, `update-button`);
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.deleteButton, `delete-button`);
@@ -109,7 +107,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
         const isChecked = !!checkBox.getValue();
 
         return <TreatmentWillValueType>{
-            acceptanceNeeded: isChecked ? this.getWishPanelValue(panel) : null,
+            acceptanceNeeded: panel.getValue(),
             $: isChecked
         };
     }
@@ -198,25 +196,25 @@ export default class TreatmentWillPanel extends TemplateWidget {
         SnackBar.show(snackbarText);
     }
 
-    public setEnabled(enabled: boolean) {
-        this.terminallyIllCheckbox.setEnabled(enabled);
-        this.terminallyIllPanel.setEnabled(enabled);
+    public setEnabled() {
+        if (!this.isAdministratorUser) {
+            this.terminallyIllCheckbox.setEnabled(this.terminallyIllCheckbox.getValue());
+            this.terminallyIllCheckbox.getInput().onclick = () => false;
+            this.illNoImprovementCheckbox.setEnabled((this.illNoImprovementCheckbox.getValue()));
+            this.illNoImprovementCheckbox.getInput().onclick = () => false;
+            this.illWithPermanentPainCheckbox.setEnabled((this.illWithPermanentPainCheckbox.getValue()));
+            this.illWithPermanentPainCheckbox.getInput().onclick = () => false;
+            this.treatmentByForceCheckbox.setEnabled((this.treatmentByForceCheckbox.getValue()));
+            this.treatmentByForceCheckbox.getInput().onclick = () => false;
+        }
 
-        this.illNoImprovementCheckbox.setEnabled(enabled);
-        this.illNoImprovementPanel.setEnabled(enabled);
-
-        this.illWithPermanentPainCheckbox.setEnabled(enabled);
-        this.illWithPermanentPainPanel.setEnabled(enabled);
-
-        this.treatmentByForceCheckbox.setEnabled(enabled);
-        this.treatmentByForcePanel.setEnabled(enabled);
     }
 
     public async setData(treatmentWill: FSKTypes.TreatmentWillType): Promise<void> {
-        Widget.setVisible(this.getElementByVarName(`main-panel`), this.isAdminUser || !!treatmentWill);
-        Widget.setVisible(this.getElementByVarName(`empty-panel`), !this.isAdminUser && !treatmentWill);
+        Widget.setVisible(this.getElementByVarName(`main-panel`), this.isAdministratorUser || !!treatmentWill);
+        Widget.setVisible(this.getElementByVarName(`empty-panel`), !this.isAdministratorUser && !treatmentWill);
         this.getElementByVarName(`empty-state-patient`).innerText = PatientUtil.getFullName(this.moduleContext.getPatient());
-        this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), this.isAdminUser);
+        this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), this.isAdministratorUser);
         if (treatmentWill) {
             Object.entries(treatmentWill).forEach(([property, will]) => {
                 switch (property) {
@@ -248,12 +246,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
             this.treatmentByForcePanel.setValue(null);
             this.treatmentByForceCheckbox.setValue(null, true);
         }
+        this.setEnabled();
         treatmentWill ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
-    }
-
-    private getWishPanelValue(wishPanel: TreatmentWillWishPanel) {
-        return wishPanel.getValue() === TreatmentWillWishPanel.NO_ACCEPT_PROPERTY
-            ? null
-            : wishPanel.getValue();
     }
 }

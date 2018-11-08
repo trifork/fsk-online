@@ -147,7 +147,7 @@ export default class LivingWillPanel extends TemplateWidget {
         SnackBar.show(snackbarText);
     }
 
-    public setEnabled(illCheckBoxCondition : boolean, handicapCheckBoxCondition: boolean) {
+    public setEnabled(illCheckBoxCondition : boolean | undefined, handicapCheckBoxCondition: boolean | undefined) {
         this.terminallyIllCheckbox.setEnabled(!!illCheckBoxCondition);
         this.severelyHandicappedCheckbox.setEnabled(!!handicapCheckBoxCondition);
     }
@@ -157,7 +157,7 @@ export default class LivingWillPanel extends TemplateWidget {
             this.terminallyIllCheckbox.setValue(livingWill.noLifeProlongingIfDying);
             this.severelyHandicappedCheckbox.setValue(livingWill.noLifeProlongingIfSeverelyDegraded);
             if (!this.isAdministratorUser) {
-                this.handleCheckBoxes(livingWill.noLifeProlongingIfDying, livingWill.noLifeProlongingIfSeverelyDegraded);
+                this.setEnabled(livingWill.noLifeProlongingIfDying, livingWill.noLifeProlongingIfSeverelyDegraded);
             }
         } else {
             this.terminallyIllCheckbox.setValue(false);
@@ -171,19 +171,5 @@ export default class LivingWillPanel extends TemplateWidget {
         livingWill
             ? this.buttonStrategy.setEditMode()
             : this.buttonStrategy.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));
-    }
-
-    private handleCheckBoxes(noLifeProlongingIfDying: boolean, noLifeProlongingIfSeverelyDegraded: boolean) {
-        this.setEnabled(noLifeProlongingIfDying, noLifeProlongingIfSeverelyDegraded);
-
-        /*if (noLifeProlongingIfDying && noLifeProlongingIfSeverelyDegraded) {
-            this.setEnabled();
-        }  else if (noLifeProlongingIfDying && !noLifeProlongingIfSeverelyDegraded) {
-            this.setEnabled(noLifeProlongingIfDying, noLifeProlongingIfSeverelyDegraded);
-        } else if (!noLifeProlongingIfDying && noLifeProlongingIfSeverelyDegraded) {
-            this.setEnabled(noLifeProlongingIfDying);
-        } else if (!noLifeProlongingIfDying && !noLifeProlongingIfSeverelyDegraded) {
-            this.setEnabled(noLifeProlongingIfDying, noLifeProlongingIfSeverelyDegraded);
-        }*/
     }
 }

@@ -16,9 +16,8 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
     public static TRUSTED_AGENT_ACCEPT = `Hvis patientens fremtidsfulmægtige meddeler sin accept i den konkrete situation`;
     private value: TreatmentWillAcceptanceType;
     private checkboxes: Checkbox[];
+    private checkboxToStringMap: WeakMap<Checkbox, TreatmentWillAcceptanceType>;
     private isAdministratorUser: boolean;
-
-    public static NO_ACCEPT_PROPERTY = `noAccept`;
 
     private updateButton: SDSButton;
 
@@ -38,33 +37,29 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
     public setupBindings(): any {
         const _pipe = (f, g) => args => g(f(args));
         const pipe = (...fns: Function[]) => fns.reduce(_pipe);
-        const addInRowAndCol = pipe(this.wrapInColumn, this.wrapInRow);
 
         const checkboxes = this.createCheckboxes();
         checkboxes.forEach(checkbox => {
-            this.appendWidgetOnVarName(addInRowAndCol(checkbox), `consent-checkboxes`);
+            this.appendWidgetOnVarName(pipe(this.wrapInColumn, this.wrapInRow)(checkbox), `consent-checkboxes`);
         });
     }
 
     public createCheckboxes(): Checkbox[] {
-        const weakMap = new WeakMap<Checkbox, TreatmentWillAcceptanceType>();
+        this.checkboxToStringMap = new WeakMap<Checkbox, TreatmentWillAcceptanceType>();
         this.checkboxes = Object.entries(this.treatmentType).map(([key, value]) => {
             const currentCheckBox = new Checkbox(false, value);
-            weakMap.set(currentCheckBox, key as TreatmentWillAcceptanceType);
+            this.checkboxToStringMap.set(currentCheckBox, key as TreatmentWillAcceptanceType);
             return currentCheckBox;
         });
 
         this.checkboxes.forEach(checkbox => {
-            if (!this.isAdministratorUser) {
-                this.setReadOnly();
-                this.setEnabled(checkbox.getValue());
-            }
-            checkbox.addClickHandler(event => {
+            checkbox.getInput().addEventListener(`click`,event => {
                 this.updateButton.setEnabled(true);
                 this.checkboxes.forEach(innerCheckBox => {
-                    const isClicked = event.target === innerCheckBox.getInput();
+                    const target = event.target as HTMLInputElement;
+                    const isClicked = target === innerCheckBox.getInput();
                     if (isClicked) {
-                        const thisValue = checkbox.getValue() ? weakMap.get(checkbox) : null;
+                        const thisValue = target.checked ? this.checkboxToStringMap.get(checkbox) : null;
                         this.setValue(thisValue);
                     } else {
                         innerCheckBox.setValue(false);
@@ -89,20 +84,24 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
 
     public setValue(value: TreatmentWillAcceptanceType) {
         this.value = value;
-    }
-
-    public setEnabled(enabled: boolean) {
-        this.checkboxes.forEach(checkbox => {
-            checkbox.setEnabled(!!enabled);
-        });
+        if (value) {
+            this.checkboxes.forEach(checkbox => {
+                if (this.checkboxToStringMap.get(checkbox) === value) {
+                    checkbox.setValue(true);
+                }
+                if (!this.isAdministratorUser) {
+                    this.setReadOnly();
+                    checkbox.setEnabled(checkbox.getValue());
+                }
+            });
+        }
     }
 
     public setReadOnly() {
         this.checkboxes.forEach(checkbox => {
-            checkbox.getInput().onclick = (() => false);
+            checkbox.getInput().onclick = () => false;
         });
     }
-
 
     public tearDownBindings(): any {
         // Unused
