@@ -1,6 +1,12 @@
-import {AsyncResponse, DefaultModule, getVersionInfo, ModuleRegistryFactory, PersonInfo, VersionImpl} from "fmko-typescript-common";
+import {
+    AsyncResponse,
+    DefaultModule,
+    getVersionInfo,
+    ModuleRegistryFactory,
+    PersonInfo,
+    VersionImpl
+} from "fmko-typescript-common";
 import FSKOnlineContainer from "./FSKOnlineContainer";
-import FSKConfig from "./FSKConfig";
 import OrganDonorRegistrationTab from "../tabs/OrganDonorRegistrationTab";
 import LivingWillTestamentTab from "../tabs/LivingWillTestamentTab";
 import TreatmentWillTab from "../tabs/TreatmentWillTab";
@@ -8,7 +14,6 @@ import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
 import TreatmentWillCache from "../services/TreatmentWillCache";
 import LivingWillCache from "../services/LivingWillCache";
 import DoctorOrNurseWillTab from "../tabs/DoctorOrNurseWillTab";
-import RemoteLogService from "fmko-typescript-common/target/lib/ts/remotelog/RemoteLogService";
 
 if (!("remove" in Element.prototype)) {
     Element.prototype[`remove`] = function () {
@@ -79,15 +84,9 @@ export default class FSKOnlineModule extends DefaultModule {
     }
 
     public refreshPatient() {
-        const foundVisibleTab = [
-            this.organDonorRegisterTab,
-            this.livingWillTestamentTab,
-            this.treatmentWillTestamentTab,
-            this.doctorOrNurseWillTab
-        ].find(tab => tab.isVisible());
-        if (foundVisibleTab) {
-            foundVisibleTab.setVisible(true);
-        }
+        this.organDonorCache.setStale(true);
+        this.livingWillCache.setStale(true);
+        this.treatmentWillCache.setStale(true);
     }
 
     private static loadLocalStylesheet(pathToCssFile: string) {

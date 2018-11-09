@@ -177,6 +177,9 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
 
     private async addListeners() {
         if (await this.livingWillCache.loadHasRegistration() === RegistrationState.REGISTERED) {
+            if (this.livingWillCache.livingWill.getValue() !== undefined) {
+                this.renderLivingWill();
+            }
             if (!this.livingWillChangeHandler) {
                 this.livingWillChangeHandler = (() => {
                     if (this.isVisible()) {
@@ -186,6 +189,9 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
                 this.livingWillCache.livingWill.addValueChangeHandler(this.livingWillChangeHandler);
             }
         } else {
+            if (this.treatmentWillCache.treatmentWill.getValue() !== undefined) {
+                this.renderTreatmentWill();
+            }
             if (!this.treatmentWillChangeHandler) {
                 this.treatmentWillChangeHandler = (() => {
                     if (this.isVisible()) {
