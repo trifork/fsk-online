@@ -45,6 +45,7 @@ export default class FullAccessPermissionPanel extends Widget implements IOrganD
     public setValue(organDonorRegistation: FSKTypes.OrganDonorRegistrationType, isFSKSupporter: boolean) {
         this.fullPermissionCheckBox.setValue(!!organDonorRegistation && !!organDonorRegistation.requiresRelativeAcceptance);
         if (isFSKSupporter) {
+            this.fullPermissionCheckBox.setEnabled(!!organDonorRegistation && !!organDonorRegistation.requiresRelativeAcceptance);
             this.fullPermissionCheckBox.getInput().onclick = ( () => false);
         }
     }

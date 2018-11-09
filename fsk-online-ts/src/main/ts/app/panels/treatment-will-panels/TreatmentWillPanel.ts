@@ -32,7 +32,8 @@ export default class TreatmentWillPanel extends TemplateWidget {
     private treatmentByForcePanel: TreatmentWillWishPanel;
 
     private buttonStrategy: ButtonStrategy;
-    private isAdminUser: boolean;
+    private isAdministratorUser: boolean;
+    private isReadOnlySet: boolean;
 
     public static deps = () => [IoC, "ModuleContext", "FSKConfig", LivingWillCache, TreatmentWillCache, FSKService];
 
@@ -43,7 +44,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
                 private treatmentWillCache: TreatmentWillCache,
                 private fskService: FSKService) {
         super(container);
-        this.isAdminUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
+        this.isAdministratorUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
         this.init();
     }
 
@@ -53,7 +54,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
 
     public setupBindings(): any {
         this.setupButtons();
-        this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), this.isAdminUser);
+        this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), this.isAdministratorUser);
 
         this.terminallyIllCheckbox = new CheckboxWrapper(this.getElementByVarName(`terminally-ill-checkbox`));
         this.terminallyIllPanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
@@ -85,8 +86,6 @@ export default class TreatmentWillPanel extends TemplateWidget {
 
         this.buttonStrategy.hideButtons();
 
-        this.setEnabled(this.isAdminUser);
-
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.createButton, `create-button`);
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.updateButton, `update-button`);
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.deleteButton, `delete-button`);
@@ -109,7 +108,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
         const isChecked = !!checkBox.getValue();
 
         return <TreatmentWillValueType>{
-            acceptanceNeeded: isChecked ? this.getWishPanelValue(panel) : null,
+            acceptanceNeeded: panel.getValue(),
             $: isChecked
         };
     }
@@ -184,9 +183,12 @@ export default class TreatmentWillPanel extends TemplateWidget {
 
     private addHandlerForCheckboxAndPanel(checkBox: CheckboxWrapper, panel: Widget) {
         checkBox.addValueChangeHandler(handler => {
-            const value = handler.getValue();
-            panel.setVisible(value);
-            this.buttonStrategy.updateButton.setEnabled(true);
+            // If you are administrator you can do whatever, otherwise you can only set it to tru, which is in the initial
+            if (this.isAdministratorUser || handler.getValue()) {
+                const value = handler.getValue();
+                panel.setVisible(value);
+                this.buttonStrategy.updateButton.setEnabled(true);
+            }
         });
     }
 
@@ -198,25 +200,33 @@ export default class TreatmentWillPanel extends TemplateWidget {
         SnackBar.show(snackbarText);
     }
 
-    public setEnabled(enabled: boolean) {
-        this.terminallyIllCheckbox.setEnabled(enabled);
-        this.terminallyIllPanel.setEnabled(enabled);
-
-        this.illNoImprovementCheckbox.setEnabled(enabled);
-        this.illNoImprovementPanel.setEnabled(enabled);
-
-        this.illWithPermanentPainCheckbox.setEnabled(enabled);
-        this.illWithPermanentPainPanel.setEnabled(enabled);
-
-        this.treatmentByForceCheckbox.setEnabled(enabled);
-        this.treatmentByForcePanel.setEnabled(enabled);
+    public setEnabled(): void {
+        if (!this.isAdministratorUser) {
+            this.terminallyIllCheckbox.setEnabled(this.terminallyIllCheckbox.getValue());
+            this.terminallyIllCheckbox.getInput().addEventListener('click', event => {
+                event.preventDefault();
+            }, true);
+            this.illNoImprovementCheckbox.setEnabled((this.illNoImprovementCheckbox.getValue()));
+            this.illNoImprovementCheckbox.getInput().addEventListener('click', event => {
+                event.preventDefault();
+            }, true);
+            this.illWithPermanentPainCheckbox.setEnabled((this.illWithPermanentPainCheckbox.getValue()));
+            this.illWithPermanentPainCheckbox.getInput().addEventListener('click', event => {
+                event.preventDefault();
+            }, true);
+            this.treatmentByForceCheckbox.setEnabled((this.treatmentByForceCheckbox.getValue()));
+            this.treatmentByForceCheckbox.getInput().addEventListener('click', event => {
+                event.preventDefault();
+            }, true);
+        }
+        this.isReadOnlySet = true;
     }
 
     public async setData(treatmentWill: FSKTypes.TreatmentWillType): Promise<void> {
-        Widget.setVisible(this.getElementByVarName(`main-panel`), this.isAdminUser || !!treatmentWill);
-        Widget.setVisible(this.getElementByVarName(`empty-panel`), !this.isAdminUser && !treatmentWill);
+        Widget.setVisible(this.getElementByVarName(`main-panel`), this.isAdministratorUser || !!treatmentWill);
+        Widget.setVisible(this.getElementByVarName(`empty-panel`), !this.isAdministratorUser && !treatmentWill);
         this.getElementByVarName(`empty-state-patient`).innerText = PatientUtil.getFullName(this.moduleContext.getPatient());
-        this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), this.isAdminUser);
+        this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), this.isAdministratorUser);
         if (treatmentWill) {
             Object.entries(treatmentWill).forEach(([property, will]) => {
                 switch (property) {
@@ -248,12 +258,9 @@ export default class TreatmentWillPanel extends TemplateWidget {
             this.treatmentByForcePanel.setValue(null);
             this.treatmentByForceCheckbox.setValue(null, true);
         }
+        if (!this.isReadOnlySet) {
+            this.setEnabled();
+        }
         treatmentWill ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
-    }
-
-    private getWishPanelValue(wishPanel: TreatmentWillWishPanel) {
-        return wishPanel.getValue() === TreatmentWillWishPanel.NO_ACCEPT_PROPERTY
-            ? null
-            : wishPanel.getValue();
     }
 }

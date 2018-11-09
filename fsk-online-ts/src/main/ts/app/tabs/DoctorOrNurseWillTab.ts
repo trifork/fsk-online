@@ -63,36 +63,37 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
         return this.TITLE;
     }
 
-    public async setVisible(visible: boolean): Promise<void> {
+    public setVisible(visible: boolean): void {
         super.setVisible(visible);
-
-        // Check if we the user has clicked accept on the dialog
-        if (visible && this.livingWillCache.registrationState === RegistrationState.UNCHECKED) {
-            if (this.initialized) {
-                this.cleanChildrenOnVarName(`will-container`);
+        if (this.moduleContext.getPatient()) {
+            // Check if we the user has clicked accept on the dialog
+            if (visible && this.livingWillCache.registrationState === RegistrationState.UNCHECKED) {
+                if (this.initialized) {
+                    this.cleanChildrenOnVarName(`will-container`);
+                }
+                this.showLogDialog();
             }
-            this.showLogDialog();
-        }
 
-        if (this.shown === visible) {
-            // Debounce..
-            return;
-        }
+            if (this.shown === visible) {
+                // Debounce..
+                return;
+            }
 
-        if (visible) {
-            this.init();
-        } else {
-            this.removeListeners();
-        }
+            if (visible) {
+                this.init();
+            } else {
+                this.removeListeners();
+            }
 
-        this.shown = visible;
+            this.shown = visible;
+        }
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
         return FSKUserUtil.isDoctorOrNurseWithoutElevatedRights(userContext);
     }
 
-    public async applicationContextIdChanged(applicationContextId: string): Promise<void> {
+    public applicationContextIdChanged(applicationContextId: string): void {
         if (applicationContextId === "PATIENT") {
             this.moduleContext.showTab(this.ID);
         } else {
@@ -128,7 +129,7 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
             "<li>Patienten ligger for døden (dvs. er uafvendeligt døende)</li>" +
             "<li>Patienten er hjælpeløs pga. sygdom, ulykke mv., og der ikke er tegn på bedring</li>" +
             "</ul>" +
-            "<br>Bemærk: Tilgang til data for testamentet vil blive logget. Tilgang vil fremgå af patientens minlog.</li>",
+            "<br>Bemærk: Tilgang til data for testamentet vil blive logget, givet at der er data. Tilgang vil fremgå af patientens minlog.</li>",
             noOption,
             yesOption);
         if (yesClicked === yesOption) {

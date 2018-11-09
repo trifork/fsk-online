@@ -62,6 +62,12 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
 
     public async setVisible(visible: boolean): Promise<void> {
         super.setVisible(visible);
+
+        if (this.shown === visible) {
+            // Debounce..
+            return;
+        }
+
         if (visible) {
             this.addListeners();
             this.init();

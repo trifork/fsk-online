@@ -3,26 +3,29 @@ import {IoC} from "fmko-ts-ioc";
 import loadTemplate from "../../main/TemplateLoader";
 import {Checkbox, HTML} from "fmko-ts-widgets";
 import SDSButton from "../../elements/SDSButton";
-import {Widget} from "fmko-typescript-common";
+import {ModuleContext, Widget} from "fmko-typescript-common";
+import FSKUserUtil from "../../util/FSKUserUtil";
 import TreatmentWillAcceptanceType = FSKTypes.TreatmentWillAcceptanceType;
 
 export default class TreatmentWillWishPanel extends TemplateWidget {
 
-    public static deps = () => [IoC];
+    public static deps = () => [IoC, "ModuleContext"];
 
     public static FAMILY_ACCEPT = `Hvis patientens nærmeste pårørende meddeler sin accept i den konkrete situation`;
     public static GUARDIAN_ACCEPT = `Hvis patientens værge meddeler sin accept i den konkrete situation`;
     public static TRUSTED_AGENT_ACCEPT = `Hvis patientens fremtidsfulmægtige meddeler sin accept i den konkrete situation`;
     private value: TreatmentWillAcceptanceType;
     private checkboxes: Checkbox[];
-
-    public static NO_ACCEPT_PROPERTY = `noAccept`;
+    private checkboxToStringMap: WeakMap<Checkbox, TreatmentWillAcceptanceType>;
+    private isAdministratorUser: boolean;
 
     private updateButton: SDSButton;
 
-    public constructor(protected container: IoC) {
+    public constructor(protected container: IoC,
+                       private moduleContext: ModuleContext) {
         super(container);
         this.element = document.createElement(`div`);
+        this.isAdministratorUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
         this.init();
         this.setVisible(false);
     }
@@ -34,29 +37,29 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
     public setupBindings(): any {
         const _pipe = (f, g) => args => g(f(args));
         const pipe = (...fns: Function[]) => fns.reduce(_pipe);
-        const addInRowAndCol = pipe(this.wrapInColumn, this.wrapInRow);
 
         const checkboxes = this.createCheckboxes();
         checkboxes.forEach(checkbox => {
-            this.appendWidgetOnVarName(addInRowAndCol(checkbox), `consent-checkboxes`);
+            this.appendWidgetOnVarName(pipe(this.wrapInColumn, this.wrapInRow)(checkbox), `consent-checkboxes`);
         });
     }
 
     public createCheckboxes(): Checkbox[] {
-        const weakMap = new WeakMap<Checkbox, TreatmentWillAcceptanceType>();
+        this.checkboxToStringMap = new WeakMap<Checkbox, TreatmentWillAcceptanceType>();
         this.checkboxes = Object.entries(this.treatmentType).map(([key, value]) => {
             const currentCheckBox = new Checkbox(false, value);
-            weakMap.set(currentCheckBox, key as TreatmentWillAcceptanceType);
+            this.checkboxToStringMap.set(currentCheckBox, key as TreatmentWillAcceptanceType);
             return currentCheckBox;
         });
 
         this.checkboxes.forEach(checkbox => {
-            checkbox.addClickHandler(event => {
+            checkbox.getInput().addEventListener(`click`,event => {
                 this.updateButton.setEnabled(true);
                 this.checkboxes.forEach(innerCheckBox => {
-                    const isClicked = event.target === innerCheckBox.getInput();
+                    const target = event.target as HTMLInputElement;
+                    const isClicked = target === innerCheckBox.getInput();
                     if (isClicked) {
-                        const thisValue = checkbox.getValue() ? weakMap.get(checkbox) : null;
+                        const thisValue = target.checked ? this.checkboxToStringMap.get(checkbox) : null;
                         this.setValue(thisValue);
                     } else {
                         innerCheckBox.setValue(false);
@@ -81,14 +84,28 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
 
     public setValue(value: TreatmentWillAcceptanceType) {
         this.value = value;
+        if (value) {
+            this.checkboxes.forEach(checkbox => {
+                if (this.checkboxToStringMap.get(checkbox) === value) {
+                    checkbox.setValue(true);
+                }
+                if (!this.isAdministratorUser) {
+                    this.setReadOnly();
+                    checkbox.setEnabled(checkbox.getValue());
+                }
+            });
+        } else {
+            this.checkboxes.forEach(checkbox => {
+                checkbox.setValue(null);
+            });
+        }
     }
 
-    public setEnabled(enabled: boolean) {
+    public setReadOnly() {
         this.checkboxes.forEach(checkbox => {
-            checkbox.setEnabled(enabled);
+            checkbox.getInput().onclick = () => false;
         });
     }
-
 
     public tearDownBindings(): any {
         // Unused
@@ -97,6 +114,7 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
     private wrapInRow(element: Widget): HTML {
         const row = new HTML();
         row.addStyleName(`row`);
+        row.getCssStyle().marginBottom = `8px`;
         row.add(element);
         return row;
     }
