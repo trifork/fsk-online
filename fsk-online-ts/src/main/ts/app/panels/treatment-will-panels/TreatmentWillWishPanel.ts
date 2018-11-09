@@ -94,6 +94,10 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
                     checkbox.setEnabled(checkbox.getValue());
                 }
             });
+        } else {
+            this.checkboxes.forEach(checkbox => {
+                checkbox.setValue(null);
+            });
         }
     }
 
