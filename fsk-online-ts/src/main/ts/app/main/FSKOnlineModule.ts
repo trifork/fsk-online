@@ -85,8 +85,18 @@ export default class FSKOnlineModule extends DefaultModule {
 
     public refreshPatient() {
         this.organDonorCache.setStale(true);
-        this.livingWillCache.setStale(true);
         this.treatmentWillCache.setStale(true);
+        this.livingWillCache.setStale(true);
+
+        const foundVisibleTab = [
+            this.organDonorRegisterTab,
+            this.livingWillTestamentTab,
+            this.treatmentWillTestamentTab,
+            this.doctorOrNurseWillTab
+        ].find(tab => tab.isVisible());
+        if (foundVisibleTab) {
+            foundVisibleTab.setVisible(true);
+        }
     }
 
     private static loadLocalStylesheet(pathToCssFile: string) {

@@ -3,9 +3,12 @@ import FSKService from "./FSKService";
 import {RegistrationState} from "../model/RegistrationState";
 import RegistrationStateUtil from "../util/RegistrationStateUtil";
 import LivingWillType = FSKTypes.LivingWillType;
+import HasWillResponse = FSKTypes.HasWillResponse;
 
 export default class LivingWillCache {
     public static deps = () => ["ModuleContext", FSKService];
+
+    private loading: Promise<HasWillResponse>;
 
     constructor(private moduleContext: ModuleContext, private fskService: FSKService) {
 
@@ -38,13 +41,22 @@ export default class LivingWillCache {
     }
 
     public async loadHasRegistration(): Promise<RegistrationState> {
+        if(this.loading){
+            return RegistrationStateUtil.registrationStateMapper((await this.loading).willExists);
+        }
+
         if (this.registrationState !== RegistrationState.UNCHECKED) {
             return this.registrationState;
         }
-        const willValue = this.moduleContext.getPatient()
-            ? (await this.fskService.hasLivingWillForPatient(this.getPatientCpr())).willExists
-            : await undefined;
-        this.registrationState = RegistrationStateUtil.registrationStateMapper(willValue);
+
+        this.loading = this.moduleContext.getPatient()
+            ? (this.fskService.hasLivingWillForPatient(this.getPatientCpr()))
+            : undefined;
+
+        this.registrationState = RegistrationStateUtil.registrationStateMapper((await this.loading).willExists);
+        this.loading.then(() => {
+            this.loading = undefined;
+        });
         return this.registrationState;
     }
 
