@@ -1,11 +1,4 @@
-import {
-    AsyncResponse,
-    DefaultModule,
-    getVersionInfo,
-    ModuleRegistryFactory,
-    PersonInfo,
-    VersionImpl
-} from "fmko-typescript-common";
+import {AsyncResponse, DefaultModule, getVersionInfo, ModuleRegistryFactory, PersonInfo, VersionImpl} from "fmko-typescript-common";
 import FSKOnlineContainer from "./FSKOnlineContainer";
 import OrganDonorRegistrationTab from "../tabs/OrganDonorRegistrationTab";
 import LivingWillTestamentTab from "../tabs/LivingWillTestamentTab";
@@ -14,6 +7,7 @@ import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
 import TreatmentWillCache from "../services/TreatmentWillCache";
 import LivingWillCache from "../services/LivingWillCache";
 import DoctorOrNurseWillTab from "../tabs/DoctorOrNurseWillTab";
+import {RegistrationState} from "../model/RegistrationState";
 
 if (!("remove" in Element.prototype)) {
     Element.prototype[`remove`] = function () {
@@ -84,18 +78,14 @@ export default class FSKOnlineModule extends DefaultModule {
     }
 
     public refreshPatient() {
-        this.organDonorCache.setStale(true);
-        this.treatmentWillCache.setStale(true);
-        this.livingWillCache.setStale(true);
-
-        const foundVisibleTab = [
-            this.organDonorRegisterTab,
-            this.livingWillTestamentTab,
-            this.treatmentWillTestamentTab,
-            this.doctorOrNurseWillTab
-        ].find(tab => tab.isVisible());
-        if (foundVisibleTab) {
-            foundVisibleTab.setVisible(true);
+        if (this.doctorOrNurseWillTab.isVisible()) {
+            this.livingWillCache.registrationState = RegistrationState.UNCHECKED;
+            this.treatmentWillCache.registrationState = RegistrationState.UNCHECKED;
+            this.doctorOrNurseWillTab.setVisible(true);
+        } else {
+            this.organDonorCache.setStale(true);
+            this.treatmentWillCache.setStale(true);
+            this.livingWillCache.setStale(true);
         }
     }
 

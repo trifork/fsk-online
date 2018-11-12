@@ -48,6 +48,7 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
         this.checkboxToStringMap = new WeakMap<Checkbox, TreatmentWillAcceptanceType>();
         this.checkboxes = Object.entries(this.treatmentType).map(([key, value]) => {
             const currentCheckBox = new Checkbox(false, value);
+            currentCheckBox.setEnabled(this.isAdministratorUser);
             this.checkboxToStringMap.set(currentCheckBox, key as TreatmentWillAcceptanceType);
             return currentCheckBox;
         });

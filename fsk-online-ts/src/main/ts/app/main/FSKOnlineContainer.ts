@@ -11,6 +11,7 @@ import FSKOnlineConfigurationFactory from "./FSKOnlineConfigurationFactory";
 import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
 import TreatmentWillCache from "../services/TreatmentWillCache";
 import LivingWillCache from "../services/LivingWillCache";
+import DoctorOrNurseWillTab from "../tabs/DoctorOrNurseWillTab";
 
 const SINGLETON = BindingScope.SINGLETON;
 const ROOT_ELEMENT_ID = "fskMain";

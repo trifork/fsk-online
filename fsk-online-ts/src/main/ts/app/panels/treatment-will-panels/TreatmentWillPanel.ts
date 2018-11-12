@@ -118,7 +118,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
         const createHandler = async () => {
             try {
                 if (this.livingWillCache.registrationState === RegistrationState.REGISTERED
-                    && (await this.livingWillCache.deleteRegistration() === RegistrationState.NOT_REGISTERED)) {
+                    && (await this.livingWillCache.deleteRegistration() === RegistrationState.REGISTERED)) {
                     return;
                 }
                 this.warningIfLivingWillExist(Promise.resolve(RegistrationState.NOT_REGISTERED), false);

@@ -259,10 +259,12 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     }
 
     public applicationContextIdChanged(applicationContextId: string): any {
-        if (applicationContextId === "PATIENT") {
-            this.moduleContext.showTab(this.ID);
-        } else {
-            this.moduleContext.hideTab(this.ID);
+        if (this.isApplicable(false, this.moduleContext.getUserContext())) {
+            if (applicationContextId === "PATIENT") {
+                this.moduleContext.showTab(this.ID);
+            } else {
+                this.moduleContext.hideTab(this.ID);
+            }
         }
     }
 

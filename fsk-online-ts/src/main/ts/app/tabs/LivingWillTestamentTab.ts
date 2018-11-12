@@ -85,20 +85,17 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
     }
 
     public async applicationContextIdChanged(applicationContextId: string): Promise<void> {
-        if(!this.isAdministratorUser){
-            this.moduleContext.hideTab(this.ID);
-            return;
-        }
+        if (this.isApplicable(false, this.moduleContext.getUserContext())) {
+            const useLivingWill = !TimelineUtil.useTreatmentWill(this.fskConfig);
+            const isPatientContext = applicationContextId === "PATIENT";
 
-        const useLivingWill = !TimelineUtil.useTreatmentWill(this.fskConfig);
-        const isPatientContext = applicationContextId === "PATIENT";
-
-        if (this.isAdministratorUser && isPatientContext && useLivingWill) {
-            this.moduleContext.showTab(this.ID);
-        } else if (this.isAdministratorUser && isPatientContext && await this.livingWillCache.loadHasRegistration() === RegistrationState.REGISTERED) {
-            this.moduleContext.showTab(this.ID);
-        } else {
-            this.moduleContext.hideTab(this.ID);
+            if (this.isAdministratorUser && isPatientContext && useLivingWill) {
+                this.moduleContext.showTab(this.ID);
+            } else if (this.isAdministratorUser && isPatientContext && await this.livingWillCache.loadHasRegistration() === RegistrationState.REGISTERED) {
+                this.moduleContext.showTab(this.ID);
+            } else {
+                this.moduleContext.hideTab(this.ID);
+            }
         }
     }
 
