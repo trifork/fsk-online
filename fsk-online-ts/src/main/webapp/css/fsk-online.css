@@ -332,8 +332,8 @@ button.sds-outline-button.danger:active {
     font-weight: 400;
 }
 
+/* ONLY WORKS IN NEWER BROWSERS */
 /*
-ONLY WORKS IN NEWER BROWSERS
 #fskMain input[type=checkbox] {
     margin-right: 5px;
     font-size: 14px;

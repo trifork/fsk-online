@@ -1,17 +1,11 @@
-import { BindingScope, IoC, ReferenceType } from "fmko-ts-ioc";
+import {BindingScope, IoC, ReferenceType} from "fmko-ts-ioc";
 
-import {
-    ModuleRegistryFactory,
-    RemoteLogService,
-    IdSynthesizer,
-    VersionImpl
-} from "fmko-typescript-common";
+import {IdSynthesizer, ModuleRegistryFactory, VersionImpl} from "fmko-typescript-common";
 
 import FSKOnlineConfigurationFactory from "./FSKOnlineConfigurationFactory";
 import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
 import TreatmentWillCache from "../services/TreatmentWillCache";
 import LivingWillCache from "../services/LivingWillCache";
-import DoctorOrNurseWillTab from "../tabs/DoctorOrNurseWillTab";
 
 const SINGLETON = BindingScope.SINGLETON;
 const ROOT_ELEMENT_ID = "fskMain";
@@ -35,7 +29,7 @@ export default class FSKOnlineContainer {
             .withFactoryFunction(() => document.getElementById(ROOT_ELEMENT_ID))
             .scopedAs(SINGLETON);
         this._ioc.bind(IdSynthesizer)
-            .withFactoryFunction((resolve) => {
+            .withFactoryFunction(() => {
                 return new IdSynthesizer("fsk-online_");
             }).scopedAs(SINGLETON);
         this._ioc.bind(`Version`)
