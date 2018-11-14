@@ -15,6 +15,50 @@
 
     <build>
         <plugins>
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>replacer</artifactId>
+				<executions>
+					<execution>
+						<id>generated-source-files-from-templates</id>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+						<configuration>
+							<file />
+							<outputFile />
+							<basedir>${basedir}/src/main/templates</basedir>
+							<includes>
+								<include>**/*.ts</include>
+								<include>**/*.java</include>
+							</includes>
+							<outputDir>../../../target/generated-sources/replacer</outputDir>
+						</configuration>
+					</execution>
+					<execution>
+						<!-- Overwrite execution inherited from fmk-online2 parent pom -->
+						<id>update-pom-version-in-package-json-files</id>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+						<phase>none</phase>
+						<configuration>
+							<basedir>${basedir}</basedir>
+							<includes>
+								<include>package.json</include>
+							</includes>
+							<replacements>
+								<replacement>
+									<token>\"(version)\": \"((?!file:)).*\"</token>
+									<value>"$1": "${project.version}"</value>
+								</replacement>
+							</replacements>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
