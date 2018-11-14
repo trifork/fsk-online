@@ -33,10 +33,10 @@
   },
   "dependencies": {
     "babel-plugin-transform-runtime": "^6.23.0",
-    "fmko-typescript-common": "2.27.0-SNAPSHOT",
-    "fmko-ts-widgets": "2.27.0-SNAPSHOT",
-    "fmko-ts-ioc": "2.27.0-SNAPSHOT",
-    "fmko-ts-mvc": "2.27.0-SNAPSHOT",
+    "fmko-typescript-common": "2.27.2",
+    "fmko-ts-widgets": "2.27.2",
+    "fmko-ts-ioc": "2.27.2",
+    "fmko-ts-mvc": "2.27.2",
     "moment": "^2.22.2",
     "regenerator-runtime": "^0.12.1"
   },
