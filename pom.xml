@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>dk.sundhedsdatastyrelsen.fsk</groupId>
     <artifactId>fsk-online-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>fsk-online-parent</name>
     <parent>
         <groupId>dk.fmkonline</groupId>
@@ -106,7 +105,7 @@
         <connection>scm:git:git@github.com:trifork/fsk-online.git</connection>
         <url>scm:git:git@github.com:trifork/fsk-online.git</url>
         <developerConnection>scm:git:git@github.com:trifork/fsk-online.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>version/1.0.0</tag>
     </scm>
 
     <modules>
