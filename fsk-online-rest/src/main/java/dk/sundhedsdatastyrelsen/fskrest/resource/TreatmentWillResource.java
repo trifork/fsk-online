@@ -18,6 +18,9 @@ public class TreatmentWillResource extends AbstractResource {
     @Autowired
     TreatmentWillPortType treatmentWillPortType;
 
+    @Autowired
+    TreatmentWillResponseWrapper treatmentWillResponseWrapper;
+
     @GET
     @Path("/getTreatmentWill")
     @Produces(MediaType.APPLICATION_JSON)
@@ -28,9 +31,13 @@ public class TreatmentWillResource extends AbstractResource {
         GetTreatmentWillResponse response = treatmentWillPortType.getTreatmentWill20180501(request);
 
         try {
+            String datetime = response.getClinicalDocument().getAuthors().get(0).getTime().getValue();
             TreatmentWill treatmentWill = (TreatmentWill) response.getClinicalDocument().getComponent().getStructuredBody().
                     getComponents().get(0).getSection().getEntries().get(0).getObservation().getValues().get(0);
-            return buildNonCacheableResponse(treatmentWill);
+
+            treatmentWillResponseWrapper.setDatetime(datetime);
+            treatmentWillResponseWrapper.setRegistrationType(treatmentWill);
+            return buildNonCacheableResponse(treatmentWillResponseWrapper);
         } catch (Exception e) {
             logger.error("Error extracting treatmentwill from response: " +  e.getMessage());
             return Response.status(Response.Status.NO_CONTENT).build();

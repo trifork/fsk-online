@@ -18,6 +18,9 @@ public class LivingWillResource extends AbstractResource {
     @Autowired
     LivingWillPortType livingWillPortType;
 
+    @Autowired
+    LivingWillResponseWrapper livingWillResponseWrapper;
+
     @GET
     @Path("/getLivingWill")
     @Produces(MediaType.APPLICATION_JSON)
@@ -27,9 +30,13 @@ public class LivingWillResource extends AbstractResource {
         request.setId(getId(cpr));
         GetLivingWillResponse response = livingWillPortType.getLivingWill20180501(request);
         try {
+            String datetime = response.getClinicalDocument().getAuthors().get(0).getTime().getValue();
             LivingWill livingWill = (LivingWill) response.getClinicalDocument().getComponent().getStructuredBody().
                     getComponents().get(0).getSection().getEntries().get(0).getObservation().getValues().get(0);
-            return buildNonCacheableResponse(livingWill);
+
+            livingWillResponseWrapper.setDatetime(datetime);
+            livingWillResponseWrapper.setRegistrationType(livingWill);
+            return buildNonCacheableResponse(livingWillResponseWrapper);
         } catch (Exception e) {
             logger.error("Error extracting livingwill from response: " +  e.getMessage());
             return Response.status(Response.Status.NO_CONTENT).build();

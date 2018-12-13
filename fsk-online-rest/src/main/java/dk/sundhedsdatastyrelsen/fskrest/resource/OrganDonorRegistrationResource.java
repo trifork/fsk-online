@@ -18,6 +18,9 @@ public class OrganDonorRegistrationResource extends AbstractResource {
     @Autowired
     OrganDonorRegistrationPortType organDonorRegistrationPortType;
 
+    @Autowired
+    OrganDonorRegistrationResponseWrapper organDonorRegistrationResponseWrapper;
+
     @GET
     @Path("/getOrganDonorRegistration")
     @Produces(MediaType.APPLICATION_JSON)
@@ -27,9 +30,14 @@ public class OrganDonorRegistrationResource extends AbstractResource {
         request.setId(getId(cpr));
         GetOrganDonorRegistrationResponse response = organDonorRegistrationPortType.getOrganDonorRegistration20180501(request);
         try {
+            String datetime = response.getClinicalDocument().getAuthors().get(0).getTime().getValue();
             OrganDonorRegistration organDonorRegistration = (OrganDonorRegistration) response.getClinicalDocument().getComponent().getStructuredBody().
                     getComponents().get(0).getSection().getEntries().get(0).getObservation().getValues().get(0);
-            return buildNonCacheableResponse(organDonorRegistration);
+
+            organDonorRegistrationResponseWrapper.setDatetime(datetime);
+            organDonorRegistrationResponseWrapper.setRegistrationType(organDonorRegistration);
+
+            return buildNonCacheableResponse(organDonorRegistrationResponseWrapper);
         } catch (Exception e) {
             logger.error("Error extracting organdonor from response: " +  e.getMessage());
             return Response.status(Response.Status.NO_CONTENT).build();
