@@ -4,6 +4,7 @@ import {RegistrationState} from "../model/RegistrationState";
 import RegistrationStateUtil from "../util/RegistrationStateUtil";
 import LivingWillType = FSKTypes.LivingWillType;
 import HasWillResponse = FSKTypes.HasWillResponse;
+import LivingWillWrapper = FSKTypes.RegistrationTypeWrapper;
 
 export default class LivingWillCache {
     public static deps = () => ["ModuleContext", FSKService];
@@ -16,7 +17,7 @@ export default class LivingWillCache {
 
     public registrationState: RegistrationState = RegistrationState.UNCHECKED;
 
-    public readonly livingWill = new AsyncValueHolder<LivingWillType>(async () => {
+    public readonly livingWill = new AsyncValueHolder<LivingWillWrapper<LivingWillType>>(async () => {
         if (await this.loadHasRegistration() === RegistrationState.REGISTERED) {
             return this.getRegistration();
         } else {
@@ -60,7 +61,7 @@ export default class LivingWillCache {
         return this.registrationState;
     }
 
-    private async getRegistration(): Promise<LivingWillType> {
+    private async getRegistration(): Promise<LivingWillWrapper<LivingWillType>> {
         return await this.fskService.getLivingWillForPatient(this.getPatientCpr());
     }
 

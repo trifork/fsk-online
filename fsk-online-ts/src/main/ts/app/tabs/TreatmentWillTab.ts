@@ -7,13 +7,14 @@ import FSKConfig from "../main/FSKConfig";
 import FSKUserUtil from "../util/FSKUserUtil";
 import TimelineUtil from "../util/TimelineUtil";
 import TreatmentWillPanel from "../panels/treatment-will-panels/TreatmentWillPanel";
+import TreatmentWillType = FSKTypes.TreatmentWillType;
 
 export default class TreatmentWillTab extends TemplateWidget implements TabbedPanel {
     private ID = "TreatmentWillTab_TS";
     private TITLE = "Behandlingstestamente";
     private shown: boolean;
     private initialized: boolean;
-    private treatmentWillChangeHandler: ValueChangeHandler<FSKTypes.TreatmentWillType>;
+    private treatmentWillChangeHandler: ValueChangeHandler<FSKTypes.RegistrationTypeWrapper<TreatmentWillType>>;
     private treatmentWillPanel: TreatmentWillPanel;
 
     public static deps = () => [IoC, "ModuleContext", "FSKConfig", TreatmentWillCache, "RootElement"];
@@ -115,7 +116,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
 
             }
         } else if (failed) {
-            this.treatmentWillPanel.setData(null);
+            this.treatmentWillPanel.setData(value);
         } else {
             this.treatmentWillPanel.setData(value);
         }

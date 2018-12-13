@@ -8,6 +8,7 @@ import FSKUserUtil from "../util/FSKUserUtil";
 import TimelineUtil from "../util/TimelineUtil";
 import {RegistrationState} from "../model/RegistrationState";
 import LivingWillPanel from "../panels/living-will-panels/LivingWillPanel";
+import LivingWillType = FSKTypes.LivingWillType;
 
 export default class LivingWillTestamentTab extends TemplateWidget implements TabbedPanel {
     private ID = "LivingWillTestamentTab_TS";
@@ -16,7 +17,7 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
     private initialized: boolean;
     private isAdministratorUser = false;
 
-    private livingWillChangeHandler: ValueChangeHandler<FSKTypes.LivingWillType>;
+    private livingWillChangeHandler: ValueChangeHandler<FSKTypes.RegistrationTypeWrapper<LivingWillType>>;
     private livingWillPanel: LivingWillPanel;
 
     public static deps = () => [IoC, "ModuleContext", "FSKConfig", LivingWillCache, "RootElement"];
@@ -120,7 +121,7 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
 
             }
         } else if (failed) {
-            this.livingWillPanel.setData(null);
+            this.livingWillPanel.setData(value);
         } else {
             this.livingWillPanel.setData(value);
         }

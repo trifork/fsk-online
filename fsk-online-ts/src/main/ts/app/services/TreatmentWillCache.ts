@@ -1,8 +1,9 @@
 import {AsyncValueHolder, ModuleContext} from "fmko-typescript-common";
 import FSKService from "./FSKService";
-import TreatmentWillType = FSKTypes.TreatmentWillType;
 import RegistrationStateUtil from "../util/RegistrationStateUtil";
 import {RegistrationState} from "../model/RegistrationState";
+import TreatmentWillType = FSKTypes.TreatmentWillType;
+import RegistrationTypeWrapper = FSKTypes.RegistrationTypeWrapper;
 
 export default class TreatmentWillCache {
     public static deps = () => ["ModuleContext", FSKService];
@@ -13,7 +14,7 @@ export default class TreatmentWillCache {
 
     public registrationState: RegistrationState = RegistrationState.UNCHECKED;
 
-    public readonly treatmentWill = new AsyncValueHolder<TreatmentWillType>(async () => {
+    public readonly treatmentWill = new AsyncValueHolder<RegistrationTypeWrapper<TreatmentWillType>>(async () => {
         if (await this.loadHasRegistration() === RegistrationState.REGISTERED) {
             return this.getRegistration();
         } else {
@@ -48,7 +49,7 @@ export default class TreatmentWillCache {
         return this.registrationState;
     }
 
-    private async getRegistration(): Promise<TreatmentWillType> {
+    private async getRegistration(): Promise<RegistrationTypeWrapper<TreatmentWillType>> {
         return await this.fskService.getTreatmentWillForPatient(this.getPatientCpr());
     }
 

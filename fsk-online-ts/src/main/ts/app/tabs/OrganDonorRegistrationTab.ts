@@ -2,7 +2,16 @@ import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler, Widget} fro
 import {TemplateWidget} from "fmko-ts-mvc";
 import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
-import {ButtonStyle, DialogOption, ErrorDisplay, PopupDialog, PopupDialogKind, RadioButton, RadioGroup} from "fmko-ts-widgets";
+import {
+    ButtonStyle,
+    DialogOption,
+    ErrorDisplay,
+    PopupDialog,
+    PopupDialogKind,
+    RadioButton,
+    RadioGroup,
+    TextBoxField
+} from "fmko-ts-widgets";
 import LimitedAccessPermissionPanel from "../panels/organdonor-panels/LimitedAccessPermissionPanel";
 import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
 import FullAccessPermissionPanel from "../panels/organdonor-panels/FullAccessPermissionPanel";
@@ -16,13 +25,16 @@ import SnackBar from "../elements/SnackBar";
 import {ButtonStrategy} from "../model/ButtonStrategy";
 import FSKButtonStrategy from "../model/FSKButtonStrategy";
 import PatientUtil from "../util/PatientUtil";
+import moment from "moment";
+import OrganDonorRegistrationType = FSKTypes.OrganDonorRegistrationType;
 
 export default class OrganDonorRegistrationTab extends TemplateWidget implements TabbedPanel {
     private ID = "OrganDonorRegistrationTab_TS";
     private TITLE = "Organdonorregister";
     private shown: boolean;
     private initialized: boolean;
-    private organRegistrationChangeHandler: ValueChangeHandler<FSKTypes.OrganDonorRegistrationType>;
+    private organRegistrationChangeHandler: ValueChangeHandler<FSKTypes.RegistrationTypeWrapper<OrganDonorRegistrationType>>;
+    private registrationDateTextBox: TextBoxField;
 
     private buttonStrategy: ButtonStrategy;
 
@@ -114,6 +126,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
             });
         });
 
+        this.registrationDateTextBox = new TextBoxField(this.getElementByVarName("registration-date"));
 
         this.buttonStrategy.hideButtons();
 
@@ -121,6 +134,8 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
             this.addAndReplaceWidgetByVarName(this.buttonStrategy.createButton, `create-button`);
             this.addAndReplaceWidgetByVarName(this.buttonStrategy.updateButton, `update-button`);
             this.addAndReplaceWidgetByVarName(this.buttonStrategy.deleteButton, `delete-button`);
+        } else if (this.isOdrCoordinator) {
+            this.addAndReplaceWidgetByVarName(this.buttonStrategy.printButton, `print-button`);
         }
 
         this.rootElement.appendChild(this.element);
@@ -181,13 +196,28 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
             }
         };
 
+        const printHandler = async () => {
+            if (this.buttonStrategy.printButton.isVisible()) {
+                window.print();
+            }
+        };
+
         this.buttonStrategy.updateButton.setEnabled(false);
         this.buttonStrategy.addHandlerForCreateButton(() => createHandler());
         this.buttonStrategy.addHandlerForEditButton(() => updateHandler());
         this.buttonStrategy.addHandlerForDeleteButton(() => deleteHandler());
+        this.buttonStrategy.addHandlerForPrintButton(() => printHandler())
     }
 
-    public setData(organDonorRegistration: FSKTypes.OrganDonorRegistrationType): void {
+    public setData(value: FSKTypes.RegistrationTypeWrapper<FSKTypes.OrganDonorRegistrationType> | null | undefined): void {
+        const organDonorRegistration = value && value.registrationType;
+        const registrationDate = value && value.datetime;
+
+        if (registrationDate) {
+            const dateString = moment(registrationDate, "YYYYMMDDHHmmss").format("DD.MM.YYYY");
+            this.registrationDateTextBox.element.innerHTML = `Registreringen er senest ændret: <b>${dateString}</b>`;
+        }
+
         const type = organDonorRegistration && organDonorRegistration.permissionType;
 
         if (!type) {
@@ -196,6 +226,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         const isAdmin = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
         Widget.setVisible(this.getElementByVarName(`main-panel`), isAdmin || !!type);
         Widget.setVisible(this.getElementByVarName(`empty-panel`), !isAdmin && !type);
+        Widget.setVisible(this.getElementByVarName(`registration-date-row`), !!type);
         this.getElementByVarName(`empty-state-patient`).innerText = PatientUtil.getFullName(this.moduleContext.getPatient());
 
         this.buttonStrategy.createButton.setEnabled(!!type);

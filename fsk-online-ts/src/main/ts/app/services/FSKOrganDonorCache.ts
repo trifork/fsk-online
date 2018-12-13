@@ -1,6 +1,7 @@
 import {AsyncValueHolder, ModuleContext} from "fmko-typescript-common";
 import FSKService from "./FSKService";
 import OrganDonorRegistrationType = FSKTypes.OrganDonorRegistrationType;
+import RegistrationTypeWrapper = FSKTypes.RegistrationTypeWrapper;
 
 export default class FSKOrganDonorCache {
     public static deps = () => ["ModuleContext", FSKService];
@@ -11,7 +12,7 @@ export default class FSKOrganDonorCache {
 
     public hasRegistration: boolean;
 
-    public readonly organDonorRegister = new AsyncValueHolder<OrganDonorRegistrationType>(async () => {
+    public readonly organDonorRegister = new AsyncValueHolder<RegistrationTypeWrapper<OrganDonorRegistrationType>>(async () => {
         if (await this.loadHasRegistration()) {
             return this.getRegistration();
         } else {
@@ -45,7 +46,7 @@ export default class FSKOrganDonorCache {
         return this.hasRegistration;
     }
 
-    private async getRegistration(): Promise<OrganDonorRegistrationType> {
+    private async getRegistration(): Promise<RegistrationTypeWrapper<OrganDonorRegistrationType>> {
         return await this.fskService.getOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr());
     }
 }

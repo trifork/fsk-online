@@ -1,7 +1,15 @@
 import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
 import loadTemplate from "../../main/TemplateLoader";
-import {ButtonStyle, CheckboxWrapper, DialogOption, ErrorDisplay, PopupDialog, PopupDialogKind} from "fmko-ts-widgets";
+import {
+    ButtonStyle,
+    CheckboxWrapper,
+    DialogOption,
+    ErrorDisplay,
+    PopupDialog,
+    PopupDialogKind,
+    TextBoxField
+} from "fmko-ts-widgets";
 import TreatmentWillWishPanel from "./TreatmentWillWishPanel";
 import {ModuleContext, Widget} from "fmko-typescript-common";
 import {ButtonStrategy} from "../../model/ButtonStrategy";
@@ -16,6 +24,7 @@ import LivingWillCache from "../../services/LivingWillCache";
 import FSKConfig from "../../main/FSKConfig";
 import {RegistrationState} from "../../model/RegistrationState";
 import RegistrationStateUtil from "../../util/RegistrationStateUtil";
+import moment from "moment";
 import TreatmentWillValueType = FSKTypes.TreatmentWillValueType;
 import TreatmentWillType = FSKTypes.TreatmentWillType;
 
@@ -25,6 +34,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
     private illNoImprovementCheckbox: CheckboxWrapper;
     private illWithPermanentPainCheckbox: CheckboxWrapper;
     private treatmentByForceCheckbox: CheckboxWrapper;
+    private registrationDateTextBox: TextBoxField;
 
     private terminallyIllPanel: TreatmentWillWishPanel;
     private illNoImprovementPanel: TreatmentWillWishPanel;
@@ -83,6 +93,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
         this.addHandlerForCheckboxAndPanel(this.treatmentByForceCheckbox, this.treatmentByForcePanel);
 
         this.addAndReplaceWidgetByVarName(this.treatmentByForcePanel, `treatment-by-force-panel`);
+        this.registrationDateTextBox = new TextBoxField(this.getElementByVarName("registration-date"));
 
         this.buttonStrategy.hideButtons();
 
@@ -222,9 +233,19 @@ export default class TreatmentWillPanel extends TemplateWidget {
         this.isReadOnlySet = true;
     }
 
-    public async setData(treatmentWill: FSKTypes.TreatmentWillType): Promise<void> {
+    public async setData(value: FSKTypes.RegistrationTypeWrapper<FSKTypes.TreatmentWillType> | null | undefined): Promise<void> {
+        const treatmentWill = value && value.registrationType;
+        const registrationDate = value && value.datetime;
+
+        if (registrationDate) {
+            const dateString = moment(registrationDate, "YYYYMMDDHHmmss").format("DD.MM.YYYY");
+            this.registrationDateTextBox.element.innerHTML = `Registreringen er senest ændret: <b>${dateString}</b>`;
+        }
+
         Widget.setVisible(this.getElementByVarName(`main-panel`), this.isAdministratorUser || !!treatmentWill);
         Widget.setVisible(this.getElementByVarName(`empty-panel`), !this.isAdministratorUser && !treatmentWill);
+        Widget.setVisible(this.getElementByVarName(`registration-date-row`), !!treatmentWill)
+
         this.getElementByVarName(`empty-state-patient`).innerText = PatientUtil.getFullName(this.moduleContext.getPatient());
         this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), this.isAdministratorUser);
         if (treatmentWill) {

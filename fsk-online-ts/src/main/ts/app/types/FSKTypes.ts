@@ -37,6 +37,11 @@ namespace FSKTypes {
         noLifeProlongingIfSeverelyDegraded: boolean;
     }
 
+    export interface RegistrationTypeWrapper<T> {
+        registrationType?: T;
+        datetime: string;
+    }
+
     export interface HasRegistrationResponse {
         registrationExists: boolean;
     }

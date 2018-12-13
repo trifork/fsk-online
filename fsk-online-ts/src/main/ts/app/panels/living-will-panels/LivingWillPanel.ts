@@ -1,7 +1,15 @@
 import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
 import loadTemplate from "../../main/TemplateLoader";
-import {ButtonStyle, CheckboxWrapper, DialogOption, ErrorDisplay, PopupDialog, PopupDialogKind} from "fmko-ts-widgets";
+import {
+    ButtonStyle,
+    CheckboxWrapper,
+    DialogOption,
+    ErrorDisplay,
+    PopupDialog,
+    PopupDialogKind,
+    TextBoxField
+} from "fmko-ts-widgets";
 import {ModuleContext, Widget} from "fmko-typescript-common";
 import {ButtonStrategy} from "../../model/ButtonStrategy";
 import FSKButtonStrategy from "../../model/FSKButtonStrategy";
@@ -15,12 +23,14 @@ import LivingWillCache from "../../services/LivingWillCache";
 import FSKConfig from "../../main/FSKConfig";
 import RegistrationStateUtil from "../../util/RegistrationStateUtil";
 import TimelineUtil from "../../util/TimelineUtil";
+import moment from "moment";
 import LivingWillType = FSKTypes.LivingWillType;
 
 export default class LivingWillPanel extends TemplateWidget {
 
     private terminallyIllCheckbox: CheckboxWrapper;
     private severelyHandicappedCheckbox: CheckboxWrapper;
+    private registrationDateTextBox: TextBoxField;
 
     private buttonStrategy: ButtonStrategy;
     private isAdministratorUser: boolean;
@@ -58,6 +68,8 @@ export default class LivingWillPanel extends TemplateWidget {
             this.terminallyIllCheckbox.getInput().onclick = (() => false);
             this.severelyHandicappedCheckbox.getInput().onclick = (() => false);
         }
+
+        this.registrationDateTextBox = new TextBoxField(this.getElementByVarName("registration-date"));
 
         this.buttonStrategy.hideButtons();
 
@@ -152,7 +164,13 @@ export default class LivingWillPanel extends TemplateWidget {
         this.severelyHandicappedCheckbox.setEnabled(!!handicapCheckBoxCondition);
     }
 
-    public async setData(livingWill: LivingWillType) {
+    public async setData(value: FSKTypes.RegistrationTypeWrapper<FSKTypes.LivingWillType> | null | undefined) {
+        const livingWill = value && value.registrationType;
+        const dateTime = value && value.datetime;
+        if (dateTime) {
+            const dateString = moment(dateTime, "YYYYMMDDHHmmss").format("DD.MM.YYYY");
+            this.registrationDateTextBox.element.innerHTML = `Registreringen er senest ændret: <b>${dateString}</b>`;
+        }
         if (livingWill) {
             this.terminallyIllCheckbox.setValue(livingWill.noLifeProlongingIfDying);
             this.severelyHandicappedCheckbox.setValue(livingWill.noLifeProlongingIfSeverelyDegraded);
@@ -166,6 +184,7 @@ export default class LivingWillPanel extends TemplateWidget {
 
         Widget.setVisible(this.getElementByVarName(`main-panel`), this.isAdministratorUser || !!livingWill);
         Widget.setVisible(this.getElementByVarName(`empty-panel`), !this.isAdministratorUser && !livingWill);
+        Widget.setVisible(this.getElementByVarName(`registration-date-row`), !!livingWill)
         this.getElementByVarName(`empty-state-patient`).innerText = PatientUtil.getFullName(this.moduleContext.getPatient());
 
         livingWill

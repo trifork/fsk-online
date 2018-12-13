@@ -4,12 +4,15 @@ export interface ButtonStrategy {
     readonly createButton: SDSButton;
     readonly updateButton: SDSButton;
     readonly deleteButton: SDSButton;
+    readonly printButton: SDSButton;
 
     hideButtons(): void;
 
     enableButtons(): void;
 
     disableButtons(): void;
+
+    enablePrintButton(): void;
 
     setCreateMode(createButtonCondition?: boolean): void;
 
@@ -20,4 +23,7 @@ export interface ButtonStrategy {
     addHandlerForEditButton(event: (event: MouseEvent) => void): void;
 
     addHandlerForDeleteButton(event: (event: MouseEvent) => void): void;
+
+    addHandlerForPrintButton(event: (event: MouseEvent) => void): void;
+
 }

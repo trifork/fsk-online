@@ -30,4 +30,4 @@ export default class SDSButton extends Widget {
     }
 }
 
-export type sdsButtonType = null | "primary" | "danger";
+export type sdsButtonType = null | "primary" | "danger" | "print";

@@ -11,14 +11,16 @@ import FSKUserUtil from "../util/FSKUserUtil";
 import TreatmentWillPanel from "../panels/treatment-will-panels/TreatmentWillPanel";
 import {RegistrationState} from "../model/RegistrationState";
 import LivingWillPanel from "../panels/living-will-panels/LivingWillPanel";
+import LivingWillType = FSKTypes.LivingWillType;
+import TreatmentWillType = FSKTypes.TreatmentWillType;
 
 export default class DoctorOrNurseWillTab extends TemplateWidget implements TabbedPanel {
     private ID = "DoctorOrNurseWillTab_TS";
     private TITLE = "Livs/Behandlingstestamente";
     private shown: boolean;
     private initialized: boolean;
-    private treatmentWillChangeHandler: ValueChangeHandler<FSKTypes.TreatmentWillType>;
-    private livingWillChangeHandler: ValueChangeHandler<FSKTypes.LivingWillType>;
+    private treatmentWillChangeHandler: ValueChangeHandler<FSKTypes.RegistrationTypeWrapper<TreatmentWillType>>;
+    private livingWillChangeHandler: ValueChangeHandler<FSKTypes.RegistrationTypeWrapper<LivingWillType>>;
     private treatmentWillPanel: TreatmentWillPanel;
 
 
@@ -149,7 +151,7 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
 
             }
         } else if (failed) {
-            this.treatmentWillPanel.setData(null);
+            this.treatmentWillPanel.setData(value);
         } else {
             this.treatmentWillPanel.setData(value);
         }
@@ -168,7 +170,7 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
 
             }
         } else if (failed) {
-            livingPanel.setData(null);
+            livingPanel.setData(value);
         } else {
             livingPanel.setData(value);
         }

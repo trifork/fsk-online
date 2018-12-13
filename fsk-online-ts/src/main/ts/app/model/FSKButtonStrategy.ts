@@ -8,11 +8,13 @@ export default class FSKButtonStrategy implements ButtonStrategy {
     public readonly createButton: SDSButton;
     public readonly updateButton: SDSButton;
     public readonly deleteButton: SDSButton;
+    public readonly printButton: SDSButton;
 
     constructor(private userContext: UserContext) {
         this.createButton = new SDSButton("Opret registrering", "primary");
         this.updateButton = new SDSButton("Opdater registrering", "primary");
         this.deleteButton = new SDSButton("Slet registrering", "danger");
+        this.printButton = new SDSButton("Print", "primary");
     }
 
     public hideButtons() {
@@ -59,5 +61,15 @@ export default class FSKButtonStrategy implements ButtonStrategy {
     public addHandlerForDeleteButton(event: (event: MouseEvent) => void): void {
         this.deleteButton.addClickHandler(event);
     }
+
+    public addHandlerForPrintButton(event: (event: MouseEvent) => void): void {
+        this.printButton.addClickHandler(event);
+    }
+
+    public enablePrintButton() {
+        this.printButton.setEnabled(true);
+        this.printButton.setVisible(true);
+    }
+
 
 }

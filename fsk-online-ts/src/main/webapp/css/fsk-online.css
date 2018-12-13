@@ -97,7 +97,7 @@ a.sds-link:before {
 }
 
 button.sds-button {
-    min-width: 64px;
+    min-width: 128px;
     height: 36px;
     line-height: 32px;
     border-radius: 4px;
@@ -140,6 +140,18 @@ button.sds-button.danger:active {
 button.sds-button:disabled {
     opacity: 0.38;
     cursor: inherit;
+}
+
+button.sds-button.print {
+    background-color: #757575;
+}
+
+button.sds-button.print:hover {
+    background-color: #616161;
+}
+
+button.sds-button.print:active {
+    background-color: #212121;
 }
 
 button.sds-outline-button {
@@ -259,6 +271,28 @@ button.sds-outline-button.danger:active {
     border-radius: 4px;
 }
 
+.fsk-registrationdate-info {
+    color: #655347;
+    font-size: 12px;
+    line-height: 28px;
+    background-color: #ECECEC;
+    border-radius: 4px;
+    margin-right: 16px;
+    height: 28px;
+    padding: 0 8px;
+    float: right;
+}
+
+a.registrationdate-info-button {
+    float: none;
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0px 0px 0px 5px;
+    background: transparent url(../styles/images/icon-info.png) no-repeat;
+}
+
 .fsk-warning-header {
     font-size: 22px;
     font-family: sans-serif;
@@ -330,6 +364,13 @@ button.sds-outline-button.danger:active {
 .empty-state-body {
     font-size: 16px;
     font-weight: 400;
+}
+
+a.button-info.button-info-inline {
+    float: none;
+    display: inline-block;
+    vertical-align: middle;
+    background: transparent url(../styles/images/icon-info.png) no-repeat right top;
 }
 
 /*

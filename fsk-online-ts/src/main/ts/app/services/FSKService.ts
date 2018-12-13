@@ -7,6 +7,8 @@ import TreatmentWillType = FSKTypes.TreatmentWillType;
 import LivingWillType = FSKTypes.LivingWillType;
 import HasWillResponse = FSKTypes.HasWillResponse;
 import HasRegistrationResponse = FSKTypes.HasRegistrationResponse;
+import LivingWillWrapper = FSKTypes.RegistrationTypeWrapper;
+import RegistrationTypeWrapper = FSKTypes.RegistrationTypeWrapper;
 
 export default class FSKService {
     public static deps = () => [ODRRestUrls, BTRRestUrls, LTRRestUrl, "Version"];
@@ -20,9 +22,9 @@ export default class FSKService {
 
     // OrgandonationRegistration
 
-    public async getOrganDonorRegisterForPatient(cpr: string): Promise<OrganDonorRegistration> {
+    public async getOrganDonorRegisterForPatient(cpr: string): Promise<RegistrationTypeWrapper<OrganDonorRegistration>> {
         const url = this.odrRestUrls.getOrganDonorRegisterForPatient(cpr);
-        const restClient = new RESTClient<OrganDonorRegistration>(this.version);
+        const restClient = new RESTClient<RegistrationTypeWrapper<OrganDonorRegistration>>(this.version);
         return await restClient.get(url, `Henter organdonor information for cpr: ${cpr}`);
     }
 
@@ -52,9 +54,9 @@ export default class FSKService {
 
     // TREATMENT WILL
 
-    public async getTreatmentWillForPatient(cpr: string): Promise<TreatmentWillType> {
+    public async getTreatmentWillForPatient(cpr: string): Promise<RegistrationTypeWrapper<TreatmentWillType>> {
         const url = this.btrRestUrls.getTreatmentWillForPatient(cpr);
-        const restClient = new RESTClient<TreatmentWillType>(this.version);
+        const restClient = new RESTClient<RegistrationTypeWrapper<TreatmentWillType>>(this.version);
         return await restClient.get(url, `Henter behandlingstestamente for cpr: ${cpr}`);
     }
 
@@ -84,10 +86,12 @@ export default class FSKService {
 
     // LIVING WILL
 
-    public async getLivingWillForPatient(cpr: string): Promise<LivingWillType> {
+    public async getLivingWillForPatient(cpr: string): Promise<LivingWillWrapper<LivingWillType>> {
         const url = this.ltrRestUrls.getLivingWillForPatient(cpr);
-        const restClient = new RESTClient<LivingWillType>(this.version);
-        return await restClient.get(url, `Henter livstestamente for cpr: ${cpr}`);
+        const restClient = new RESTClient<LivingWillWrapper<LivingWillType>>(this.version);
+        const a = await restClient.get(url, `Henter livstestamente for cpr: ${cpr}`);
+        console.log("TESTING");
+        return a;
     }
 
     public async hasLivingWillForPatient(cpr: string): Promise<HasWillResponse> {
