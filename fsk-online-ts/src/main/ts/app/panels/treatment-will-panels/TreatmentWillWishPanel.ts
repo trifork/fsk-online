@@ -6,17 +6,15 @@ import SDSButton from "../../elements/SDSButton";
 import {ModuleContext, Widget} from "fmko-typescript-common";
 import FSKUserUtil from "../../util/FSKUserUtil";
 import TreatmentWillAcceptanceType = FSKTypes.TreatmentWillAcceptanceType;
+import CheckboxWrapper from "fmko-ts-widgets/target/lib/wrappers/CheckboxWrapper";
 
 export default class TreatmentWillWishPanel extends TemplateWidget {
 
     public static deps = () => [IoC, "ModuleContext"];
 
-    public static FAMILY_ACCEPT = `Hvis patientens nærmeste pårørende meddeler sin accept i den konkrete situation`;
-    public static GUARDIAN_ACCEPT = `Hvis patientens værge meddeler sin accept i den konkrete situation`;
-    public static TRUSTED_AGENT_ACCEPT = `Hvis patientens fremtidsfulmægtige meddeler sin accept i den konkrete situation`;
     private value: TreatmentWillAcceptanceType;
-    private checkboxes: Checkbox[];
-    private checkboxToStringMap: WeakMap<Checkbox, TreatmentWillAcceptanceType>;
+    private checkboxes: CheckboxWrapper[];
+    private checkboxToStringMap: WeakMap<CheckboxWrapper, TreatmentWillAcceptanceType>;
     private isAdministratorUser: boolean;
 
     private updateButton: SDSButton;
@@ -35,25 +33,27 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
     }
 
     public setupBindings(): any {
-        const _pipe = (f, g) => args => g(f(args));
-        const pipe = (...fns: Function[]) => fns.reduce(_pipe);
+        const familyConsentCheckBox = new CheckboxWrapper(this.getElementByVarName(`family-consent-checkboxes`));
+        const guardianConsentCheckBox = new CheckboxWrapper(this.getElementByVarName(`guardian-consent-checkboxes`));
+        const agentConsentCheckBox = new CheckboxWrapper(this.getElementByVarName(`agent-consent-checkboxes`));
 
-        const checkboxes = this.createCheckboxes();
-        checkboxes.forEach(checkbox => {
-            this.appendWidgetOnVarName(pipe(this.wrapInColumn, this.wrapInRow)(checkbox), `consent-checkboxes`);
+        this.checkboxes = [familyConsentCheckBox, guardianConsentCheckBox, agentConsentCheckBox];
+        this.checkboxes.forEach(checkbox => {
+            checkbox.setEnabled(this.isAdministratorUser);
         });
+
+        this.checkboxToStringMap = new WeakMap<CheckboxWrapper, TreatmentWillAcceptanceType>();
+
+        this.checkboxToStringMap.set(familyConsentCheckBox, `relativeAcceptanceRequired`);
+        this.checkboxToStringMap.set(guardianConsentCheckBox, `guardianAcceptanceRequired`);
+        this.checkboxToStringMap.set(agentConsentCheckBox, `trustedAgentAcceptanceRequired`);
+
+        this.addHandlersForCheckbox();
     }
 
-    public createCheckboxes(): Checkbox[] {
-        this.checkboxToStringMap = new WeakMap<Checkbox, TreatmentWillAcceptanceType>();
-        this.checkboxes = Object.entries(this.treatmentType).map(([key, value]) => {
-            const currentCheckBox = new Checkbox(false, value);
-            this.checkboxToStringMap.set(currentCheckBox, key as TreatmentWillAcceptanceType);
-            return currentCheckBox;
-        });
-
+    public addHandlersForCheckbox(): void {
         this.checkboxes.forEach(checkbox => {
-            checkbox.getInput().addEventListener(`click`,event => {
+            checkbox.getInput().addEventListener(`click`, event => {
                 this.updateButton.setEnabled(true);
                 this.checkboxes.forEach(innerCheckBox => {
                     const target = event.target as HTMLInputElement;
@@ -67,7 +67,6 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
                 });
             });
         });
-        return this.checkboxes;
     }
 
     public getValue(): TreatmentWillAcceptanceType {
@@ -86,9 +85,7 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
         this.value = value;
         if (value) {
             this.checkboxes.forEach(checkbox => {
-                if (this.checkboxToStringMap.get(checkbox) === value) {
-                    checkbox.setValue(true);
-                }
+                checkbox.setValue(this.checkboxToStringMap.get(checkbox) === value);
                 if (!this.isAdministratorUser) {
                     this.setReadOnly();
                     checkbox.setEnabled(checkbox.getValue());
@@ -110,25 +107,4 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
     public tearDownBindings(): any {
         // Unused
     }
-
-    private wrapInRow(element: Widget): HTML {
-        const row = new HTML();
-        row.addStyleName(`row`);
-        row.getCssStyle().marginBottom = `8px`;
-        row.add(element);
-        return row;
-    }
-
-    private wrapInColumn(element: Widget): HTML {
-        const col = new HTML();
-        col.addStyleName(`col-12`);
-        col.add(element);
-        return col;
-    }
-
-    private treatmentType: {[K in TreatmentWillAcceptanceType]: string} = {
-        guardianAcceptanceRequired: TreatmentWillWishPanel.GUARDIAN_ACCEPT,
-        relativeAcceptanceRequired: TreatmentWillWishPanel.FAMILY_ACCEPT,
-        trustedAgentAcceptanceRequired: TreatmentWillWishPanel.TRUSTED_AGENT_ACCEPT
-    };
 }

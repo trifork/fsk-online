@@ -74,21 +74,21 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
                     this.cleanChildrenOnVarName(`will-container`);
                 }
                 this.showLogDialog();
-            }
 
-            if (this.shown === visible) {
-                // Debounce..
-                return;
             }
-
-            if (visible) {
-                this.init();
-            } else {
-                this.removeListeners();
-            }
-
-            this.shown = visible;
         }
+        if (this.shown === visible) {
+            // Debounce..
+            return;
+        }
+
+        if (visible) {
+            this.init();
+        } else {
+            this.removeListeners();
+        }
+
+        this.shown = visible;
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
@@ -96,10 +96,12 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
     }
 
     public applicationContextIdChanged(applicationContextId: string): void {
-        if (applicationContextId === "PATIENT") {
-            this.moduleContext.showTab(this.ID);
-        } else {
-            this.moduleContext.hideTab(this.ID);
+        if (this.isApplicable(false, this.moduleContext.getUserContext())) {
+            if (applicationContextId === "PATIENT") {
+                this.moduleContext.showTab(this.ID);
+            } else {
+                this.moduleContext.hideTab(this.ID);
+            }
         }
     }
 
@@ -179,9 +181,6 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
 
     private async addListeners() {
         if (await this.livingWillCache.loadHasRegistration() === RegistrationState.REGISTERED) {
-            if (this.livingWillCache.livingWill.getValue() !== undefined) {
-                this.renderLivingWill();
-            }
             if (!this.livingWillChangeHandler) {
                 this.livingWillChangeHandler = (() => {
                     if (this.isVisible()) {
@@ -189,11 +188,10 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
                     }
                 });
                 this.livingWillCache.livingWill.addValueChangeHandler(this.livingWillChangeHandler);
+            } else {
+                this.livingWillCache.setStale();
             }
         } else {
-            if (this.treatmentWillCache.treatmentWill.getValue() !== undefined) {
-                this.renderTreatmentWill();
-            }
             if (!this.treatmentWillChangeHandler) {
                 this.treatmentWillChangeHandler = (() => {
                     if (this.isVisible()) {
@@ -201,6 +199,8 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
                     }
                 });
                 this.treatmentWillCache.treatmentWill.addValueChangeHandler(this.treatmentWillChangeHandler);
+            } else {
+                this.treatmentWillCache.setStale();
             }
         }
     }

@@ -86,15 +86,16 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     }
 
     public async applicationContextIdChanged(applicationContextId: string): Promise<void> {
-
-        const isTreatmentWillStarted = TimelineUtil.useTreatmentWill(this.fskConfig);
-        const isFSKAdmin =FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
+        if (this.isApplicable(false, this.moduleContext.getUserContext())) {
+            const isTreatmentWillStarted = TimelineUtil.useTreatmentWill(this.fskConfig);
+            const isFSKAdmin = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
             const isPatientContext = applicationContextId === "PATIENT";
 
-        if (isTreatmentWillStarted && isFSKAdmin && isPatientContext) {
-            this.moduleContext.showTab(this.ID);
-        } else {
-            this.moduleContext.hideTab(this.ID);
+            if (isTreatmentWillStarted && isFSKAdmin && isPatientContext) {
+                this.moduleContext.showTab(this.ID);
+            } else {
+                this.moduleContext.hideTab(this.ID);
+            }
         }
     }
 

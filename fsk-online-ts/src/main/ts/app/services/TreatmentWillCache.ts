@@ -24,14 +24,14 @@ export default class TreatmentWillCache {
         // Ignore
     });
 
-    public setStale(removeRegistration: boolean) {
+    public setStale(removeRegistration?: boolean) {
         if (removeRegistration === true) {
             this.registrationState = RegistrationState.UNCHECKED;
         }
         this.treatmentWill.setStale();
     }
 
-    public clear(removeRegistration: boolean) {
+    public clear(removeRegistration?: boolean) {
         if (removeRegistration === true) {
             this.registrationState = RegistrationState.UNCHECKED;
         }
