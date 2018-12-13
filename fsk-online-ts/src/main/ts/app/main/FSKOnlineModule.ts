@@ -1,4 +1,11 @@
-import {AsyncResponse, DefaultModule, getVersionInfo, ModuleRegistryFactory, PersonInfo, VersionImpl} from "fmko-typescript-common";
+import {
+    AsyncResponse,
+    DefaultModule,
+    getVersionInfo,
+    ModuleRegistryFactory,
+    PersonInfo,
+    VersionImpl
+} from "fmko-typescript-common";
 import FSKOnlineContainer from "./FSKOnlineContainer";
 import OrganDonorRegistrationTab from "../tabs/OrganDonorRegistrationTab";
 import LivingWillTestamentTab from "../tabs/LivingWillTestamentTab";

@@ -1,12 +1,11 @@
 import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
 import loadTemplate from "../../main/TemplateLoader";
-import {Checkbox, HTML} from "fmko-ts-widgets";
 import SDSButton from "../../elements/SDSButton";
-import {ModuleContext, Widget} from "fmko-typescript-common";
+import {ModuleContext} from "fmko-typescript-common";
 import FSKUserUtil from "../../util/FSKUserUtil";
-import TreatmentWillAcceptanceType = FSKTypes.TreatmentWillAcceptanceType;
 import CheckboxWrapper from "fmko-ts-widgets/target/lib/wrappers/CheckboxWrapper";
+import TreatmentWillAcceptanceType = FSKTypes.TreatmentWillAcceptanceType;
 
 export default class TreatmentWillWishPanel extends TemplateWidget {
 
