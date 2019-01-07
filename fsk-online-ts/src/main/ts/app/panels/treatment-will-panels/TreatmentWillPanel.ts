@@ -141,7 +141,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
                 this.moduleContext.setApplicationContextId(`PATIENT`);
 
             } catch (error) {
-                ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
+                ErrorDisplay.showError("Der skete en fejl", ErrorUtil.getMessage(error));
             }
         };
 
@@ -153,7 +153,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
                     this.getValue());
                 this.updateCache(true, `Behandlingstestamente opdateret`);
             } catch (error) {
-                ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
+                ErrorDisplay.showError("Der skete en fejl", ErrorUtil.getMessage(error));
             }
         };
 
@@ -178,7 +178,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
                     this.moduleContext.setApplicationContextId(`PATIENT`);
                 }
             } catch (error) {
-                ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
+                ErrorDisplay.showError("Der skete en fejl", ErrorUtil.getMessage(error));
             }
         };
 

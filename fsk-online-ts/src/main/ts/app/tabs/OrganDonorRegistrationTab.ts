@@ -154,7 +154,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
                     this.updateCache(true, `Organdonorregistering oprettet`);
                 }
             } catch (error) {
-                ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
+                ErrorDisplay.showError("Der skete en fejl", ErrorUtil.getMessage(error));
             }
         };
 
@@ -168,7 +168,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
                     this.updateCache(true, "Organdonorregistering opdateret");
                 }
             } catch (error) {
-                ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
+                ErrorDisplay.showError("Der skete en fejl", ErrorUtil.getMessage(error));
             }
         };
 
@@ -192,7 +192,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
                     this.updateCache(false, `Organdonorregistering slettet`);
                 }
             } catch (error) {
-                ErrorDisplay.showError("Det skete en fejl", ErrorUtil.getMessage(error));
+                ErrorDisplay.showError("Der skete en fejl", ErrorUtil.getMessage(error));
             }
         };
 
