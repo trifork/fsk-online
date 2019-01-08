@@ -15,8 +15,6 @@ import TreatmentWillCache from "../services/TreatmentWillCache";
 import LivingWillCache from "../services/LivingWillCache";
 import DoctorOrNurseWillTab from "../tabs/DoctorOrNurseWillTab";
 import {RegistrationState} from "../model/RegistrationState";
-import {ErrorDisplay} from "fmko-ts-widgets";
-import ErrorUtil from "../util/ErrorUtil";
 
 if (!("remove" in Element.prototype)) {
     Element.prototype[`remove`] = function () {
@@ -52,11 +50,8 @@ export default class FSKOnlineModule extends DefaultModule {
         this.treatmentWillCache = <TreatmentWillCache>this.container.resolve(TreatmentWillCache);
         this.livingWillCache = <LivingWillCache>this.container.resolve(LivingWillCache);
         this.initAfterModuleRegistered();
-        try {
-            ModuleRegistryFactory.getInstance().moduleInitializationCompleted(FSKOnlineModule.MODULE_IDENTIFIER);
-        } catch (error) {
-            ErrorDisplay.showError("Der skete en fejl", ErrorUtil.getMessage(error));
-        }
+        ModuleRegistryFactory.getInstance().moduleInitializationCompleted(FSKOnlineModule.MODULE_IDENTIFIER);
+
     }
 
     public initAfterModuleRegistered() {
