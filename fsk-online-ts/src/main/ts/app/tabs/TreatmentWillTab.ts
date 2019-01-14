@@ -117,7 +117,6 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
 
             }
         } else if (failed) {
-            this.treatmentWillPanel.setData(value);
         } else {
             this.treatmentWillPanel.setData(value);
         }

@@ -69,7 +69,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
         this.terminallyIllCheckbox = new CheckboxWrapper(this.getElementByVarName(`terminally-ill-checkbox`));
         this.terminallyIllPanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
         this.terminallyIllPanel.setUpdateButton(this.buttonStrategy.updateButton);
-        this.addHandlerForCheckboxAndPanel(this.terminallyIllCheckbox, this.terminallyIllPanel);
+        //this.addHandlerForCheckboxAndPanel(this.terminallyIllCheckbox, this.terminallyIllPanel);
 
         this.addAndReplaceWidgetByVarName(this.terminallyIllPanel, `terminally-ill-panel`);
 

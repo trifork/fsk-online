@@ -118,7 +118,7 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
 
             }
         } else if (failed) {
-            this.livingWillPanel.setData(value);
+            //this.livingWillPanel.setData(value);
         } else {
             this.livingWillPanel.setData(value);
         }

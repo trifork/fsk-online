@@ -153,7 +153,7 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
 
             }
         } else if (failed) {
-            this.treatmentWillPanel.setData(value);
+            //this.treatmentWillPanel.setData(value);
         } else {
             this.treatmentWillPanel.setData(value);
         }
@@ -172,7 +172,7 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
 
             }
         } else if (failed) {
-            livingPanel.setData(value);
+            //livingPanel.setData(value);
         } else {
             livingPanel.setData(value);
         }

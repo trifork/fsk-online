@@ -9,15 +9,13 @@
   ],
   "compilerOptions": {
     "moduleResolution": "node",
-    "target": "ES2017",
+    "target": "ES5",
     "outDir": "target/js",
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "lib": ["es2018", "dom"]
   },
-  "lib": ["es2018", "dom"],
   "atom": {
     "rewriteTsconfig": true
   },
