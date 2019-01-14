@@ -2,6 +2,7 @@ import {AsyncValueHolder, ModuleContext} from "fmko-typescript-common";
 import FSKService from "./FSKService";
 import {RegistrationState} from "../model/RegistrationState";
 import RegistrationStateUtil from "../util/RegistrationStateUtil";
+import {ErrorDisplay} from "fmko-ts-widgets";
 import LivingWillType = FSKTypes.LivingWillType;
 import LivingWillWrapper = FSKTypes.RegistrationTypeWrapper;
 
@@ -21,7 +22,7 @@ export default class LivingWillCache {
             return null;
         }
     }, error => {
-        // Ignore
+        ErrorDisplay.showError("Der skete en fejl", `Der skete en uventet fejl ved aflæsning af patientens livstestamente.`);
     });
 
     public setStale(removeRegistration?: boolean) {

@@ -1,5 +1,6 @@
 import {AsyncValueHolder, ModuleContext} from "fmko-typescript-common";
 import FSKService from "./FSKService";
+import {ErrorDisplay} from "fmko-ts-widgets";
 import OrganDonorRegistrationType = FSKTypes.OrganDonorRegistrationType;
 import RegistrationTypeWrapper = FSKTypes.RegistrationTypeWrapper;
 
@@ -19,7 +20,7 @@ export default class FSKOrganDonorCache {
             return null;
         }
     }, error => {
-        // Ignore
+        ErrorDisplay.showError("Der skete en fejl", `Der skete en uventet fejl ved aflæsning af patientens organdonorregistrering.`);
     });
 
     public setStale(removeRegistration: boolean) {

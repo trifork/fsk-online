@@ -2,6 +2,7 @@ import {AsyncValueHolder, ModuleContext} from "fmko-typescript-common";
 import FSKService from "./FSKService";
 import RegistrationStateUtil from "../util/RegistrationStateUtil";
 import {RegistrationState} from "../model/RegistrationState";
+import {ErrorDisplay} from "fmko-ts-widgets";
 import TreatmentWillType = FSKTypes.TreatmentWillType;
 import RegistrationTypeWrapper = FSKTypes.RegistrationTypeWrapper;
 
@@ -21,7 +22,7 @@ export default class TreatmentWillCache {
             return null;
         }
     }, error => {
-        // Ignore
+        ErrorDisplay.showError("Der skete en fejl", `Der skete en uventet fejl ved aflæsning af patientens behandlingstestamente.`);
     });
 
     public setStale(removeRegistration?: boolean) {
@@ -53,7 +54,7 @@ export default class TreatmentWillCache {
         return await this.fskService.getTreatmentWillForPatient(this.getPatientCpr());
     }
 
-    private getPatientCpr(): string{
+    private getPatientCpr(): string {
         return this.moduleContext.getPatient().getCpr();
     }
 }
