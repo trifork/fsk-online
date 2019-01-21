@@ -1,6 +1,5 @@
 import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler} from "fmko-typescript-common";
 import {TemplateWidget} from "fmko-ts-mvc";
-import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
 import LivingWillCache from "../services/LivingWillCache";
 import FSKConfig from "../main/FSKConfig";
@@ -40,7 +39,7 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
     }
 
     public getTemplate(): string {
-        return loadTemplate("tabs/livingWillTestamentTab.html");
+        return require("./livingWillTestamentTab.html");
     }
 
     public setupBindings(): void {

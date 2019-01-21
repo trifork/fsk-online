@@ -1,6 +1,5 @@
 import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
-import loadTemplate from "../../main/TemplateLoader";
 import {
     ButtonStyle,
     CheckboxWrapper,
@@ -49,7 +48,7 @@ export default class LivingWillPanel extends TemplateWidget {
     }
 
     public getTemplate(): string {
-        return loadTemplate("panels/living-will-panels/livingWillPanel.html");
+        return require("./livingWillPanel.html");
     }
 
     public setupBindings(): any {

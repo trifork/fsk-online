@@ -1,6 +1,5 @@
 import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler, Widget} from "fmko-typescript-common";
 import {TemplateWidget} from "fmko-ts-mvc";
-import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
 import {
     ButtonStyle,
@@ -63,7 +62,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     }
 
     public getTemplate(): string {
-        return loadTemplate("tabs/organDonorRegistrationTab.html");
+        return require("./organDonorRegistrationTab.html");
     }
 
     public setupBindings(): void {

@@ -1,6 +1,5 @@
 import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
-import loadTemplate from "../../main/TemplateLoader";
 import {
     ButtonStyle,
     CheckboxWrapper,
@@ -59,7 +58,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
     }
 
     public getTemplate(): string {
-        return loadTemplate("panels/treatment-will-panels/treatmentWillPanel.html");
+        return require("./treatmentWillPanel.html");
     }
 
     public setupBindings(): any {

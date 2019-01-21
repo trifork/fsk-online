@@ -9,12 +9,16 @@
   ],
   "compilerOptions": {
     "moduleResolution": "node",
-    "target": "ES5",
-    "outDir": "target/js",
-    "sourceMap": true,
+    "target": "es5",
     "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "importHelpers": true,
+    "noEmitHelpers": true,
+    "strictNullChecks": false,
     "esModuleInterop": true,
-    "lib": ["es2018", "dom"]
+    "lib": [
+      "dom", "es2018"
+    ]
   },
   "atom": {
     "rewriteTsconfig": true
