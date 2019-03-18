@@ -1,4 +1,4 @@
-import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler} from "fmko-typescript-common";
+import {LoginTypeUtil, ModuleContext, TabbedPanel, UserContext, ValueChangeHandler} from "fmko-typescript-common";
 import {TemplateWidget} from "fmko-ts-mvc";
 import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
@@ -92,7 +92,7 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
-        return FSKUserUtil.isDoctorOrNurseWithoutElevatedRights(userContext);
+        return !LoginTypeUtil.loggedInWithPoces() && FSKUserUtil.isDoctorOrNurseWithoutElevatedRights(userContext);
     }
 
     public applicationContextIdChanged(applicationContextId: string): void {
