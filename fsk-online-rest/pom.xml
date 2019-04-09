@@ -3,13 +3,13 @@
     <parent>
         <groupId>dk.sundhedsdatastyrelsen.fsk</groupId>
         <artifactId>fsk-online-parent</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>1.0.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>fsk-online-rest</artifactId>
     <packaging>war</packaging>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.3</version>
     <name>fsk-online-rest</name>
 
     <properties>
@@ -48,7 +48,7 @@
         <dependency>
             <groupId>dk.sundhedsdatastyrelsen.fsk</groupId>
             <artifactId>fsk-online-schemas</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
+            <version>1.0.3</version>
         </dependency>
 
         <!-- Servlet API dependency -->
