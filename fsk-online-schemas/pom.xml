@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>dk.sundhedsdatastyrelsen.fsk</groupId>
 		<artifactId>fsk-online-parent</artifactId>
-		<version>1.0.3</version>
+		<version>1.0.4-SNAPSHOT</version>
 	</parent>
 
 	<properties>
