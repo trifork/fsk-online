@@ -2,12 +2,11 @@ import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
 import loadTemplate from "../../main/TemplateLoader";
 import {Checkbox, HTML} from "fmko-ts-widgets";
-import {IOrganDonor} from "../../model/OrganDonorRegistrationType";
 import {Widget} from "fmko-typescript-common";
 import SDSButton from "../../elements/SDSButton";
 import OrganDonorRegistration = FSKTypes.OrganDonorRegistrationType;
 
-export default class LimitedAccessPermissionPanel extends TemplateWidget implements IOrganDonor<FSKTypes.OrganDonorRegistrationType> {
+export default class LimitedAccessPermissionPanel extends TemplateWidget {
 
     public static deps = () => [IoC];
 
@@ -38,7 +37,6 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
                     row = new HTML();
                     row.addStyleName(`row`);
                     row.getCssStyle().paddingBottom = `8px`;
-                    row.getCssStyle().paddingLeft = `8px`;
                 }
 
                 this.wrapInRow(row, checkbox);
@@ -47,10 +45,6 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
         this.appendWidgetOnVarName(row, `limited-access-checkboxes`);
 
         this.appendWidgetOnVarName(checkboxes.requiresRelativeAcceptance, `family-consent`, true);
-    }
-
-    public getType(): FSKTypes.OrganDonorPermissionType {
-        return "LIMITED";
     }
 
     public setEnabled(enabled: boolean): void {
@@ -71,7 +65,6 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
             return null;
         }
         return <FSKTypes.OrganDonorRegistrationType>{
-            permissionType: this.getType(),
             permissionForHeart: !!this.checkboxes.permissionForHeart.getValue(),
             permissionForKidneys: !!this.checkboxes.permissionForKidneys.getValue(),
             permissionForLungs: !!this.checkboxes.permissionForLungs.getValue(),
@@ -83,6 +76,8 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
             requiresRelativeAcceptance: !!this.checkboxes.requiresRelativeAcceptance.getValue(),
         };
     }
+
+
 
     public setValue(value: FSKTypes.OrganDonorRegistrationType, isFSKSupporter: boolean): void {
         if (value) {
@@ -99,12 +94,9 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
                         `requiresRelativeAcceptance`
                     ].includes(key)) {
                     this.checkboxes[key].setValue(value);
-                    if (isFSKSupporter) {
-                        if (value) {
-                            this.checkboxes[key].getInput().onclick = ( () => false);
-                        } else {
-                            this.checkboxes[key].setEnabled(false);
-                        }
+                    this.checkboxes[key].setEnabled(isFSKSupporter && value || !isFSKSupporter);
+                    if (isFSKSupporter && value) {
+                        this.checkboxes[key].getInput().onclick = ( () => false);
                     }
                 }
             });
@@ -145,23 +137,23 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget impleme
 
     public createCheckboxes(): OrganRegistrationCheckBoxes {
         const heartCheckbox = new Checkbox(false, `Hjerte`);
-        const kidneyCheckbox = new Checkbox(false, `Nyrer`);
         const lungsCheckbox = new Checkbox(false, `Lunger`);
-        const corneasCheckbox = new Checkbox(false, `Hornhinder`);
         const liverCheckbox = new Checkbox(false, `Lever`);
-        const intestineCheckbox = new Checkbox(false, `Tyndtarm`);
         const pancreasCheckbox = new Checkbox(false, `Bugspytkirtel`);
+        const kidneyCheckbox = new Checkbox(false, `Nyrer`);
+        const corneasCheckbox = new Checkbox(false, `Hornhinder`);
+        const intestineCheckbox = new Checkbox(false, `Tyndtarm`);
         const skinCheckbox = new Checkbox(false, `Hud`);
         const consentCheckBox = new Checkbox(false, `Forudsætter accept fra patientens pårørende`);
 
         this.checkboxes = <OrganRegistrationCheckBoxes>{
             permissionForHeart: heartCheckbox,
-            permissionForKidneys: kidneyCheckbox,
             permissionForLungs: lungsCheckbox,
-            permissionForCornea: corneasCheckbox,
             permissionForLiver: liverCheckbox,
-            permissionForSmallIntestine: intestineCheckbox,
             permissionForPancreas: pancreasCheckbox,
+            permissionForKidneys: kidneyCheckbox,
+            permissionForCornea: corneasCheckbox,
+            permissionForSmallIntestine: intestineCheckbox,
             permissionForSkin: skinCheckbox,
             requiresRelativeAcceptance: consentCheckBox
         };

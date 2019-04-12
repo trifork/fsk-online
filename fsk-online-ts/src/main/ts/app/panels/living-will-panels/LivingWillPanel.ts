@@ -99,7 +99,7 @@ export default class LivingWillPanel extends TemplateWidget {
                     this.getValue());
                 this.updateCache(true, `Livstestamente oprettet`);
             } catch (error) {
-                ErrorDisplay.showError("Der skete en fejl", ErrorUtil.getMessage(error));
+                ErrorDisplay.showError("Der opstod en fejl", ErrorUtil.getMessage(error));
             }
         };
 
@@ -111,7 +111,7 @@ export default class LivingWillPanel extends TemplateWidget {
                     this.getValue());
                 this.updateCache(true, `Livstestamente opdateret`);
             } catch (error) {
-                ErrorDisplay.showError("Der skete en fejl", ErrorUtil.getMessage(error));
+                ErrorDisplay.showError("Der opstod en fejl", ErrorUtil.getMessage(error));
             }
         };
 
@@ -140,7 +140,7 @@ export default class LivingWillPanel extends TemplateWidget {
                     }
                 }
             } catch (error) {
-                ErrorDisplay.showError("Der skete en fejl", ErrorUtil.getMessage(error));
+                ErrorDisplay.showError("Der opstod en fejl", ErrorUtil.getMessage(error));
             }
         };
         this.buttonStrategy.updateButton.setEnabled(false);

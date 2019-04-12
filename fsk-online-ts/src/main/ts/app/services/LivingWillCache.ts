@@ -22,7 +22,7 @@ export default class LivingWillCache {
             return null;
         }
     }, error => {
-        ErrorDisplay.showError("Der skete en fejl", `Der skete en uventet fejl ved aflæsning af patientens livstestamente.`);
+        ErrorDisplay.showError("Der opstod en fejl", `Der opstod en uventet fejl ved aflæsning af patientens livstestamente.`);
     });
 
     public setStale(removeRegistration?: boolean) {

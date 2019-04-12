@@ -251,15 +251,14 @@ button.sds-outline-button.danger:active {
 }
 
 .organ-donor-panel {
-    border: 1px solid #005a8d;
     margin: 0 16px;
-    border-radius: 4px;
     padding-right: 33%;
 }
 
 .sds-line {
     border-bottom: 1px solid #007ec5;
     padding-top: 8px;
+    margin-bottom: 8px;
 }
 
 .fsk-warning {

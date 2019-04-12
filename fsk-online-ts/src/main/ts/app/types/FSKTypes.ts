@@ -1,6 +1,6 @@
 namespace FSKTypes {
 
-    export type OrganDonorPermissionType = "FULL" | "LIMITED" | "NONE" | "DONT_KNOW";
+    export type OrganDonorPermissionType = "FULL" | "FULL_WITH_RESEARCH" | "LIMITED" | "LIMITED_WITH_RESEARCH" | "NONE" | "DONT_KNOW";
 
     export interface OrganDonorRegistrationType {
         permissionType: OrganDonorPermissionType;

@@ -20,7 +20,7 @@ export default class FSKOrganDonorCache {
             return null;
         }
     }, error => {
-        ErrorDisplay.showError("Der skete en fejl", `Der skete en uventet fejl ved aflæsning af patientens organdonorregistrering.`);
+        ErrorDisplay.showError("Der opstod en fejl", `Der opstod en uventet fejl ved aflæsning af patientens organdonorregistrering.`);
     });
 
     public setStale(removeRegistration: boolean) {

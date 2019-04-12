@@ -16,12 +16,13 @@
         </xs:annotation>
         <xs:restriction base="xs:string">
             <xs:enumeration value="FULL" />
+            <xs:enumeration value="FULL_WITH_RESEARCH" />
             <xs:enumeration value="LIMITED" />
+            <xs:enumeration value="LIMITED_WITH_RESEARCH" />
             <xs:enumeration value="NONE" />
             <xs:enumeration value="DONT_KNOW" />
         </xs:restriction>
     </xs:simpleType>
-
     <xs:complexType name="OrganDonorRegistration">
         <xs:annotation>
             <xs:documentation>

@@ -1,37 +1,30 @@
 import {Widget} from "fmko-typescript-common";
-import {IOrganDonor} from "../../model/OrganDonorRegistrationType";
-import {Checkbox, Tag} from "fmko-ts-widgets";
+import {Checkbox} from "fmko-ts-widgets";
 import SDSButton from "../../elements/SDSButton";
 
-export default class FullAccessPermissionPanel extends Widget implements IOrganDonor<FSKTypes.OrganDonorRegistrationType> {
+export default class FullAccessPermissionPanel extends Widget {
 
     public static deps = () => [];
 
-    private fullPermissionCheckBox: Checkbox;
+    private requiresRelativeAcceptanceCheckBox: Checkbox;
     private updateButton: SDSButton;
 
     public constructor() {
         super();
         this.element = document.createElement(`div`);
         this.element.className = `card full-access-panel`;
-        this.fullPermissionCheckBox = new Checkbox(false, `Forudsætter accept fra patientens pårørende`);
-        this.fullPermissionCheckBox.getCssStyle().fontSize = `14px`;
-        this.fullPermissionCheckBox.addValueChangeHandler(() => {
+        this.requiresRelativeAcceptanceCheckBox = new Checkbox(false, `Forudsætter accept fra patientens pårørende`);
+        this.requiresRelativeAcceptanceCheckBox.getCssStyle().fontSize = `14px`;
+        this.requiresRelativeAcceptanceCheckBox.addValueChangeHandler(() => {
             if(this.updateButton){
                 this.updateButton.setEnabled(true);
             }
         });
-        const pTag = new Tag(`p`,`Detaljer for <b>fuld tilladelse</b>`);
-        pTag.getCssStyle().fontSize = `16px`;
-        this.add(pTag);
-        this.add(this.fullPermissionCheckBox);
+        this.add(this.requiresRelativeAcceptanceCheckBox);
     }
 
-    getValue(): FSKTypes.OrganDonorRegistrationType {
-        return <FSKTypes.OrganDonorRegistrationType>{
-            permissionType: this.getType(),
-            requiresRelativeAcceptance: this.fullPermissionCheckBox.getValue()
-        };
+    public getRequiresRelativeAcceptance(): boolean {
+        return this.requiresRelativeAcceptanceCheckBox.getValue();
     }
 
     public setUpdateButton(updateButton: SDSButton){
@@ -39,19 +32,14 @@ export default class FullAccessPermissionPanel extends Widget implements IOrganD
     }
 
     public setEnabled() {
-        this.fullPermissionCheckBox.setEnabled(true);
+        this.requiresRelativeAcceptanceCheckBox.setEnabled(true);
     }
 
-    public setValue(organDonorRegistation: FSKTypes.OrganDonorRegistrationType, isFSKSupporter: boolean) {
-        this.fullPermissionCheckBox.setValue(!!organDonorRegistation && !!organDonorRegistation.requiresRelativeAcceptance);
+    public setRequiresRelativeAcceptance(value: boolean, isFSKSupporter: boolean) {
+        this.requiresRelativeAcceptanceCheckBox.setValue(value);
         if (isFSKSupporter) {
-            this.fullPermissionCheckBox.setEnabled(!!organDonorRegistation && !!organDonorRegistation.requiresRelativeAcceptance);
-            this.fullPermissionCheckBox.getInput().onclick = ( () => false);
+            this.requiresRelativeAcceptanceCheckBox.setEnabled(value);
+            this.requiresRelativeAcceptanceCheckBox.getInput().onclick = ( () => false);
         }
     }
-
-    public getType(): FSKTypes.OrganDonorPermissionType {
-        return "FULL";
-    }
-
 }
