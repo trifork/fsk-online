@@ -1,6 +1,6 @@
 {
   "name": "fsk-online",
-  "version": "1.0.5",
+  "version": "1.0.6-SNAPSHOT",
   "scripts": {},
   "devDependencies": {
     "awesome-typescript-loader": "^4.0.0",
