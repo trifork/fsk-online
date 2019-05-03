@@ -69,7 +69,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
         this.terminallyIllCheckbox = new CheckboxWrapper(this.getElementByVarName(`terminally-ill-checkbox`));
         this.terminallyIllPanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
         this.terminallyIllPanel.setUpdateButton(this.buttonStrategy.updateButton);
-        //this.addHandlerForCheckboxAndPanel(this.terminallyIllCheckbox, this.terminallyIllPanel);
+        this.addHandlerForCheckboxAndPanel(this.terminallyIllCheckbox);
 
         this.addAndReplaceWidgetByVarName(this.terminallyIllPanel, `terminally-ill-panel`);
 
@@ -192,15 +192,17 @@ export default class TreatmentWillPanel extends TemplateWidget {
         Widget.setVisible(this.getElementByVarName(`living-will-exists`), await livingWillExist === RegistrationState.REGISTERED && isAdmin);
     }
 
-    private addHandlerForCheckboxAndPanel(checkBox: CheckboxWrapper, panel: TreatmentWillWishPanel) {
+    private addHandlerForCheckboxAndPanel(checkBox: CheckboxWrapper, panel?: TreatmentWillWishPanel) {
         checkBox.addValueChangeHandler(handler => {
             // If you are administrator you can do whatever, otherwise you can only set it to tru, which is in the initial
             if (this.isAdministratorUser || handler.getValue()) {
                 const value = handler.getValue();
-                panel.setVisible(value);
                 this.buttonStrategy.updateButton.setEnabled(true);
-                if(!value){
-                    panel.setValue(null);
+                if (panel) {
+                    panel.setVisible(value);
+                    if(!value){
+                        panel.setValue(null);
+                    }
                 }
             }
         });
