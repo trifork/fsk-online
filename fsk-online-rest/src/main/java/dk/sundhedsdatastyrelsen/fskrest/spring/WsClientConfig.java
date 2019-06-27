@@ -39,44 +39,33 @@ public class WsClientConfig {
 
     @Bean
     public IdCardProvider idCardProvider(final HttpServletRequest req) {
-        return new IdCardProvider() {
-            @Override
-            public String getIdCard() {
-                String idCardHeader = req.getHeader("X-ID-Card");
-                if (idCardHeader == null) {
-                    logger.info("No ID-card found for user. Request: " + req.getRequestURI());
-                    return null;
-                }
-                byte[] decodedIdCardBytes = Base64.decodeBase64(idCardHeader);
-                return new String(decodedIdCardBytes, Charset.forName("UTF-8"));
+        return () -> {
+            String idCardHeader = req.getHeader("X-ID-Card");
+            if (idCardHeader == null) {
+                logger.info("No ID-card found for user. Request: " + req.getRequestURI());
+                return null;
             }
+            byte[] decodedIdCardBytes = Base64.decodeBase64(idCardHeader);
+            return new String(decodedIdCardBytes, Charset.forName("UTF-8"));
         };
     }
 
     @Bean
     public RequestedRoleProvider requestedRoleProvider(final HttpServletRequest req) {
-        return new RequestedRoleProvider() {
-            @Override
-            public String getRequestedRole() {
-                UserInfo userInfo = UserInfoHolder.get();
-                if (userInfo != null) {
-                    Role role =  Role.forName(UserInfoHolder.get().requestedRole);
-                    return role.getSchemaName();
-                } else {
-                    return Role.Citizen.getSchemaName();
-                }
+        return () -> {
+            UserInfo userInfo = UserInfoHolder.get();
+            if (userInfo != null) {
+                Role role =  Role.forName(UserInfoHolder.get().requestedRole);
+                return role.getSchemaName();
+            } else {
+                return Role.Citizen.getSchemaName();
             }
         };
     }
 
     @Bean
     public FlowIdProvider flowIdProvider(final HttpServletRequest req) {
-        return new FlowIdProvider() {
-            @Override
-            public String getCurrentFlowId() {
-                return req.getHeader("X-Request-Handle");
-            }
-        };
+        return () -> req.getHeader("X-Request-Handle");
     }
 
     @Bean

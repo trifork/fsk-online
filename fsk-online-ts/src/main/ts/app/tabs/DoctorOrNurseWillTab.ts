@@ -1,6 +1,5 @@
 import {LoginTypeUtil, ModuleContext, TabbedPanel, UserContext, ValueChangeHandler} from "fmko-typescript-common";
 import {TemplateWidget} from "fmko-ts-mvc";
-import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
 import {ButtonStyle, DialogOption, PopupDialog, PopupDialogKind} from "fmko-ts-widgets";
 import TreatmentWillCache from "../services/TreatmentWillCache";
@@ -46,7 +45,7 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
     }
 
     public getTemplate(): string {
-        return loadTemplate("tabs/doctorOrNurseWillTab.html");
+        return require("./doctorOrNurseWillTab.html");
     }
 
     public setupBindings(): any {

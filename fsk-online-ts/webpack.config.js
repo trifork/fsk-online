@@ -1,20 +1,18 @@
 'use strict';
 
-const base = require('fmko-typescript-build');
-const webpack = require('webpack');
+const webpack = require('fmko-typescript-build');
 
-const baseConfig = base.webpack.dev({
+module.exports = (_, options) => webpack.buildTemplate({
+    options,
     entry: './src/main/ts/index.ts',
-    output: {
-        filename: 'target/js/fsk.js'
-    },
-    devtool: 'source-map'
+    outputPath: __dirname + '/',
+    fileName: 'target/js/fsk.js',
+    devtool: 'source-map',
+    tsLintPath: undefined, // 'tslint.json', too many errors
+    copyConfig: [
+        {from: 'src/main/webapp/css', to: `target/css/`}
+    ],
+    aliases: {
+        moment$: `${__dirname}/node_modules/moment/moment.js`
+    }
 });
-
-baseConfig.plugins = [].concat(baseConfig.plugins).concat([
-    new webpack.DefinePlugin({
-        IE8: false
-    })
-]);
-
-module.exports = baseConfig;

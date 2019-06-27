@@ -16,14 +16,6 @@ import LivingWillCache from "../services/LivingWillCache";
 import DoctorOrNurseWillTab from "../tabs/DoctorOrNurseWillTab";
 import {RegistrationState} from "../model/RegistrationState";
 
-if (!("remove" in Element.prototype)) {
-    Element.prototype[`remove`] = function () {
-        if (this.parentNode) {
-            this.parentNode.removeChild(this);
-        }
-    };
-}
-
 export default class FSKOnlineModule extends DefaultModule {
 
     public static SYSTEM_NAME = "FSK";

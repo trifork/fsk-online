@@ -1,17 +1,16 @@
 import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
-import loadTemplate from "../../main/TemplateLoader";
 import SDSButton from "../../elements/SDSButton";
 import {ModuleContext} from "fmko-typescript-common";
 import FSKUserUtil from "../../util/FSKUserUtil";
-import CheckboxWrapper from "fmko-ts-widgets/target/lib/wrappers/CheckboxWrapper";
+import {CheckboxWrapper} from "fmko-ts-widgets";
 import TreatmentWillAcceptanceType = FSKTypes.TreatmentWillAcceptanceType;
 
 export default class TreatmentWillWishPanel extends TemplateWidget {
 
     public static deps = () => [IoC, "ModuleContext"];
 
-    private value: TreatmentWillAcceptanceType;
+    private value: TreatmentWillAcceptanceType | null | undefined;
     private checkboxes: CheckboxWrapper[];
     private checkboxToStringMap: WeakMap<CheckboxWrapper, TreatmentWillAcceptanceType>;
     private isAdministratorUser: boolean;
@@ -28,7 +27,7 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
     }
 
     public getTemplate(): string {
-        return loadTemplate(`panels/treatment-will-panels/treatmentWillWishPanel.html`);
+        return require(`./treatmentWillWishPanel.html`);
     }
 
     public setupBindings(): any {
@@ -68,7 +67,7 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
         });
     }
 
-    public getValue(): TreatmentWillAcceptanceType {
+    public getValue(): TreatmentWillAcceptanceType | null | undefined {
         return this.value;
     }
 
@@ -80,7 +79,7 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
         this.updateButton = updateButton;
     }
 
-    public setValue(value: TreatmentWillAcceptanceType) {
+    public setValue(value: TreatmentWillAcceptanceType | null | undefined) {
         this.value = value;
         if (value) {
             this.checkboxes.forEach(checkbox => {

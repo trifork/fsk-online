@@ -1,6 +1,5 @@
 import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler} from "fmko-typescript-common";
 import {TemplateWidget} from "fmko-ts-mvc";
-import loadTemplate from "../main/TemplateLoader";
 import {IoC} from "fmko-ts-ioc";
 import TreatmentWillCache from "../services/TreatmentWillCache";
 import FSKConfig from "../main/FSKConfig";
@@ -37,7 +36,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     }
 
     public getTemplate(): string {
-        return loadTemplate("tabs/treatmentWillTab.html");
+        return require("./treatmentWillTab.html");
     }
 
     public setupBindings(): any {

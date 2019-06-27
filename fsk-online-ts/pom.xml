@@ -58,17 +58,17 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>grunt-build</id>
+                        <id>npm-build</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <environmentVariables>
-                                <key>NODE_ENV</key>
-                                <value>production</value>
-                            </environmentVariables>
-                            <executable>${grunt.command}</executable>
+                            <executable>${npm.command}</executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>${webpack.mode}</argument>
+                            </arguments>
                         </configuration>
                     </execution>
                 </executions>

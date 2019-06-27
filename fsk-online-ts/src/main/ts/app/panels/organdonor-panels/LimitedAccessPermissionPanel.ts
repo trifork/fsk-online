@@ -1,6 +1,5 @@
 import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
-import loadTemplate from "../../main/TemplateLoader";
 import {Checkbox, HTML} from "fmko-ts-widgets";
 import {Widget} from "fmko-typescript-common";
 import SDSButton from "../../elements/SDSButton";
@@ -20,7 +19,7 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget {
     }
 
     public getTemplate(): string {
-        return loadTemplate(`panels/organdonor-panels/limitedAccessPermissionPanel.html`);
+        return require(`./limitedAccessPermissionPanel.html`);
     }
 
     public setupBindings(): any {
