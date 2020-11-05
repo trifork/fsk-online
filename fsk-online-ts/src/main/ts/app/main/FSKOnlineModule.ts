@@ -1,11 +1,4 @@
-import {
-    AsyncResponse,
-    DefaultModule,
-    getVersionInfo,
-    ModuleRegistryFactory,
-    PersonInfo,
-    VersionImpl
-} from "fmko-typescript-common";
+import {AsyncResponse, DefaultModule, getVersionInfo, ModuleRegistryFactory, PersonInfo, VersionImpl} from "fmko-ts-common";
 import FSKOnlineContainer from "./FSKOnlineContainer";
 import OrganDonorRegistrationTab from "../tabs/OrganDonorRegistrationTab";
 import LivingWillTestamentTab from "../tabs/LivingWillTestamentTab";
@@ -30,32 +23,31 @@ export default class FSKOnlineModule extends DefaultModule {
     private treatmentWillTestamentTab: TreatmentWillTab;
     private doctorOrNurseWillTab: DoctorOrNurseWillTab;
 
-    public constructor(private container: FSKOnlineContainer) {
+    constructor(private container: FSKOnlineContainer) {
         super(FSKOnlineModule.MODULE_IDENTIFIER);
     }
 
     public register(): void {
-            ModuleRegistryFactory.getInstance().setupModuleContext(FSKOnlineModule.MODULE_IDENTIFIER, this);
+        ModuleRegistryFactory.getInstance().setupModuleContextByReference(this);
+        this.organDonorCache = this.container.resolve<FSKOrganDonorCache>(FSKOrganDonorCache);
+        this.treatmentWillCache = this.container.resolve<TreatmentWillCache>(TreatmentWillCache);
+        this.livingWillCache = this.container.resolve<LivingWillCache>(LivingWillCache);
 
-
-        this.organDonorCache = <FSKOrganDonorCache>this.container.resolve(FSKOrganDonorCache);
-        this.treatmentWillCache = <TreatmentWillCache>this.container.resolve(TreatmentWillCache);
-        this.livingWillCache = <LivingWillCache>this.container.resolve(LivingWillCache);
         this.initAfterModuleRegistered();
-        ModuleRegistryFactory.getInstance().moduleInitializationCompleted(FSKOnlineModule.MODULE_IDENTIFIER);
+        ModuleRegistryFactory.getInstance().moduleInitializationCompletedByReference(this);
 
     }
 
-    public initAfterModuleRegistered() {
-        this.organDonorRegisterTab = <OrganDonorRegistrationTab>this.container.resolve(OrganDonorRegistrationTab);
+    public initAfterModuleRegistered(): void {
+        this.organDonorRegisterTab = this.container.resolve<OrganDonorRegistrationTab>(OrganDonorRegistrationTab);
         this.addTabbedPanel(this.organDonorRegisterTab);
-        this.livingWillTestamentTab = <LivingWillTestamentTab>this.container.resolve(LivingWillTestamentTab);
+        this.livingWillTestamentTab = this.container.resolve<LivingWillTestamentTab>(LivingWillTestamentTab);
         this.addTabbedPanel(this.livingWillTestamentTab);
-        this.treatmentWillTestamentTab = <TreatmentWillTab>this.container.resolve(TreatmentWillTab);
+        this.treatmentWillTestamentTab = this.container.resolve<TreatmentWillTab>(TreatmentWillTab);
         this.addTabbedPanel(this.treatmentWillTestamentTab);
-        this.doctorOrNurseWillTab = <DoctorOrNurseWillTab>this.container.resolve(DoctorOrNurseWillTab);
+        this.doctorOrNurseWillTab = this.container.resolve<DoctorOrNurseWillTab>(DoctorOrNurseWillTab);
         this.addTabbedPanel(this.doctorOrNurseWillTab);
-        FSKOnlineModule.loadLocalStylesheet("/fsk-online-ts/css/fsk-online.css");
+        this.loadLocalStylesheet("/fsk-online-ts/css/fsk-online.css");
     }
 
     public getVersionInfo(): string {
@@ -78,7 +70,7 @@ export default class FSKOnlineModule extends DefaultModule {
         return result;
     }
 
-    public refreshPatient() {
+    public refreshPatient(): void {
         if (this.doctorOrNurseWillTab.isVisible()) {
             this.livingWillCache.registrationState = RegistrationState.UNCHECKED;
             this.treatmentWillCache.registrationState = RegistrationState.UNCHECKED;
@@ -90,11 +82,11 @@ export default class FSKOnlineModule extends DefaultModule {
         }
     }
 
-    private static loadLocalStylesheet(pathToCssFile: string) {
+    private loadLocalStylesheet(pathToCssFile: string): void {
         const styleSheet = document.createElement("link");
         styleSheet.setAttribute("rel", "stylesheet");
         styleSheet.setAttribute("type", "text/css");
-        styleSheet.setAttribute("href", `${pathToCssFile}`);
-        document.getElementsByTagName("head")[0].appendChild(styleSheet);
+        styleSheet.setAttribute("href", pathToCssFile);
+        document.head.appendChild(styleSheet);
     }
 }

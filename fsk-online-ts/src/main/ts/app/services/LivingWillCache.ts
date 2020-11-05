@@ -1,4 +1,4 @@
-import {AsyncValueHolder, ModuleContext} from "fmko-typescript-common";
+import {AsyncValueHolder, ModuleContext} from "fmko-ts-common";
 import FSKService from "./FSKService";
 import {RegistrationState} from "../model/RegistrationState";
 import RegistrationStateUtil from "../util/RegistrationStateUtil";
@@ -7,12 +7,6 @@ import LivingWillType = FSKTypes.LivingWillType;
 import LivingWillWrapper = FSKTypes.RegistrationTypeWrapper;
 
 export default class LivingWillCache {
-    public static deps = () => ["ModuleContext", FSKService];
-
-    constructor(private moduleContext: ModuleContext, private fskService: FSKService) {
-
-    }
-
     public registrationState: RegistrationState = RegistrationState.UNCHECKED;
 
     public readonly livingWill = new AsyncValueHolder<LivingWillWrapper<LivingWillType>>(async () => {
@@ -24,6 +18,12 @@ export default class LivingWillCache {
     }, error => {
         ErrorDisplay.showError("Der opstod en fejl", `Der opstod en uventet fejl ved aflæsning af patientens livstestamente.`);
     });
+
+    public static deps = () => ["ModuleContext", FSKService];
+
+    constructor(private moduleContext: ModuleContext, private fskService: FSKService) {
+
+    }
 
     public setStale(removeRegistration?: boolean) {
         if (removeRegistration === true) {
@@ -50,10 +50,6 @@ export default class LivingWillCache {
         return this.registrationState;
     }
 
-    private async getRegistration(): Promise<LivingWillWrapper<LivingWillType>> {
-        return await this.fskService.getLivingWillForPatient(this.getPatientCpr());
-    }
-
     public async deleteRegistration(): Promise<RegistrationState> {
         if (this.registrationState === RegistrationState.REGISTERED) {
             try {
@@ -64,6 +60,10 @@ export default class LivingWillCache {
             }
         }
         return this.registrationState;
+    }
+
+    private async getRegistration(): Promise<LivingWillWrapper<LivingWillType>> {
+        return await this.fskService.getLivingWillForPatient(this.getPatientCpr());
     }
 
     private getPatientCpr(): string {

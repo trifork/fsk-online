@@ -1,4 +1,4 @@
-import {LoginTypeUtil, ModuleContext, TabbedPanel, UserContext, ValueChangeHandler} from "fmko-typescript-common";
+import {LoginTypeUtil, ModuleContext, TabbedPanel, UserContext, ValueChangeHandler} from "fmko-ts-common";
 import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
 import {ButtonStyle, DialogOption, PopupDialog, PopupDialogKind} from "fmko-ts-widgets";
@@ -25,13 +25,13 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
 
     public static deps = () => [IoC, "ModuleContext", "FSKConfig", LivingWillCache, TreatmentWillCache, FSKService, "RootElement"];
 
-    public constructor(protected container: IoC,
-                       private moduleContext: ModuleContext,
-                       private fskConfig: FSKConfig,
-                       private livingWillCache: LivingWillCache,
-                       private treatmentWillCache: TreatmentWillCache,
-                       private fskService: FSKService,
-                       private rootElement: HTMLElement) {
+    constructor(protected container: IoC,
+        private moduleContext: ModuleContext,
+        private fskConfig: FSKConfig,
+        private livingWillCache: LivingWillCache,
+        private treatmentWillCache: TreatmentWillCache,
+        private fskService: FSKService,
+        private rootElement: HTMLElement) {
         super(container);
         this.element = document.createElement(`div`);
     }
@@ -115,12 +115,12 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
     public async showLogDialog(): Promise<void> {
         const yesOption = <DialogOption>{
             buttonStyle: ButtonStyle.GREEN,
-            text: `Videre`,
+            text: `Videre`
         };
 
         const noOption = <DialogOption>{
             buttonStyle: ButtonStyle.RED,
-            text: `Fortryd`,
+            text: `Fortryd`
         };
 
         const yesClicked = await PopupDialog.display(
@@ -151,10 +151,10 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
 
         if (loading) {
             if (this.initialized) {
-
+                // ignored
             }
         } else if (failed) {
-            //this.treatmentWillPanel.setData(value);
+            // this.treatmentWillPanel.setData(value);
         } else {
             this.treatmentWillPanel.setData(value);
         }
@@ -170,10 +170,10 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
 
         if (loading) {
             if (this.initialized) {
-
+                // ignored
             }
         } else if (failed) {
-            //livingPanel.setData(value);
+            // livingPanel.setData(value);
         } else {
             livingPanel.setData(value);
         }

@@ -1,18 +1,18 @@
 import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
 import {Checkbox, HTML} from "fmko-ts-widgets";
-import {Widget} from "fmko-typescript-common";
+import {Widget} from "fmko-ts-common";
 import SDSButton from "../../elements/SDSButton";
 import OrganDonorRegistration = FSKTypes.OrganDonorRegistrationType;
 
 export default class LimitedAccessPermissionPanel extends TemplateWidget {
 
-    public static deps = () => [IoC];
-
     private checkboxes: OrganRegistrationCheckBoxes;
     private updateButton: SDSButton;
 
-    public constructor(protected container: IoC) {
+    public static deps = () => [IoC];
+
+    constructor(protected container: IoC) {
         super(container);
         this.element = document.createElement(`div`);
         this.init();
@@ -64,15 +64,15 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget {
             return null;
         }
         return <FSKTypes.OrganDonorRegistrationType>{
+            permissionForCornea: !!this.checkboxes.permissionForCornea.getValue(),
             permissionForHeart: !!this.checkboxes.permissionForHeart.getValue(),
             permissionForKidneys: !!this.checkboxes.permissionForKidneys.getValue(),
-            permissionForLungs: !!this.checkboxes.permissionForLungs.getValue(),
-            permissionForCornea: !!this.checkboxes.permissionForCornea.getValue(),
             permissionForLiver: !!this.checkboxes.permissionForLiver.getValue(),
-            permissionForSmallIntestine: !!this.checkboxes.permissionForSmallIntestine.getValue(),
+            permissionForLungs: !!this.checkboxes.permissionForLungs.getValue(),
             permissionForPancreas: !!this.checkboxes.permissionForPancreas.getValue(),
             permissionForSkin: !!this.checkboxes.permissionForSkin.getValue(),
-            requiresRelativeAcceptance: !!this.checkboxes.requiresRelativeAcceptance.getValue(),
+            permissionForSmallIntestine: !!this.checkboxes.permissionForSmallIntestine.getValue(),
+            requiresRelativeAcceptance: !!this.checkboxes.requiresRelativeAcceptance.getValue()
         };
     }
 
@@ -80,21 +80,21 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget {
 
     public setValue(value: FSKTypes.OrganDonorRegistrationType, isFSKSupporter: boolean): void {
         if (value) {
-            Object.entries(value).forEach(([key, value]) => {
+            Object.entries(value).forEach(([key, objValue]) => {
                 if ([
-                        `permissionForHeart`,
-                        `permissionForKidneys`,
-                        `permissionForLungs`,
-                        `permissionForCornea`,
-                        `permissionForLiver`,
-                        `permissionForSmallIntestine`,
-                        `permissionForPancreas`,
-                        `permissionForSkin`,
-                        `requiresRelativeAcceptance`
-                    ].includes(key)) {
-                    this.checkboxes[key].setValue(value);
-                    this.checkboxes[key].setEnabled(isFSKSupporter && value || !isFSKSupporter);
-                    if (isFSKSupporter && value) {
+                    `permissionForHeart`,
+                    `permissionForKidneys`,
+                    `permissionForLungs`,
+                    `permissionForCornea`,
+                    `permissionForLiver`,
+                    `permissionForSmallIntestine`,
+                    `permissionForPancreas`,
+                    `permissionForSkin`,
+                    `requiresRelativeAcceptance`
+                ].includes(key)) {
+                    this.checkboxes[key].setValue(objValue);
+                    this.checkboxes[key].setEnabled(isFSKSupporter && objValue || !isFSKSupporter);
+                    if (isFSKSupporter && objValue) {
                         this.checkboxes[key].getInput().onclick = ( () => false);
                     }
                 }
@@ -106,15 +106,6 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget {
 
     public tearDownBindings(): any {
         // Unused
-    }
-
-    private wrapInRow(row: HTML, checkBox: Checkbox): void {
-
-        const column = new HTML();
-        column.addStyleName(`col-3`);
-
-        column.add(checkBox);
-        row.add(column);
     }
 
     public isACheckboxChosen(): boolean {
@@ -146,14 +137,14 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget {
         const consentCheckBox = new Checkbox(false, `Forudsætter accept fra patientens pårørende`);
 
         this.checkboxes = <OrganRegistrationCheckBoxes>{
-            permissionForHeart: heartCheckbox,
-            permissionForLungs: lungsCheckbox,
-            permissionForLiver: liverCheckbox,
-            permissionForPancreas: pancreasCheckbox,
-            permissionForKidneys: kidneyCheckbox,
             permissionForCornea: corneasCheckbox,
-            permissionForSmallIntestine: intestineCheckbox,
+            permissionForHeart: heartCheckbox,
+            permissionForKidneys: kidneyCheckbox,
+            permissionForLiver: liverCheckbox,
+            permissionForLungs: lungsCheckbox,
+            permissionForPancreas: pancreasCheckbox,
             permissionForSkin: skinCheckbox,
+            permissionForSmallIntestine: intestineCheckbox,
             requiresRelativeAcceptance: consentCheckBox
         };
 
@@ -176,6 +167,15 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget {
         return this.checkboxes;
     }
 
+    private wrapInRow(row: HTML, checkBox: Checkbox): void {
+
+        const column = new HTML();
+        column.addStyleName(`col-3`);
+
+        column.add(checkBox);
+        row.add(column);
+    }
+
 }
 
-type OrganRegistrationCheckBoxes = { [K in keyof OrganDonorRegistration]?: Checkbox; }
+type OrganRegistrationCheckBoxes = { [K in keyof OrganDonorRegistration]?: Checkbox; };

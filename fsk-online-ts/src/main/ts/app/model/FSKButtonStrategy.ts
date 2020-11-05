@@ -1,6 +1,6 @@
 import {ButtonStrategy} from "./ButtonStrategy";
 import SDSButton from "../elements/SDSButton";
-import {UserContext} from "fmko-typescript-common";
+import {UserContext} from "fmko-ts-common";
 import FSKUserUtil from "../util/FSKUserUtil";
 
 export default class FSKButtonStrategy implements ButtonStrategy {

@@ -6,13 +6,12 @@ import {
     DialogOption,
     ErrorDisplay,
     PopupDialog,
-    PopupDialogKind,
+    PopupDialogKind, SnackBar,
     TextBoxField
 } from "fmko-ts-widgets";
-import {ModuleContext, Widget} from "fmko-typescript-common";
+import {ModuleContext, Widget} from "fmko-ts-common";
 import {ButtonStrategy} from "../../model/ButtonStrategy";
 import FSKButtonStrategy from "../../model/FSKButtonStrategy";
-import SnackBar from "../../elements/SnackBar";
 import ErrorUtil from "../../util/ErrorUtil";
 import FSKUserUtil from "../../util/FSKUserUtil";
 import PatientUtil from "../../util/PatientUtil";
@@ -37,11 +36,11 @@ export default class LivingWillPanel extends TemplateWidget {
     public static deps = () => [IoC, "ModuleContext", "FSKConfig", LivingWillCache, TreatmentWillCache, FSKService];
 
     constructor(protected container: IoC,
-                private moduleContext: ModuleContext,
-                private fskConfig: FSKConfig,
-                private livingWillCache: LivingWillCache,
-                private treatmentWillCache: TreatmentWillCache,
-                private fskService: FSKService) {
+        private moduleContext: ModuleContext,
+        private fskConfig: FSKConfig,
+        private livingWillCache: LivingWillCache,
+        private treatmentWillCache: TreatmentWillCache,
+        private fskService: FSKService) {
         super(container);
         this.isAdministratorUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
         this.init();
@@ -118,17 +117,17 @@ export default class LivingWillPanel extends TemplateWidget {
             try {
                 const yesOption = <DialogOption>{
                     buttonStyle: ButtonStyle.GREEN,
-                    text: `Slet`,
+                    text: `Slet`
                 };
 
                 const noOption = <DialogOption>{
                     buttonStyle: ButtonStyle.RED,
-                    text: `Fortryd`,
+                    text: `Fortryd`
                 };
                 const yesIsClicked = await PopupDialog.display(PopupDialogKind.WARNING, "Bekræft sletning",
                     "<p>Er du sikker på du vil slette patientens livstestamenteregistrering?</p>",
                     noOption, yesOption);
-                if (yesIsClicked == yesOption) {
+                if (yesIsClicked === yesOption) {
                     this.buttonStrategy.disableButtons();
                     await this.fskService.deleteLivingWillForPatient(this.moduleContext.getPatient().getCpr());
                     this.terminallyIllCheckbox.setValue(false);
@@ -158,7 +157,7 @@ export default class LivingWillPanel extends TemplateWidget {
         SnackBar.show(snackbarText);
     }
 
-    public setEnabled(illCheckBoxCondition : boolean | undefined, handicapCheckBoxCondition: boolean | undefined) {
+    public setEnabled(illCheckBoxCondition: boolean | undefined, handicapCheckBoxCondition: boolean | undefined) {
         this.terminallyIllCheckbox.setEnabled(!!illCheckBoxCondition);
         this.severelyHandicappedCheckbox.setEnabled(!!handicapCheckBoxCondition);
     }
@@ -183,7 +182,7 @@ export default class LivingWillPanel extends TemplateWidget {
 
         Widget.setVisible(this.getElementByVarName(`main-panel`), this.isAdministratorUser || !!livingWill);
         Widget.setVisible(this.getElementByVarName(`empty-panel`), !this.isAdministratorUser && !livingWill);
-        Widget.setVisible(this.getElementByVarName(`registration-date-row`), !!livingWill)
+        Widget.setVisible(this.getElementByVarName(`registration-date-row`), !!livingWill);
         this.getElementByVarName(`empty-state-patient`).innerText = PatientUtil.getFullName(this.moduleContext.getPatient());
 
         livingWill

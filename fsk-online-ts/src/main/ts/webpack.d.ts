@@ -4,9 +4,9 @@ interface WebpackRequire {
     ensure: (paths: string[], callback: (require: <T>(path: string) => T) => void) => void;
 }
 interface NodeRequire extends WebpackRequire {}
-declare var require: NodeRequire;
+declare let require: NodeRequire;
 
-declare var SCM_VERSION: string;
-declare var SCM_BRANCH: string;
-declare var BUILD_TIME: string;
-declare var POM_VERSION: string;
+declare let SCM_VERSION: string;
+declare let SCM_BRANCH: string;
+declare let BUILD_TIME: string;
+declare let POM_VERSION: string;

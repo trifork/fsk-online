@@ -4,7 +4,7 @@ import com.trifork.web.security.userinfo.OrganisationIdType;
 import com.trifork.web.security.userinfo.UserInfo;
 import com.trifork.web.security.userinfo.UserInfoHolder;
 import dk.fmkonline.common.shared.Role;
-import dk.fmkonline.taswsclient.*;
+import dk.fmkonline.dgwsidwsclient.*;
 import dk.sundhedsdatastyrelsen.behandlingstestamente._2018._05._01.TreatmentWillPortType;
 import dk.sundhedsdatastyrelsen.livstestamente._2018._05._01.LivingWillPortType;
 import dk.sundhedsdatastyrelsen.organdonor._2018._05._01.OrganDonorRegistrationPortType;
@@ -27,6 +27,7 @@ import org.springframework.core.env.Environment;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.soap.SOAPException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 @Configuration
@@ -46,7 +47,7 @@ public class WsClientConfig {
                 return null;
             }
             byte[] decodedIdCardBytes = Base64.decodeBase64(idCardHeader);
-            return new String(decodedIdCardBytes, Charset.forName("UTF-8"));
+            return new String(decodedIdCardBytes, StandardCharsets.UTF_8);
         };
     }
 

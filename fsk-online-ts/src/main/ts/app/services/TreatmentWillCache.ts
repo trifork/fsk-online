@@ -1,4 +1,4 @@
-import {AsyncValueHolder, ModuleContext} from "fmko-typescript-common";
+import {AsyncValueHolder, ModuleContext} from "fmko-ts-common";
 import FSKService from "./FSKService";
 import RegistrationStateUtil from "../util/RegistrationStateUtil";
 import {RegistrationState} from "../model/RegistrationState";
@@ -7,12 +7,6 @@ import TreatmentWillType = FSKTypes.TreatmentWillType;
 import RegistrationTypeWrapper = FSKTypes.RegistrationTypeWrapper;
 
 export default class TreatmentWillCache {
-    public static deps = () => ["ModuleContext", FSKService];
-
-    constructor(private moduleContext: ModuleContext, private fskService: FSKService) {
-
-    }
-
     public registrationState: RegistrationState = RegistrationState.UNCHECKED;
 
     public readonly treatmentWill = new AsyncValueHolder<RegistrationTypeWrapper<TreatmentWillType>>(async () => {
@@ -24,6 +18,12 @@ export default class TreatmentWillCache {
     }, error => {
         ErrorDisplay.showError("Der opstod en fejl", `Der opstod en uventet fejl ved aflæsning af patientens behandlingstestamente.`);
     });
+
+    public static deps = () => ["ModuleContext", FSKService];
+
+    constructor(private moduleContext: ModuleContext, private fskService: FSKService) {
+
+    }
 
     public setStale(removeRegistration?: boolean) {
         if (removeRegistration === true) {

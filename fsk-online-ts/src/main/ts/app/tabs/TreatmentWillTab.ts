@@ -1,4 +1,4 @@
-import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler} from "fmko-typescript-common";
+import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler} from "fmko-ts-common";
 import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
 import TreatmentWillCache from "../services/TreatmentWillCache";
@@ -18,11 +18,11 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
 
     public static deps = () => [IoC, "ModuleContext", "FSKConfig", TreatmentWillCache, "RootElement"];
 
-    public constructor(protected container: IoC,
-                       private moduleContext: ModuleContext,
-                       private fskConfig: FSKConfig,
-                       private treatmentWillCache: TreatmentWillCache,
-                       private rootElement: HTMLElement) {
+    constructor(protected container: IoC,
+        private moduleContext: ModuleContext,
+        private fskConfig: FSKConfig,
+        private treatmentWillCache: TreatmentWillCache,
+        private rootElement: HTMLElement) {
         super(container);
         this.element = document.createElement(`div`);
     }
@@ -113,9 +113,10 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
 
         if (loading) {
             if (this.initialized) {
-
+                // ignored
             }
         } else if (failed) {
+            // ignored
         } else {
             this.treatmentWillPanel.setData(value);
         }

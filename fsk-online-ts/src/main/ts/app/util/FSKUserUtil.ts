@@ -1,4 +1,4 @@
-import {UserContext} from "fmko-typescript-common";
+import {UserContext} from "fmko-ts-common";
 import FSKOnlineModule from "../main/FSKOnlineModule";
 
 export default class FSKUserUtil {
@@ -34,7 +34,7 @@ export default class FSKUserUtil {
         const userHasEducation = education => ["læge", "sygeplejerske"].includes(education);
         return (userContext.getEducations() || []).some(userHasEducation);
 
-       /* const userHasEducation = education => ["7170", "5166"].includes(education);
+        /* const userHasEducation = education => ["7170", "5166"].includes(education);
         return (userContext.getAuthorisations().map(x => x.getEducationCode()) || []).some(userHasEducation);*/
     }
 }

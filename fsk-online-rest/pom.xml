@@ -13,11 +13,10 @@
     <name>fsk-online-rest</name>
 
     <properties>
-        <spring.context.version>5.0.5.RELEASE</spring.context.version>
         <version.template.file>${project.build.sourceDirectory}/dk/sundhedsdatastyrelsen/fskrest/VersionTemplate.java</version.template.file>
         <version.generated.file>dk/sundhedsdatastyrelsen/fskrest/Version.java</version.generated.file>
-        <jersey.version>2.23.2</jersey.version>
-        <spring.version>3.2.11.RELEASE</spring.version>
+        <jersey.version>2.30.1</jersey.version>
+        <spring.version>4.3.13.RELEASE</spring.version>
         <jaxb.api.version>2.2.12</jaxb.api.version>
     </properties>
 
@@ -30,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>dk.fmkonline</groupId>
-            <artifactId>fmk-tas-client</artifactId>
+            <artifactId>dgws-idws-client</artifactId>
             <version>${fmk.online.version}</version>
             <exclusions>
                 <exclusion>
@@ -39,16 +38,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>dk.fmkonline</groupId>
-            <artifactId>fmk-online-tilskud-api</artifactId>
-            <version>${fmk.online.version}</version>
-        </dependency>
         <!-- Internal dependencies -->
         <dependency>
             <groupId>dk.sundhedsdatastyrelsen.fsk</groupId>
             <artifactId>fsk-online-schemas</artifactId>
-            <version>1.0.6-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- Servlet API dependency -->
@@ -66,7 +60,7 @@
         <dependency>
             <groupId>org.glassfish.jersey.ext</groupId>
             <artifactId>jersey-spring4</artifactId>
-            <version>2.27</version>
+            <version>${jersey.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
@@ -102,7 +96,7 @@
         <dependency>
             <groupId>dk.fmkonline</groupId>
             <artifactId>fol-test</artifactId>
-            <version>2.31.12</version>
+            <version>${fmk.online.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -145,11 +139,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
             </plugin>
 
             <plugin>

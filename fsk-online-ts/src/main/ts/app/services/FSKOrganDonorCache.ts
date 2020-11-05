@@ -1,16 +1,10 @@
-import {AsyncValueHolder, ModuleContext} from "fmko-typescript-common";
+import {AsyncValueHolder, ModuleContext} from "fmko-ts-common";
 import FSKService from "./FSKService";
 import {ErrorDisplay} from "fmko-ts-widgets";
 import OrganDonorRegistrationType = FSKTypes.OrganDonorRegistrationType;
 import RegistrationTypeWrapper = FSKTypes.RegistrationTypeWrapper;
 
 export default class FSKOrganDonorCache {
-    public static deps = () => ["ModuleContext", FSKService];
-
-    constructor(private moduleContext: ModuleContext, private fskService: FSKService) {
-
-    }
-
     public hasRegistration: boolean;
 
     public readonly organDonorRegister = new AsyncValueHolder<RegistrationTypeWrapper<OrganDonorRegistrationType>>(async () => {
@@ -22,6 +16,12 @@ export default class FSKOrganDonorCache {
     }, error => {
         ErrorDisplay.showError("Der opstod en fejl", `Der opstod en uventet fejl ved aflæsning af patientens organdonorregistrering.`);
     });
+
+    public static deps = () => ["ModuleContext", FSKService];
+
+    constructor(private moduleContext: ModuleContext, private fskService: FSKService) {
+
+    }
 
     public setStale(removeRegistration: boolean) {
         if (removeRegistration === true) {

@@ -1,6 +1,6 @@
 import {BindingScope, IoC, ReferenceType} from "fmko-ts-ioc";
 
-import {IdSynthesizer, ModuleRegistryFactory, VersionImpl} from "fmko-typescript-common";
+import {IdSynthesizer, ModuleRegistryFactory, VersionImpl} from "fmko-ts-common";
 
 import FSKOnlineConfigurationFactory from "./FSKOnlineConfigurationFactory";
 import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
@@ -13,7 +13,7 @@ const ROOT_ELEMENT_ID = "fskMain";
 export default class FSKOnlineContainer {
     private _ioc: IoC;
 
-    public constructor() {
+    constructor() {
         this._ioc = new IoC();
 
         this._ioc.bind(ModuleRegistryFactory)
@@ -43,7 +43,7 @@ export default class FSKOnlineContainer {
         this._ioc.bind(LivingWillCache).scopedAs(SINGLETON);
     }
 
-    public resolve(type: ReferenceType) {
-        return this._ioc.resolve(type);
+    public resolve<T>(type: ReferenceType) {
+        return this._ioc.resolve<T>(type);
     }
 }

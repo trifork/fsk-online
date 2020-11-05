@@ -1,4 +1,4 @@
-import {ModuleContext} from "fmko-typescript-common";
+import {ModuleContext} from "fmko-ts-common";
 import FSKConfig from "./FSKConfig";
 
 export default class FSKOnlineConfigurationFactory {

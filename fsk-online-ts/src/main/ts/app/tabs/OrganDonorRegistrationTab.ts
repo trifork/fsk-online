@@ -1,4 +1,4 @@
-import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler, Widget} from "fmko-typescript-common";
+import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler, Widget} from "fmko-ts-common";
 import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
 import {
@@ -8,7 +8,7 @@ import {
     PopupDialog,
     PopupDialogKind,
     RadioButton,
-    RadioGroup,
+    RadioGroup, SnackBar,
     TextBoxField
 } from "fmko-ts-widgets";
 import LimitedAccessPermissionPanel from "../panels/organdonor-panels/LimitedAccessPermissionPanel";
@@ -17,7 +17,6 @@ import FullAccessPermissionPanel from "../panels/organdonor-panels/FullAccessPer
 import FSKService from "../services/FSKService";
 import ErrorUtil from "../util/ErrorUtil";
 import FSKUserUtil from "../util/FSKUserUtil";
-import SnackBar from "../elements/SnackBar";
 import {ButtonStrategy} from "../model/ButtonStrategy";
 import FSKButtonStrategy from "../model/FSKButtonStrategy";
 import PatientUtil from "../util/PatientUtil";
@@ -39,14 +38,14 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     private fullAccessPanel: FullAccessPermissionPanel;
     private limitedAccessPanel: LimitedAccessPermissionPanel;
     private radioGroup: RadioGroup<FSKTypes.OrganDonorPermissionType>;
-    
+
     public static deps = () => [IoC, "ModuleContext", FSKOrganDonorCache, FSKService, "RootElement"];
 
     constructor(protected container: IoC,
-                private moduleContext: ModuleContext,
-                private fskOrganDonorCache: FSKOrganDonorCache,
-                private fskService: FSKService,
-                private rootElement: HTMLElement) {
+        private moduleContext: ModuleContext,
+        private fskOrganDonorCache: FSKOrganDonorCache,
+        private fskService: FSKService,
+        private rootElement: HTMLElement) {
         super(container);
         this.element = document.createElement("div");
     }
@@ -70,15 +69,19 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         this.fullAccessPanel.setVisible(false);
         this.fullAccessPanel.setEnabled();
         this.fullAccessPanel.setUpdateButton(this.buttonStrategy.updateButton);
-        this.fullAccessPanel.addStyleName('organ-donor-panel');
-        const fullPermissionWithResearchRadioButton = new RadioButton<FSKTypes.OrganDonorPermissionType>("FULL_WITH_RESEARCH", "");
+        this.fullAccessPanel.addStyleName("organ-donor-panel");
+        const fullPermissionWithResearchRadioButton = new RadioButton<FSKTypes.OrganDonorPermissionType>(
+            {value: "FULL_WITH_RESEARCH", labelString: ""}
+        );
         fullPermissionWithResearchRadioButton.setEnabled(this.isAdminUser);
-        const fullPermissionRadioButton = new RadioButton<FSKTypes.OrganDonorPermissionType>("FULL", "");
+        const fullPermissionRadioButton = new RadioButton<FSKTypes.OrganDonorPermissionType>(
+            {value: "FULL", labelString: ""}
+        );
         fullPermissionRadioButton.setEnabled(this.isAdminUser);
 
-        this.addAndReplaceWidgetByVarName(fullPermissionWithResearchRadioButton.getWrappedButton(this.idSynthesizer.createId()), "full-permission-with-research-radio");
+        this.addAndReplaceWidgetByVarName(fullPermissionWithResearchRadioButton.wrapButton(this.idSynthesizer.createId()), "full-permission-with-research-radio");
         fullPermissionWithResearchRadioButton.element.parentElement.style.paddingBottom = "6px";
-        this.addAndReplaceWidgetByVarName(fullPermissionRadioButton.getWrappedButton(this.idSynthesizer.createId()), "full-permission-radio");
+        this.addAndReplaceWidgetByVarName(fullPermissionRadioButton.wrapButton(this.idSynthesizer.createId()), "full-permission-radio");
         fullPermissionRadioButton.element.parentElement.style.paddingBottom = "6px";
         this.addAndReplaceWidgetByVarName(this.fullAccessPanel, "full-permission-widget");
 
@@ -86,26 +89,38 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         this.limitedAccessPanel.setVisible(false);
         this.limitedAccessPanel.setEnabled(this.isAdminUser);
         this.limitedAccessPanel.setUpdateButton(this.buttonStrategy.updateButton);
-        this.limitedAccessPanel.addStyleName('organ-donor-panel');
-        const limitedPermissionWithResearchRadioButton = new RadioButton<FSKTypes.OrganDonorPermissionType>("LIMITED_WITH_RESEARCH", "");
+        this.limitedAccessPanel.addStyleName("organ-donor-panel");
+        const limitedPermissionWithResearchRadioButton = new RadioButton<FSKTypes.OrganDonorPermissionType>(
+            {value: "LIMITED_WITH_RESEARCH", labelString: ""}
+        );
         limitedPermissionWithResearchRadioButton.setEnabled(this.isAdminUser);
-        const limitedPermissionRadioButton = new RadioButton<FSKTypes.OrganDonorPermissionType>("LIMITED", "");
+
+        const limitedPermissionRadioButton = new RadioButton<FSKTypes.OrganDonorPermissionType>(
+            {value: "LIMITED", labelString: ""}
+        );
         limitedPermissionRadioButton.setEnabled(this.isAdminUser);
 
-        this.addAndReplaceWidgetByVarName(limitedPermissionWithResearchRadioButton.getWrappedButton(this.idSynthesizer.createId()), "limited-permission-with-research-radio");
+        this.addAndReplaceWidgetByVarName(limitedPermissionWithResearchRadioButton.wrapButton(this.idSynthesizer.createId()), "limited-permission-with-research-radio");
         limitedPermissionWithResearchRadioButton.element.parentElement.style.paddingBottom = "6px";
-        this.addAndReplaceWidgetByVarName(limitedPermissionRadioButton.getWrappedButton(this.idSynthesizer.createId()), "limited-permission-radio");
+        this.addAndReplaceWidgetByVarName(limitedPermissionRadioButton.wrapButton(
+            this.idSynthesizer.createId()),
+        "limited-permission-radio"
+        );
         limitedPermissionRadioButton.element.parentElement.style.paddingBottom = "6px";
         this.addAndReplaceWidgetByVarName(this.limitedAccessPanel, "limited-permission-widget");
 
-        const dontKnowPermissionRadioButton = new RadioButton<FSKTypes.OrganDonorPermissionType>("DONT_KNOW", "");
+        const dontKnowPermissionRadioButton = new RadioButton<FSKTypes.OrganDonorPermissionType>(
+            {value: "DONT_KNOW", labelString: ""}
+        );
         dontKnowPermissionRadioButton.setEnabled(this.isAdminUser);
-        this.addAndReplaceWidgetByVarName(dontKnowPermissionRadioButton.getWrappedButton(this.idSynthesizer.createId()), "dont-know-permission-radio");
+        this.addAndReplaceWidgetByVarName(dontKnowPermissionRadioButton.wrapButton(this.idSynthesizer.createId()), "dont-know-permission-radio");
         dontKnowPermissionRadioButton.element.parentElement.style.paddingBottom = "6px";
 
-        const restrictedPermissionRadioButton = new RadioButton<FSKTypes.OrganDonorPermissionType>("NONE", "");
+        const restrictedPermissionRadioButton = new RadioButton<FSKTypes.OrganDonorPermissionType>(
+            {value: "NONE", labelString: ""}
+        );
         restrictedPermissionRadioButton.setEnabled(this.isAdminUser);
-        this.addAndReplaceWidgetByVarName(restrictedPermissionRadioButton.getWrappedButton(this.idSynthesizer.createId()), "restricted-permission-radio");
+        this.addAndReplaceWidgetByVarName(restrictedPermissionRadioButton.wrapButton(this.idSynthesizer.createId()), "restricted-permission-radio");
         restrictedPermissionRadioButton.element.parentElement.style.paddingBottom = "6px";
 
         this.radioGroup = new RadioGroup<FSKTypes.OrganDonorPermissionType>([
@@ -115,7 +130,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
             limitedPermissionRadioButton,
             dontKnowPermissionRadioButton,
             restrictedPermissionRadioButton
-        ], this.idSynthesizer, false);
+        ], false);
 
         this.radioGroup.addValueChangeHandler(handler => {
             const value = handler.getValue();
@@ -173,12 +188,12 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
             try {
                 const yesOption = <DialogOption>{
                     buttonStyle: ButtonStyle.GREEN,
-                    text: "Slet",
+                    text: "Slet"
                 };
 
                 const noOption = <DialogOption>{
                     buttonStyle: ButtonStyle.RED,
-                    text: "Fortryd",
+                    text: "Fortryd"
                 };
                 const yesIsClicked = await PopupDialog.display(PopupDialogKind.WARNING, "Bekræft sletning",
                     "<p>Er du sikker på du vil slette patientens organdonorregistrering?</p>",
@@ -203,7 +218,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         this.buttonStrategy.addHandlerForCreateButton(() => createHandler());
         this.buttonStrategy.addHandlerForEditButton(() => updateHandler());
         this.buttonStrategy.addHandlerForDeleteButton(() => deleteHandler());
-        this.buttonStrategy.addHandlerForPrintButton(() => printHandler())
+        this.buttonStrategy.addHandlerForPrintButton(() => printHandler());
     }
 
     public setData(value: FSKTypes.RegistrationTypeWrapper<FSKTypes.OrganDonorRegistrationType> | null | undefined): void {
@@ -261,7 +276,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         this.fskOrganDonorCache.organDonorRegister.setStale();
         SnackBar.show(snackbarText);
         this.buttonStrategy.enableButtons();
-    };
+    }
 
     public tearDownBindings(): void {
         // unused
@@ -322,10 +337,10 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
 
         if (loading) {
             if (this.initialized) {
-
+                // do nothing
             }
         } else if (failed) {
-
+            // do nothing
         } else {
             this.setData(value);
         }
@@ -364,20 +379,20 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     private getValue(): FSKTypes.OrganDonorRegistrationType {
         const type = this.radioGroup.getValue();
 
-        if(type) {
-            if(type === "FULL" || type === "FULL_WITH_RESEARCH") {
+        if (type) {
+            if (type === "FULL" || type === "FULL_WITH_RESEARCH") {
                 return {
                     permissionType: type,
                     requiresRelativeAcceptance: this.fullAccessPanel.getRequiresRelativeAcceptance()
                 };
-            } else if(type === "LIMITED" || type === "LIMITED_WITH_RESEARCH") {
+            } else if (type === "LIMITED" || type === "LIMITED_WITH_RESEARCH") {
                 const value = this.limitedAccessPanel.getValue();
                 if (value) {
                     value.permissionType = type;
                 }
                 return value;
-            } else if(type === "NONE" || type === "DONT_KNOW") {
-                return { permissionType: type };
+            } else if (type === "NONE" || type === "DONT_KNOW") {
+                return {permissionType: type};
             }
         }
     }

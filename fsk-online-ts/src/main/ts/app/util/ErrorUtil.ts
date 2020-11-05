@@ -6,8 +6,8 @@ export default class ErrorUtil {
                     const jsonMessage = JSON.parse(error.message);
                     const message = jsonMessage.message;
                     return message || error.message;
-                } catch (error) {
-                    return error.message;
+                } catch (parseError) {
+                    return parseError.message;
                 }
             }
         }

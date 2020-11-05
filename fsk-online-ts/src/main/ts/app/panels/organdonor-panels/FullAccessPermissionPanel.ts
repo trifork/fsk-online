@@ -1,22 +1,22 @@
-import {Widget} from "fmko-typescript-common";
+import {Widget} from "fmko-ts-common";
 import {Checkbox} from "fmko-ts-widgets";
 import SDSButton from "../../elements/SDSButton";
 
 export default class FullAccessPermissionPanel extends Widget {
 
-    public static deps = () => [];
-
     private requiresRelativeAcceptanceCheckBox: Checkbox;
     private updateButton: SDSButton;
 
-    public constructor() {
+    public static deps = () => [];
+
+    constructor() {
         super();
         this.element = document.createElement(`div`);
         this.element.className = `card full-access-panel`;
         this.requiresRelativeAcceptanceCheckBox = new Checkbox(false, `Forudsætter accept fra patientens pårørende`);
         this.requiresRelativeAcceptanceCheckBox.getCssStyle().fontSize = `14px`;
         this.requiresRelativeAcceptanceCheckBox.addValueChangeHandler(() => {
-            if(this.updateButton){
+            if (this.updateButton) {
                 this.updateButton.setEnabled(true);
             }
         });
@@ -27,7 +27,7 @@ export default class FullAccessPermissionPanel extends Widget {
         return this.requiresRelativeAcceptanceCheckBox.getValue();
     }
 
-    public setUpdateButton(updateButton: SDSButton){
+    public setUpdateButton(updateButton: SDSButton) {
         this.updateButton = updateButton;
     }
 
@@ -39,7 +39,7 @@ export default class FullAccessPermissionPanel extends Widget {
         this.requiresRelativeAcceptanceCheckBox.setValue(value);
         if (isFSKSupporter) {
             this.requiresRelativeAcceptanceCheckBox.setEnabled(value);
-            this.requiresRelativeAcceptanceCheckBox.getInput().onclick = ( () => false);
+            this.requiresRelativeAcceptanceCheckBox.getInput().onclick = (() => false);
         }
     }
 }

@@ -7,17 +7,24 @@
     "watch": "node node_modules/webpack/bin/webpack --watch --mode=development"
   },
   "devDependencies": {
-    "fmko-typescript-build": "2.31.12",
-    "tslint": "^5.12.1",
-    "typescript": "3.4.5",
-    "webpack": "4.27.1",
-    "webpack-cli": "^3.1.2"
+    "tslint": "6.1.3",
+    "@typescript-eslint/parser": "^3.10.1",
+    "@typescript-eslint/eslint-plugin": "^3.10.1",
+    "@typescript-eslint/eslint-plugin-tslint": "^3.10.1",
+    "eslint": "^7.7.0",
+    "typescript": "4.0.2",
+    "webpack": "5.3.1",
+    "webpack-cli": "4.1.0",
+    "fmko-ts-build": "4.8.0"
   },
   "dependencies": {
-    "fmko-typescript-common": "2.31.12",
-    "fmko-ts-widgets": "2.31.12",
-    "fmko-ts-ioc": "2.31.12",
-    "fmko-ts-mvc": "2.31.12",
+    "fmko-ts-common": "4.8.0",
+    "fmko-ts-grid": "4.8.0",
+    "fmko-ts-ioc": "4.8.0",
+    "fmko-ts-mvc": "4.8.0",
+    "fmko-ts-validation": "4.8.0",
+    "fmko-ts-widgets": "4.8.0",
+    "fmko-ts-components": "4.8.0",
     "moment": "2.24.0"
   },
   "registry": "http://ci.fmk.netic.dk/nexus/content/groups/npm-fmk-all/"

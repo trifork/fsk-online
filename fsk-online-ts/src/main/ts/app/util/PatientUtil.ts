@@ -1,4 +1,4 @@
-import {PersonInfo} from "fmko-typescript-common";
+import {PersonInfo} from "fmko-ts-common";
 
 export default class PatientUtil {
     public static getFullName(patient: PersonInfo): string {
@@ -6,7 +6,7 @@ export default class PatientUtil {
             return "";
         }
         const firstName = patient.getFirstName() || ``;
-        //If the person has a middle name, then add it and create a space for the last name otherwise leave the space empty
+        // If the person has a middle name, then add it and create a space for the last name otherwise leave the space empty
         const middleName = `${patient.getMiddleName()} ` || ``;
         const lastName = patient.getLastName() || ``;
 

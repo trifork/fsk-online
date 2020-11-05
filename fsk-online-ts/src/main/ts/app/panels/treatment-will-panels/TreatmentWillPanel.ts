@@ -7,13 +7,13 @@ import {
     ErrorDisplay,
     PopupDialog,
     PopupDialogKind,
+    SnackBar,
     TextBoxField
 } from "fmko-ts-widgets";
 import TreatmentWillWishPanel from "./TreatmentWillWishPanel";
-import {ModuleContext, Widget} from "fmko-typescript-common";
+import {ModuleContext, setElementVisible, Widget} from "fmko-ts-common";
 import {ButtonStrategy} from "../../model/ButtonStrategy";
 import FSKButtonStrategy from "../../model/FSKButtonStrategy";
-import SnackBar from "../../elements/SnackBar";
 import ErrorUtil from "../../util/ErrorUtil";
 import FSKUserUtil from "../../util/FSKUserUtil";
 import PatientUtil from "../../util/PatientUtil";
@@ -47,11 +47,11 @@ export default class TreatmentWillPanel extends TemplateWidget {
     public static deps = () => [IoC, "ModuleContext", "FSKConfig", LivingWillCache, TreatmentWillCache, FSKService];
 
     constructor(protected container: IoC,
-                private moduleContext: ModuleContext,
-                private fskConfig: FSKConfig,
-                private livingWillCache: LivingWillCache,
-                private treatmentWillCache: TreatmentWillCache,
-                private fskService: FSKService) {
+        private moduleContext: ModuleContext,
+        private fskConfig: FSKConfig,
+        private livingWillCache: LivingWillCache,
+        private treatmentWillCache: TreatmentWillCache,
+        private fskService: FSKService) {
         super(container);
         this.isAdministratorUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
         this.init();
@@ -107,10 +107,10 @@ export default class TreatmentWillPanel extends TemplateWidget {
 
     public getValue(): TreatmentWillType {
         return <TreatmentWillType>{
+            noForcedTreatmentIfIncapable: this.getTreatmentValue(this.treatmentByForceCheckbox, this.treatmentByForcePanel),
             noLifeProlongingIfDying: this.getTreatmentValue(this.terminallyIllCheckbox, this.terminallyIllPanel),
-            noLifeProlongingIfSeverelyDegraded: this.getTreatmentValue(this.illNoImprovementCheckbox, this.illNoImprovementPanel),
             noLifeProlongingIfSeverePain: this.getTreatmentValue(this.illWithPermanentPainCheckbox, this.illWithPermanentPainPanel),
-            noForcedTreatmentIfIncapable: this.getTreatmentValue(this.treatmentByForceCheckbox, this.treatmentByForcePanel)
+            noLifeProlongingIfSeverelyDegraded: this.getTreatmentValue(this.illNoImprovementCheckbox, this.illNoImprovementPanel)
         };
     }
 
@@ -119,6 +119,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
 
         return <TreatmentWillValueType>{
             acceptanceNeeded: panel.getValue(),
+            // tslint:disable-next-line:object-literal-sort-keys
             $: isChecked
         };
     }
@@ -160,12 +161,12 @@ export default class TreatmentWillPanel extends TemplateWidget {
             try {
                 const yesOption = <DialogOption>{
                     buttonStyle: ButtonStyle.GREEN,
-                    text: `Slet`,
+                    text: `Slet`
                 };
 
                 const noOption = <DialogOption>{
                     buttonStyle: ButtonStyle.RED,
-                    text: `Fortryd`,
+                    text: `Fortryd`
                 };
                 const yesIsClicked = await PopupDialog.display(PopupDialogKind.WARNING, "Bekræft sletning",
                     "<p>Er du sikker på du vil slette patientens behandlingstestamenteregistrering?</p>",
@@ -187,26 +188,6 @@ export default class TreatmentWillPanel extends TemplateWidget {
         this.buttonStrategy.addHandlerForDeleteButton(() => deleteHandler());
     }
 
-    private async warningIfLivingWillExist(livingWillExist: Promise<RegistrationState>, isAdmin: boolean) {
-        Widget.setVisible(this.getElementByVarName(`living-will-exists`), await livingWillExist === RegistrationState.REGISTERED && isAdmin);
-    }
-
-    private addHandlerForCheckboxAndPanel(checkBox: CheckboxWrapper, panel?: TreatmentWillWishPanel) {
-        checkBox.addValueChangeHandler(handler => {
-            // If you are administrator you can do whatever, otherwise you can only set it to tru, which is in the initial
-            if (this.isAdministratorUser || handler.getValue()) {
-                const value = handler.getValue();
-                this.buttonStrategy.updateButton.setEnabled(true);
-                if (panel) {
-                    panel.setVisible(value);
-                    if(!value){
-                        panel.setValue(null);
-                    }
-                }
-            }
-        });
-    }
-
     public updateCache(hasRegistration: boolean, snackbarText: string) {
         this.treatmentWillCache.registrationState = RegistrationStateUtil.registrationStateMapper(hasRegistration);
         hasRegistration ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
@@ -218,19 +199,19 @@ export default class TreatmentWillPanel extends TemplateWidget {
     public setEnabled(): void {
         if (!this.isAdministratorUser) {
             this.terminallyIllCheckbox.setEnabled(this.terminallyIllCheckbox.getValue());
-            this.terminallyIllCheckbox.getInput().addEventListener('click', event => {
+            this.terminallyIllCheckbox.getInput().addEventListener("click", event => {
                 event.preventDefault();
             }, true);
             this.illNoImprovementCheckbox.setEnabled((this.illNoImprovementCheckbox.getValue()));
-            this.illNoImprovementCheckbox.getInput().addEventListener('click', event => {
+            this.illNoImprovementCheckbox.getInput().addEventListener("click", event => {
                 event.preventDefault();
             }, true);
             this.illWithPermanentPainCheckbox.setEnabled((this.illWithPermanentPainCheckbox.getValue()));
-            this.illWithPermanentPainCheckbox.getInput().addEventListener('click', event => {
+            this.illWithPermanentPainCheckbox.getInput().addEventListener("click", event => {
                 event.preventDefault();
             }, true);
             this.treatmentByForceCheckbox.setEnabled((this.treatmentByForceCheckbox.getValue()));
-            this.treatmentByForceCheckbox.getInput().addEventListener('click', event => {
+            this.treatmentByForceCheckbox.getInput().addEventListener("click", event => {
                 event.preventDefault();
             }, true);
         }
@@ -248,7 +229,7 @@ export default class TreatmentWillPanel extends TemplateWidget {
 
         Widget.setVisible(this.getElementByVarName(`main-panel`), this.isAdministratorUser || !!treatmentWill);
         Widget.setVisible(this.getElementByVarName(`empty-panel`), !this.isAdministratorUser && !treatmentWill);
-        Widget.setVisible(this.getElementByVarName(`registration-date-row`), !!treatmentWill)
+        Widget.setVisible(this.getElementByVarName(`registration-date-row`), !!treatmentWill);
 
         this.getElementByVarName(`empty-state-patient`).innerText = PatientUtil.getFullName(this.moduleContext.getPatient());
         this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), this.isAdministratorUser);
@@ -287,5 +268,26 @@ export default class TreatmentWillPanel extends TemplateWidget {
             this.setEnabled();
         }
         treatmentWill ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
+    }
+
+    private async warningIfLivingWillExist(livingWillExist: Promise<RegistrationState>, isAdmin: boolean) {
+        const hasRegisteredLivingWillAndIsAdmin = await livingWillExist === RegistrationState.REGISTERED && isAdmin;
+        setElementVisible(this.getElementByVarName(`living-will-exists`), hasRegisteredLivingWillAndIsAdmin);
+    }
+
+    private addHandlerForCheckboxAndPanel(checkBox: CheckboxWrapper, panel?: TreatmentWillWishPanel) {
+        checkBox.addValueChangeHandler(handler => {
+            // If you are administrator you can do whatever, otherwise you can only set it to tru, which is in the initial
+            if (this.isAdministratorUser || handler.getValue()) {
+                const value = handler.getValue();
+                this.buttonStrategy.updateButton.setEnabled(true);
+                if (panel) {
+                    panel.setVisible(value);
+                    if (!value) {
+                        panel.setValue(null);
+                    }
+                }
+            }
+        });
     }
 }

@@ -1,4 +1,4 @@
-import {Widget} from "fmko-typescript-common";
+import {Widget} from "fmko-ts-common";
 
 export default class SDSButton extends Widget {
     constructor(title: string, buttonStyle?: sdsButtonType, event?: (MouseEvent) => void) {

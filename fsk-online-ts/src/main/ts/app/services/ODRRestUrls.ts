@@ -4,7 +4,7 @@ export default class ODRRestUrls {
     private url: string;
     public static deps = () => ["FSKConfig"];
 
-    public constructor(private fskConfig: FSKConfig) {
+    constructor(private fskConfig: FSKConfig) {
         this.url = fskConfig.FSKUrlBase;
     }
 

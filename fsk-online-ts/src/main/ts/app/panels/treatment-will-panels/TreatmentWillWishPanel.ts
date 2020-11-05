@@ -1,14 +1,12 @@
 import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
 import SDSButton from "../../elements/SDSButton";
-import {ModuleContext} from "fmko-typescript-common";
+import {ModuleContext} from "fmko-ts-common";
 import FSKUserUtil from "../../util/FSKUserUtil";
 import {CheckboxWrapper} from "fmko-ts-widgets";
 import TreatmentWillAcceptanceType = FSKTypes.TreatmentWillAcceptanceType;
 
 export default class TreatmentWillWishPanel extends TemplateWidget {
-
-    public static deps = () => [IoC, "ModuleContext"];
 
     private value: TreatmentWillAcceptanceType | null | undefined;
     private checkboxes: CheckboxWrapper[];
@@ -17,8 +15,10 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
 
     private updateButton: SDSButton;
 
-    public constructor(protected container: IoC,
-                       private moduleContext: ModuleContext) {
+    public static deps = () => [IoC, "ModuleContext"];
+
+    constructor(protected container: IoC,
+        private moduleContext: ModuleContext) {
         super(container);
         this.element = document.createElement(`div`);
         this.isAdministratorUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());

@@ -1,4 +1,4 @@
-import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler} from "fmko-typescript-common";
+import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler} from "fmko-ts-common";
 import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
 import LivingWillCache from "../services/LivingWillCache";
@@ -21,11 +21,11 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
 
     public static deps = () => [IoC, "ModuleContext", "FSKConfig", LivingWillCache, "RootElement"];
 
-    public constructor(protected container: IoC,
-                       private moduleContext: ModuleContext,
-                       private fskConfig: FSKConfig,
-                       private livingWillCache: LivingWillCache,
-                       private rootElement: HTMLElement) {
+    constructor(protected container: IoC,
+        private moduleContext: ModuleContext,
+        private fskConfig: FSKConfig,
+        private livingWillCache: LivingWillCache,
+        private rootElement: HTMLElement) {
         super(container);
         this.element = document.createElement(`div`);
     }
@@ -91,7 +91,9 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
 
             if (this.isAdministratorUser && isPatientContext && useLivingWill) {
                 this.moduleContext.showTab(this.ID);
-            } else if (this.isAdministratorUser && isPatientContext && await this.livingWillCache.loadHasRegistration() === RegistrationState.REGISTERED) {
+            } else if (this.isAdministratorUser
+                && isPatientContext
+                && await this.livingWillCache.loadHasRegistration() === RegistrationState.REGISTERED) {
                 this.moduleContext.showTab(this.ID);
             } else {
                 this.moduleContext.hideTab(this.ID);
@@ -114,10 +116,10 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
 
         if (loading) {
             if (this.initialized) {
-
+                // ignored
             }
         } else if (failed) {
-            //this.livingWillPanel.setData(value);
+            // this.livingWillPanel.setData(value);
         } else {
             this.livingWillPanel.setData(value);
         }

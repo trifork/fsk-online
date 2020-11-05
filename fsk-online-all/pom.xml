@@ -44,18 +44,7 @@
 		</dependency>
 		<dependency>
 			<groupId>dk.fmkonline</groupId>
-			<artifactId>fmk-tas-client</artifactId>
-			<version>${fmk.online.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>log4j-over-slf4j</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>dk.fmkonline</groupId>
-			<artifactId>fmk-online-tilskud-api</artifactId>
+			<artifactId>dgws-idws-client</artifactId>
 			<version>${fmk.online.version}</version>
 		</dependency>
 
