@@ -4,5 +4,5 @@
 	<dir path="js" from="../target/js" />
 	<dir path="css" from="../target/css" />
     <dir path="src/main/ts" from="../src/main/ts" />
-	<dir path="WEB-INF/classes" from="../target/fsk-online-ts-1.0.10-SNAPSHOT/WEB-INF/classes" /> <!-- TEMPLATE DONT EDIT <dir path="WEB-INF/classes" from="../target/fsk-online-ts-@POM_VERSION/WEB-INF/classes" /> -->
+	<dir path="WEB-INF/classes" from="../target/fsk-online-ts-1.0.10/WEB-INF/classes" /> <!-- TEMPLATE DONT EDIT <dir path="WEB-INF/classes" from="../target/fsk-online-ts-@POM_VERSION/WEB-INF/classes" /> -->
 </jar>
