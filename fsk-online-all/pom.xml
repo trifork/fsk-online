@@ -76,6 +76,10 @@
                     <groupId>dk.fmkonline</groupId>
                     <artifactId>fmk-online-common</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>dk.fmkonline</groupId>
+                    <artifactId>dgws-idws-client</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
