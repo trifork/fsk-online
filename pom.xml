@@ -3,7 +3,7 @@
     <groupId>dk.sundhedsdatastyrelsen.fsk</groupId>
     <artifactId>fsk-online-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.10</version>
+    <version>1.0.11-SNAPSHOT</version>
     <name>fsk-online-parent</name>
     <parent>
         <groupId>dk.fmkonline</groupId>
@@ -104,7 +104,7 @@
         <connection>scm:git:git@github.com:trifork/fsk-online.git</connection>
         <url>scm:git:git@github.com:trifork/fsk-online.git</url>
         <developerConnection>scm:git:git@github.com:trifork/fsk-online.git</developerConnection>
-        <tag>version/1.0.10</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <modules>
