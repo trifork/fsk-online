@@ -4,12 +4,12 @@
     <parent>
         <groupId>dk.sundhedsdatastyrelsen.fsk</groupId>
         <artifactId>fsk-online-parent</artifactId>
-        <version>1.0.10-SNAPSHOT</version>
+        <version>1.0.10</version>
     </parent>
 
     <artifactId>fsk-online-ts</artifactId>
     <packaging>war</packaging>
-    <version>1.0.10-SNAPSHOT</version>
+    <version>1.0.10</version>
     <name>fsk-online-ts</name>
 
     <build>
