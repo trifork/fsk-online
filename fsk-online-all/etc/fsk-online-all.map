@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 
 <jar name="fsk-online-all.ear">
-	<file path="META-INF/application.xml" from="../target/fsk-online-all-1.0.9/META-INF/application.xml" /> <!-- TEMPLATE DONT EDIT <file path="META-INF/application.xml" from="../target/fsk-online-all-@POM_VERSION/META-INF/application.xml" /> -->
+	<file path="META-INF/application.xml" from="../target/fsk-online-all-1.0.10-SNAPSHOT/META-INF/application.xml" /> <!-- TEMPLATE DONT EDIT <file path="META-INF/application.xml" from="../target/fsk-online-all-@POM_VERSION/META-INF/application.xml" /> -->
 
-    <map path="fsk-online-rest-1.0.9.war" from="../../fsk-online-rest/etc/fsk-online-rest.map" /> <!-- TEMPLATE DONT EDIT <map path="fsk-online-rest-@POM_VERSION.war" from="../../fsk-online-rest/etc/fsk-online-rest.map" /> -->
-	<map path="fsk-online-ts-1.0.9.war" from="../../fsk-online-ts/etc/fsk-online-ts.map" /> <!-- TEMPLATE DONT EDIT <map path="fsk-online-ts-@POM_VERSION.war" from="../../fsk-online-ts/etc/fsk-online-ts.map" /> -->
+    <map path="fsk-online-rest-1.0.10-SNAPSHOT.war" from="../../fsk-online-rest/etc/fsk-online-rest.map" /> <!-- TEMPLATE DONT EDIT <map path="fsk-online-rest-@POM_VERSION.war" from="../../fsk-online-rest/etc/fsk-online-rest.map" /> -->
+	<map path="fsk-online-ts-1.0.10-SNAPSHOT.war" from="../../fsk-online-ts/etc/fsk-online-ts.map" /> <!-- TEMPLATE DONT EDIT <map path="fsk-online-ts-@POM_VERSION.war" from="../../fsk-online-ts/etc/fsk-online-ts.map" /> -->
 </jar>
