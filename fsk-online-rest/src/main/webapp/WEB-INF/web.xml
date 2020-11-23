@@ -14,6 +14,11 @@
     </context-param>
 
     <context-param>
+        <param-name>log4jConfigLocation</param-name>
+        <param-value>/log4j-fsk-online-rest.xml</param-value>
+    </context-param>
+
+    <context-param>
         <param-name>contextClass</param-name>
         <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
     </context-param>
