@@ -1,4 +1,4 @@
-import {RESTClient, Version} from "fmko-ts-common";
+import {ModuleContext, RESTClient, Version} from "fmko-ts-common";
 import ODRRestUrls from "./ODRRestUrls";
 import BTRRestUrls from "./BTRRestUrls";
 import LTRRestUrl from "./LTRRestUrl";
@@ -14,14 +14,15 @@ export default class FSKService {
 
     private restClient: RESTClient;
 
-    public static deps = () => [ODRRestUrls, BTRRestUrls, LTRRestUrl, "Version"];
+    public static deps = () => [ODRRestUrls, BTRRestUrls, LTRRestUrl, "ModuleContext", "Version"];
 
     constructor(
         private odrRestUrls: ODRRestUrls,
         private btrRestUrls: BTRRestUrls,
         private ltrRestUrls: LTRRestUrl,
+        private moduleContext: ModuleContext,
         private version: Version) {
-        this.restClient = new RESTClient({version});
+        this.restClient = new RESTClient({moduleContext, version});
     }
 
     // OrgandonationRegistration
