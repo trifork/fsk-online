@@ -28,7 +28,7 @@ public class RestIsAliveServlet extends CachingIsAliveServlet {
 
     @Override
     protected void addTasks(Set<IsAliveTask> tasks) {
-        tasks.add(new UrlRespondingTask(IntegrationPointTask.PointOfIntegration.INTERNAL, "ODR-WS", odrWsUrl));
-        tasks.add(new UrlRespondingTask(IntegrationPointTask.PointOfIntegration.INTERNAL, "BTR-WS", btr_ltr_WsUrl));
+        tasks.add(new UrlRespondingTask(IntegrationPointTask.PointOfIntegration.EXTERNAL, "ODR-WS", odrWsUrl));
+        tasks.add(new UrlRespondingTask(IntegrationPointTask.PointOfIntegration.EXTERNAL, "BTR-WS", btr_ltr_WsUrl));
     }
 }
