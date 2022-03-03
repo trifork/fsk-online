@@ -27,5 +27,5 @@
     "fmko-ts-components": "4.8.0",
     "moment": "2.24.0"
   },
-  "registry": "http://ci.fmk.netic.dk/nexus/content/groups/npm-fmk-all/"
+  "registry": "https://ci.fmk.netic.dk/nexus/content/groups/npm-fmk-all/"
 }
