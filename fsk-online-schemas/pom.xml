@@ -1,50 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<artifactId>fsk-online-schemas</artifactId>
 	<packaging>jar</packaging>
 
 	<parent>
 		<groupId>dk.sundhedsdatastyrelsen.fsk</groupId>
 		<artifactId>fsk-online-parent</artifactId>
-		<version>1.2.0-SNAPSHOT</version>
+		<version>2.1.0-SNAPSHOT</version>
 	</parent>
-
-	<properties>
-		<jaxb-impl.version>2.2.11</jaxb-impl.version>
-	</properties>
 
 	<dependencies>
 		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>${jaxb-impl.version}</version>
-			<!-- 2.1.12 is the latest version that works with MinLog client 1.2.5 -->
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.2.12</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.xml.ws</groupId>
+			<artifactId>jakarta.xml.ws-api</artifactId>
+			<version>2.3.3</version>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.jws</groupId>
+			<artifactId>jakarta.jws-api</artifactId>
+			<version>2.1.0</version>
 		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jaxws-maven-plugin</artifactId>
-				<version>2.5</version>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-codegen-plugin</artifactId>
+				<version>3.3.5</version>
 				<executions>
 					<execution>
-						<goals>
-							<goal>wsimport</goal>
-						</goals>
+						<id>generate</id>
+						<phase>generate-sources</phase>
 						<configuration>
-							<wsdlFiles>
-								<wsdlFile>${basedir}/src/main/resources/wsdl/organdonor_service_2018_05_01.wsdl</wsdlFile>
-								<wsdlFile>${basedir}/src/main/resources/wsdl/livstestamente_service_2018_05_01.wsdl</wsdlFile>
-								<wsdlFile>${basedir}/src/main/resources/wsdl/behandlingstestamente_service_2018_05_01.wsdl</wsdlFile>
-							</wsdlFiles>
-							<bindingFiles>
-								<bindingFile>${basedir}/src/main/resources/bindings.xjb</bindingFile>
-							</bindingFiles>
+							<wsdlOptions>
+								<wsdlOption>
+									<wsdl>${basedir}/src/main/resources/wsdl/organdonor_service_2018_05_01.wsdl</wsdl>
+									<bindingFiles>
+										<bindingFile>${basedir}/src/main/resources/bindings.xjb</bindingFile>
+									</bindingFiles>
+								</wsdlOption>
+								<wsdlOption>
+									<wsdl>${basedir}/src/main/resources/wsdl/livstestamente_service_2018_05_01.wsdl</wsdl>
+									<bindingFiles>
+										<bindingFile>${basedir}/src/main/resources/bindings.xjb</bindingFile>
+									</bindingFiles>
+								</wsdlOption>
+								<wsdlOption>
+									<wsdl>${basedir}/src/main/resources/wsdl/behandlingstestamente_service_2018_05_01.wsdl</wsdl>
+									<bindingFiles>
+										<bindingFile>${basedir}/src/main/resources/bindings.xjb</bindingFile>
+									</bindingFiles>
+								</wsdlOption>
+							</wsdlOptions>
 						</configuration>
+						<goals>
+							<goal>wsdl2java</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>

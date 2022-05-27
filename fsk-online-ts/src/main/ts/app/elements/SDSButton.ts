@@ -1,7 +1,7 @@
 import {Widget} from "fmko-ts-common";
 
 export default class SDSButton extends Widget {
-    constructor(title: string, buttonStyle?: sdsButtonType, event?: (MouseEvent) => void) {
+    constructor(title: string, buttonStyle?: sdsButtonType, event?: (e: MouseEvent) => void) {
         super();
         this.element = document.createElement(`button`);
         this.element.innerText = title;
@@ -25,7 +25,7 @@ export default class SDSButton extends Widget {
 
     }
 
-    public addClickEvent(event?: (MouseEvent) => void) {
+    public addClickEvent(event?: (e: MouseEvent) => void) {
         this.element.addEventListener(`click`, event);
     }
 }

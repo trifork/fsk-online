@@ -8,17 +8,22 @@
     "typings/main"
   ],
   "compilerOptions": {
-    "moduleResolution": "node",
-    "target": "es5",
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "importHelpers": true,
-    "noEmitHelpers": true,
-    "strictNullChecks": false,
-    "esModuleInterop": true,
-    "lib": [
-      "dom", "es2018"
-    ]
+ "sourceMap": true,
+        "moduleResolution": "node",
+        "target": "ES2019",
+        "outDir": "target/js",
+        "allowSyntheticDefaultImports": true,
+        "strictNullChecks": false,
+        "noImplicitAny": true,
+        "esModuleInterop": true,
+        "importHelpers": true,
+        "noEmitHelpers": true,
+        "experimentalDecorators": true,
+        "noImplicitOverride": true,
+        "lib": [
+            "dom", "es2017", "es2018.promise"
+        ],
+        "downlevelIteration": false
   },
   "atom": {
     "rewriteTsconfig": true

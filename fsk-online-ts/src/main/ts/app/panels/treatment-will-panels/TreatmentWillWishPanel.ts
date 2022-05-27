@@ -71,7 +71,7 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
         return this.value;
     }
 
-    public setVisible(visible: boolean): void {
+    public override setVisible(visible: boolean): void {
         this.element.setAttribute("aria-hidden", `${!visible}`);
     }
 
@@ -102,7 +102,7 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
         });
     }
 
-    public tearDownBindings(): any {
+    public override tearDownBindings(): any {
         // Unused
     }
 }

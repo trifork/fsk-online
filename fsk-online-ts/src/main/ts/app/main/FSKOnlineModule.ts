@@ -27,7 +27,7 @@ export default class FSKOnlineModule extends DefaultModule {
         super(FSKOnlineModule.MODULE_IDENTIFIER);
     }
 
-    public register(): void {
+    public override register(): void {
         ModuleRegistryFactory.getInstance().setupModuleContextByReference(this);
         this.organDonorCache = this.container.resolve<FSKOrganDonorCache>(FSKOrganDonorCache);
         this.treatmentWillCache = this.container.resolve<TreatmentWillCache>(TreatmentWillCache);
@@ -50,12 +50,12 @@ export default class FSKOnlineModule extends DefaultModule {
         this.loadLocalStylesheet("/fsk-online-ts/css/fsk-online.css");
     }
 
-    public getVersionInfo(): string {
+    public override getVersionInfo(): string {
         const version = new VersionImpl(SCM_VERSION, SCM_BRANCH, BUILD_TIME, POM_VERSION);
         return getVersionInfo(version);
     }
 
-    public setPatient(patient: PersonInfo, asyncResponse: AsyncResponse): boolean {
+    public override setPatient(patient: PersonInfo, asyncResponse: AsyncResponse): boolean {
         const result = super.setPatient(patient, asyncResponse);
         if (patient) {
             this.organDonorCache.organDonorRegister.setStale();
@@ -70,7 +70,7 @@ export default class FSKOnlineModule extends DefaultModule {
         return result;
     }
 
-    public refreshPatient(): void {
+    public override refreshPatient(): void {
         if (this.doctorOrNurseWillTab.isVisible()) {
             this.livingWillCache.registrationState = RegistrationState.UNCHECKED;
             this.treatmentWillCache.registrationState = RegistrationState.UNCHECKED;

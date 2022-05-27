@@ -50,7 +50,11 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         this.element = document.createElement("div");
     }
 
-    public init() {
+    public autoActivationAllowed(): boolean {
+        return true;
+    }
+
+    public override init() {
         if (this.initialized) {
             return;
         }
@@ -65,7 +69,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     public setupBindings(): void {
         this.setupButtons();
 
-        this.fullAccessPanel = new FullAccessPermissionPanel();
+        this.fullAccessPanel = this.container.resolve<FullAccessPermissionPanel>(FullAccessPermissionPanel);
         this.fullAccessPanel.setVisible(false);
         this.fullAccessPanel.setEnabled();
         this.fullAccessPanel.setUpdateButton(this.buttonStrategy.updateButton);
@@ -187,12 +191,12 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         const deleteHandler = async () => {
             try {
                 const yesOption = <DialogOption>{
-                    buttonStyle: ButtonStyle.GREEN,
+                    buttonStyle: ButtonStyle.DEFAULT,
                     text: "Slet"
                 };
 
                 const noOption = <DialogOption>{
-                    buttonStyle: ButtonStyle.RED,
+                    buttonStyle: ButtonStyle.SECONDARY,
                     text: "Fortryd"
                 };
                 const yesIsClicked = await PopupDialog.display(PopupDialogKind.WARNING, "Bekræft sletning",
@@ -274,11 +278,12 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         this.fskOrganDonorCache.hasRegistration = hasRegistration;
         hasRegistration ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
         this.fskOrganDonorCache.organDonorRegister.setStale();
-        SnackBar.show(snackbarText);
+        SnackBar.show({headerText: snackbarText, delay: 5000});
+
         this.buttonStrategy.enableButtons();
     }
 
-    public tearDownBindings(): void {
+    public override tearDownBindings(): void {
         // unused
     }
 
@@ -290,7 +295,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         return this.TITLE;
     }
 
-    public setVisible(visible: boolean): any {
+    public override setVisible(visible: boolean): any {
         super.setVisible(visible);
 
         if (this.shown === visible) {

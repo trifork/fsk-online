@@ -36,7 +36,7 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
         this.element = document.createElement(`div`);
     }
 
-    public init() {
+    public override init() {
         if (this.initialized) {
             return;
         }
@@ -52,7 +52,7 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
         this.rootElement.appendChild(this.element);
     }
 
-    public tearDownBindings(): void {
+    public override tearDownBindings(): void {
         // unused
     }
 
@@ -64,7 +64,11 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
         return this.TITLE;
     }
 
-    public setVisible(visible: boolean): void {
+    public autoActivationAllowed(): boolean {
+        return true;
+    }
+
+    public override setVisible(visible: boolean): void {
         super.setVisible(visible);
         if (this.moduleContext.getPatient()) {
             // Check if we the user has clicked accept on the dialog
@@ -114,12 +118,12 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
 
     public async showLogDialog(): Promise<void> {
         const yesOption = <DialogOption>{
-            buttonStyle: ButtonStyle.GREEN,
+            buttonStyle: ButtonStyle.DEFAULT,
             text: `Videre`
         };
 
         const noOption = <DialogOption>{
-            buttonStyle: ButtonStyle.RED,
+            buttonStyle: ButtonStyle.SECONDARY,
             text: `Fortryd`
         };
 
@@ -216,5 +220,4 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
             this.livingWillChangeHandler = undefined;
         }
     }
-
 }

@@ -1,6 +1,6 @@
 import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
-import {Checkbox, HTML} from "fmko-ts-widgets";
+import {CheckboxWrapper} from "fmko-ts-widgets";
 import {Widget} from "fmko-ts-common";
 import SDSButton from "../../elements/SDSButton";
 import OrganDonorRegistration = FSKTypes.OrganDonorRegistrationType;
@@ -23,32 +23,12 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget {
     }
 
     public setupBindings(): any {
-        const checkboxes = this.createCheckboxes();
-
-        let row: HTML = null;
-
-        Object.entries(checkboxes).forEach(([key, checkbox], index) => {
-            if (key !== "requiresRelativeAcceptance") {
-                if (index % 4 === 0) {
-                    if (row) {
-                        this.appendWidgetOnVarName(row, `limited-access-checkboxes`);
-                    }
-                    row = new HTML();
-                    row.addStyleName(`row`);
-                    row.getCssStyle().paddingBottom = `8px`;
-                }
-
-                this.wrapInRow(row, checkbox);
-            }
-        });
-        this.appendWidgetOnVarName(row, `limited-access-checkboxes`);
-
-        this.appendWidgetOnVarName(checkboxes.requiresRelativeAcceptance, `family-consent`, true);
+        this.checkboxes = this.createCheckboxes();
     }
 
     public setEnabled(enabled: boolean): void {
         if (!enabled) {
-            Object.values(this.checkboxes).forEach(checkbox => checkbox.getInput().onclick = ( () => false));
+            Object.values(this.checkboxes).forEach(checkbox => checkbox.getInput().onclick = (() => false));
         }
         Object.values(this.checkboxes).forEach(checkbox => checkbox.setEnabled(true));
     }
@@ -77,7 +57,6 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget {
     }
 
 
-
     public setValue(value: FSKTypes.OrganDonorRegistrationType, isFSKSupporter: boolean): void {
         if (value) {
             Object.entries(value).forEach(([key, objValue]) => {
@@ -92,10 +71,12 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget {
                     `permissionForSkin`,
                     `requiresRelativeAcceptance`
                 ].includes(key)) {
-                    this.checkboxes[key].setValue(objValue);
-                    this.checkboxes[key].setEnabled(isFSKSupporter && objValue || !isFSKSupporter);
+                    // @ts-ignore
+                    const checkBox = this.checkboxes[key];
+                    checkBox.setValue(objValue);
+                    checkBox.setEnabled(isFSKSupporter && objValue || !isFSKSupporter);
                     if (isFSKSupporter && objValue) {
-                        this.checkboxes[key].getInput().onclick = ( () => false);
+                        checkBox.getInput().onclick = (() => false);
                     }
                 }
             });
@@ -104,7 +85,7 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget {
         }
     }
 
-    public tearDownBindings(): any {
+    public override tearDownBindings(): any {
         // Unused
     }
 
@@ -126,15 +107,15 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget {
     }
 
     public createCheckboxes(): OrganRegistrationCheckBoxes {
-        const heartCheckbox = new Checkbox(false, `Hjerte`);
-        const lungsCheckbox = new Checkbox(false, `Lunger`);
-        const liverCheckbox = new Checkbox(false, `Lever`);
-        const pancreasCheckbox = new Checkbox(false, `Bugspytkirtel`);
-        const kidneyCheckbox = new Checkbox(false, `Nyrer`);
-        const corneasCheckbox = new Checkbox(false, `Hornhinder`);
-        const intestineCheckbox = new Checkbox(false, `Tyndtarm`);
-        const skinCheckbox = new Checkbox(false, `Hud`);
-        const consentCheckBox = new Checkbox(false, `Forudsætter accept fra patientens pårørende`);
+        const heartCheckbox = new CheckboxWrapper(this.getElementByVarName(`heart-checkbox`));
+        const lungsCheckbox = new CheckboxWrapper(this.getElementByVarName(`lungs-checkbox`));
+        const liverCheckbox = new CheckboxWrapper(this.getElementByVarName(`liver-checkbox`));
+        const pancreasCheckbox = new CheckboxWrapper(this.getElementByVarName(`pancreas-checkbox`));
+        const kidneyCheckbox = new CheckboxWrapper(this.getElementByVarName(`kidney-checkbox`));
+        const corneasCheckbox = new CheckboxWrapper(this.getElementByVarName(`corneas-checkbox`));
+        const intestineCheckbox = new CheckboxWrapper(this.getElementByVarName(`intestine-checkbox`));
+        const skinCheckbox = new CheckboxWrapper(this.getElementByVarName(`skin-checkbox`));
+        const consentCheckBox = new CheckboxWrapper(this.getElementByVarName(`consent-checkbox`));
 
         this.checkboxes = <OrganRegistrationCheckBoxes>{
             permissionForCornea: corneasCheckbox,
@@ -149,7 +130,6 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget {
         };
 
         Object.values(this.checkboxes).forEach(currentCheckbox => {
-            currentCheckbox.getCssStyle().fontSize = `14px`;
             currentCheckbox.addValueChangeHandler(handler => {
                 if (currentCheckbox !== consentCheckBox) {
                     const value = handler.getValue();
@@ -166,16 +146,6 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget {
 
         return this.checkboxes;
     }
-
-    private wrapInRow(row: HTML, checkBox: Checkbox): void {
-
-        const column = new HTML();
-        column.addStyleName(`col-3`);
-
-        column.add(checkBox);
-        row.add(column);
-    }
-
 }
 
-type OrganRegistrationCheckBoxes = { [K in keyof OrganDonorRegistration]?: Checkbox; };
+type OrganRegistrationCheckBoxes = { [K in keyof OrganDonorRegistration]?: CheckboxWrapper; };

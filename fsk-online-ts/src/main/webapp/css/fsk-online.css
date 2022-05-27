@@ -2,7 +2,29 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
+.card {
+    padding: 16px;
+}
+
+.row {
+    padding-bottom: 8px;
+}
+
+.flexrow {
+    display: flex;
+    padding-bottom: 8px;
+}
+
+.col-3 {
+    width: 25%;
+}
+
+.col-12 {
+    width: 100%;
+}
+
 h1.sds-h1 {
+    padding: 0;
     font-size: 30px;
     font-weight: 500;
 }
@@ -28,10 +50,11 @@ label.sds-label {
 }
 
 .sds-title {
-    background-color: #005a8d;
+    background-color: #405b6b;
     color: white;
     border-radius: 4px;
     margin: 0 16px 8px 16px;
+    padding: 8px;
 }
 
 p.sds-p {
@@ -114,15 +137,16 @@ button.sds-button {
 }
 
 button.sds-button.primary {
-    background-color: #005a8d;
+    background-color: #bfe600;
+    color: black;
 }
 
 button.sds-button.primary:hover {
-    background-color: #00517F;
+    background-color: #accf00;
 }
 
 button.sds-button.primary:active {
-    background-color: #004870;
+    background-color: #accf00;
 }
 
 button.sds-button.danger {
@@ -256,7 +280,7 @@ button.sds-outline-button.danger:active {
 }
 
 .sds-line {
-    border-bottom: 1px solid #007ec5;
+    border-bottom: 2px solid #b2b2b2;
     padding-top: 8px;
     margin-bottom: 8px;
 }

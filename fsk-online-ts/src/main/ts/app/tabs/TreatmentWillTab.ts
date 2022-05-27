@@ -27,7 +27,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
         this.element = document.createElement(`div`);
     }
 
-    public init() {
+    public override init() {
         if (this.initialized) {
             return;
         }
@@ -45,7 +45,7 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
         this.rootElement.appendChild(this.element);
     }
 
-    public tearDownBindings(): void {
+    public override tearDownBindings(): void {
         // unused
     }
 
@@ -57,7 +57,11 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
         return this.TITLE;
     }
 
-    public async setVisible(visible: boolean): Promise<void> {
+    public autoActivationAllowed(): boolean {
+        return true;
+    }
+
+    public override async setVisible(visible: boolean): Promise<void> {
         super.setVisible(visible);
 
         if (this.shown === visible) {
@@ -139,5 +143,4 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             this.treatmentWillChangeHandler = undefined;
         }
     }
-
 }

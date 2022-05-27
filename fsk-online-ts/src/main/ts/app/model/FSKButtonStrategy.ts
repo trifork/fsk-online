@@ -50,19 +50,19 @@ export default class FSKButtonStrategy implements ButtonStrategy {
         this.deleteButton.setVisible(isFSKAdmin && deleteButtonCondition);
     }
 
-    public addHandlerForCreateButton(event: (event: MouseEvent) => void): void {
+    public addHandlerForCreateButton(event: (e: MouseEvent) => void): void {
         this.createButton.addClickHandler(event);
     }
 
-    public addHandlerForEditButton(event: (event: MouseEvent) => void): void {
+    public addHandlerForEditButton(event: (e: MouseEvent) => void): void {
         this.updateButton.addClickHandler(event);
     }
 
-    public addHandlerForDeleteButton(event: (event: MouseEvent) => void): void {
+    public addHandlerForDeleteButton(event: (e: MouseEvent) => void): void {
         this.deleteButton.addClickHandler(event);
     }
 
-    public addHandlerForPrintButton(event: (event: MouseEvent) => void): void {
+    public addHandlerForPrintButton(event: (e: MouseEvent) => void): void {
         this.printButton.addClickHandler(event);
     }
 
@@ -70,6 +70,4 @@ export default class FSKButtonStrategy implements ButtonStrategy {
         this.printButton.setEnabled(true);
         this.printButton.setVisible(true);
     }
-
-
 }

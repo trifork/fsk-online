@@ -3,14 +3,25 @@
         <div id="{no-checkbox-selected}" style="display:none">
             <div class="row" style="text-align: center">
                 <div class="col-12">
-                    <div style="padding:12px">
-                        Angiv mindst et organ
-                    </div>
+                    <div style="padding:12px">Angiv mindst ét organ</div>
                 </div>
             </div>
         </div>
         <div id="{limited-access-checkboxes}">
+            <div class="flexrow">
+                <div class="col-3"><input id="{corneas-checkbox}" type="checkbox"/><label for="{corneas-checkbox}">Hornhinder</label></div>
+                <div class="col-3"><input id="{heart-checkbox}" type="checkbox"/><label for="{heart-checkbox}">Hjerte</label></div>
+                <div class="col-3"><input id="{kidney-checkbox}" type="checkbox"/><label for="{kidney-checkbox}">Nyrer</label></div>
+                <div class="col-3"><input id="{liver-checkbox}" type="checkbox"/><label for="{liver-checkbox}">Lever</label></div>
+            </div>
+            <div class="flexrow">
+                <div class="col-3"><input id="{lungs-checkbox}" type="checkbox"/><label for="{lungs-checkbox}">Lunger</label></div>
+                <div class="col-3"><input id="{pancreas-checkbox}" type="checkbox"/><label for="{pancreas-checkbox}">Bugspytkirtel</label></div>
+                <div class="col-3"><input id="{skin-checkbox}" type="checkbox"/><label for="{skin-checkbox}">Hud</label></div>
+                <div class="col-3"><input id="{intestine-checkbox}" type="checkbox"/><label for="{intestine-checkbox}">Tyndtarm</label></div>
+            </div>
+            <div class="flexrow"></div>
         </div>
     </div>
-    <div id="{family-consent}" style="margin-top:16px"></div>
+    <input id="{consent-checkbox}" type="checkbox"/><label for="{consent-checkbox}">Forudsætter accept fra patientens pårørende</label>
 </div>

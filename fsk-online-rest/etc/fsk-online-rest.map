@@ -2,6 +2,6 @@
 <jar name="fsk-online-rest.war">
 	<dir path="" from="../src/main/webapp" />
 	<dir path="META-INF" from="../src/main/webapp/META-INF" />
-	<dir path="WEB-INF/lib" from="../target/fsk-online-rest-1.2.0-SNAPSHOT/WEB-INF/lib" /> <!-- TEMPLATE DONT EDIT <dir path="WEB-INF/lib" from="../target/fsk-online-rest-@POM_VERSION/WEB-INF/lib" /> -->
+	<dir path="WEB-INF/lib" from="../target/fsk-online-rest-2.1.0-SNAPSHOT/WEB-INF/lib" /> <!-- TEMPLATE DONT EDIT <dir path="WEB-INF/lib" from="../target/fsk-online-rest-@POM_VERSION/WEB-INF/lib" /> -->
 	<dir path="WEB-INF/classes" from="../target/classes" />
 </jar>

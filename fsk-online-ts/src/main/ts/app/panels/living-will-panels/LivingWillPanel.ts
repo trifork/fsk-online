@@ -76,7 +76,7 @@ export default class LivingWillPanel extends TemplateWidget {
         this.addAndReplaceWidgetByVarName(this.buttonStrategy.deleteButton, `delete-button`);
     }
 
-    public tearDownBindings(): any {
+    public override tearDownBindings(): any {
         // Unused
     }
 
@@ -116,12 +116,12 @@ export default class LivingWillPanel extends TemplateWidget {
         const deleteHandler = async () => {
             try {
                 const yesOption = <DialogOption>{
-                    buttonStyle: ButtonStyle.GREEN,
+                    buttonStyle: ButtonStyle.DEFAULT,
                     text: `Slet`
                 };
 
                 const noOption = <DialogOption>{
-                    buttonStyle: ButtonStyle.RED,
+                    buttonStyle: ButtonStyle.SECONDARY,
                     text: `Fortryd`
                 };
                 const yesIsClicked = await PopupDialog.display(PopupDialogKind.WARNING, "Bekræft sletning",
@@ -154,7 +154,7 @@ export default class LivingWillPanel extends TemplateWidget {
             : this.buttonStrategy.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));
         this.livingWillCache.livingWill.setStale();
         this.buttonStrategy.enableButtons();
-        SnackBar.show(snackbarText);
+        SnackBar.show({headerText: snackbarText, delay: 5000});
     }
 
     public setEnabled(illCheckBoxCondition: boolean | undefined, handicapCheckBoxCondition: boolean | undefined) {

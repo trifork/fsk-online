@@ -1,26 +1,31 @@
-import {Widget} from "fmko-ts-common";
-import {Checkbox} from "fmko-ts-widgets";
+import {CheckboxWrapper} from "fmko-ts-widgets";
 import SDSButton from "../../elements/SDSButton";
+import {IoC} from "fmko-ts-ioc";
+import {TemplateWidget} from "fmko-ts-mvc";
 
-export default class FullAccessPermissionPanel extends Widget {
-
-    private requiresRelativeAcceptanceCheckBox: Checkbox;
+export default class FullAccessPermissionPanel extends TemplateWidget {
+    private requiresRelativeAcceptanceCheckBox: CheckboxWrapper;
     private updateButton: SDSButton;
 
-    public static deps = () => [];
+    public static deps = () => [IoC];
 
-    constructor() {
-        super();
+    constructor(protected container: IoC) {
+        super(container);
         this.element = document.createElement(`div`);
-        this.element.className = `card full-access-panel`;
-        this.requiresRelativeAcceptanceCheckBox = new Checkbox(false, `Forudsætter accept fra patientens pårørende`);
-        this.requiresRelativeAcceptanceCheckBox.getCssStyle().fontSize = `14px`;
+        this.init();
+    }
+
+    public getTemplate(): string {
+        return require(`./fullAccessPermissionPanel.html`);
+    }
+
+    public setupBindings(): any {
+        this.requiresRelativeAcceptanceCheckBox = new CheckboxWrapper(this.getElementByVarName(`consent-checkbox`));
         this.requiresRelativeAcceptanceCheckBox.addValueChangeHandler(() => {
             if (this.updateButton) {
                 this.updateButton.setEnabled(true);
             }
         });
-        this.add(this.requiresRelativeAcceptanceCheckBox);
     }
 
     public getRequiresRelativeAcceptance(): boolean {

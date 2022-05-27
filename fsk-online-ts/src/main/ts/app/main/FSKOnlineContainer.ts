@@ -43,7 +43,7 @@ export default class FSKOnlineContainer {
         this._ioc.bind(LivingWillCache).scopedAs(SINGLETON);
     }
 
-    public resolve<T>(type: ReferenceType) {
+    public resolve<T>(type: ReferenceType<T>) {
         return this._ioc.resolve<T>(type);
     }
 }

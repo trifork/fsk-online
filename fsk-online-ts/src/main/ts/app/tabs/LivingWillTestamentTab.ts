@@ -30,7 +30,7 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         this.element = document.createElement(`div`);
     }
 
-    public init() {
+    public override init() {
         if (this.initialized) {
             return;
         }
@@ -48,7 +48,7 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         this.rootElement.appendChild(this.element);
     }
 
-    public tearDownBindings(): void {
+    public override tearDownBindings(): void {
         // unused
     }
 
@@ -60,7 +60,11 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         return this.TITLE;
     }
 
-    public async setVisible(visible: boolean): Promise<void> {
+    public autoActivationAllowed(): boolean {
+        return true;
+    }
+
+    public override async setVisible(visible: boolean): Promise<void> {
         super.setVisible(visible);
 
         if (this.shown === visible) {

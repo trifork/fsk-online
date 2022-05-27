@@ -1,6 +1,6 @@
 {
   "name": "fsk-online",
-  "version": "1.2.0-SNAPSHOT",
+  "version": "2.1.0-SNAPSHOT",
   "scripts": {
     "dev": "node node_modules/webpack/bin/webpack --mode=development",
     "prod": "node node_modules/webpack/bin/webpack --mode=production",
@@ -8,24 +8,25 @@
   },
   "devDependencies": {
     "tslint": "6.1.3",
-    "@typescript-eslint/parser": "^3.10.1",
-    "@typescript-eslint/eslint-plugin": "^3.10.1",
-    "@typescript-eslint/eslint-plugin-tslint": "^3.10.1",
-    "eslint": "^7.7.0",
-    "typescript": "4.0.2",
-    "webpack": "5.3.1",
-    "webpack-cli": "4.1.0",
-    "fmko-ts-build": "4.8.0"
+    "@typescript-eslint/parser": "5.20.0",
+    "@typescript-eslint/eslint-plugin": "5.20.0",
+    "@typescript-eslint/eslint-plugin-tslint": "5.20.0",
+    "eslint": "8.13.0",
+    "typescript": "4.6.3",
+    "webpack": "5.72.0",
+    "webpack-cli": "4.9.2",
+    "tslib": "2.4.0",
+    "fmko-ts-build": "6.1.0-SNAPSHOT"
   },
   "dependencies": {
-    "fmko-ts-common": "4.8.0",
-    "fmko-ts-grid": "4.8.0",
-    "fmko-ts-ioc": "4.8.0",
-    "fmko-ts-mvc": "4.8.0",
-    "fmko-ts-validation": "4.8.0",
-    "fmko-ts-widgets": "4.8.0",
-    "fmko-ts-components": "4.8.0",
-    "moment": "2.24.0"
+    "fmko-ts-common": "6.1.0-SNAPSHOT",
+    "fmko-ts-grid": "6.1.0-SNAPSHOT",
+    "fmko-ts-ioc": "6.1.0-SNAPSHOT",
+    "fmko-ts-mvc": "6.1.0-SNAPSHOT",
+    "fmko-ts-validation": "6.1.0-SNAPSHOT",
+    "fmko-ts-widgets": "6.1.0-SNAPSHOT",
+    "fmko-ts-components": "6.1.0-SNAPSHOT",
+    "moment": "2.29.3"
   },
   "registry": "https://ci.fmk.netic.dk/nexus/content/groups/npm-fmk-all/"
 }
