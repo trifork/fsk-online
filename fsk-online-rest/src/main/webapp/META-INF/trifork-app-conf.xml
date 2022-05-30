@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-
 <trifork-app-conf xmlns='http://trifork.com/j2ee/xsd/trifork-app-conf_2_1'
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   xsi:schemaLocation="http://trifork.com/j2ee/xsd/trifork-app-conf_2_1 http://trifork.com/xml/ns/j2ee/trifork-app-conf_2_1.xsd">
     <web-app>
         <context-root>fsk-online</context-root>
+        <endpoint>REDESIGN_ENDPOINT</endpoint>
     </web-app>
 </trifork-app-conf>
