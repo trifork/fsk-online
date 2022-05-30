@@ -47,7 +47,7 @@ export default class FSKOnlineModule extends DefaultModule {
         this.addTabbedPanel(this.treatmentWillTestamentTab);
         this.doctorOrNurseWillTab = this.container.resolve<DoctorOrNurseWillTab>(DoctorOrNurseWillTab);
         this.addTabbedPanel(this.doctorOrNurseWillTab);
-        this.loadLocalStylesheet("/fsk-online-ts/css/fsk-online-temporary.css");
+        this.loadLocalStylesheet("/fmk/u/fsk-online-ts/css/fsk-online-temporary.css");
     }
 
     public override getVersionInfo(): string {
