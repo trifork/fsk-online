@@ -2,22 +2,43 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>dk.sundhedsdatastyrelsen.fsk</groupId>
     <artifactId>fsk-online-parent</artifactId>
-    <packaging>pom</packaging>
     <version>2.1.0-SNAPSHOT</version>
     <name>fsk-online-parent</name>
+    <packaging>pom</packaging>
+
     <parent>
         <groupId>dk.fmkonline</groupId>
         <artifactId>fol-parent</artifactId>
-        <version>3.8.0-SNAPSHOT</version>
+        <version>3.12.1</version>
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>11</java.version>
-        <fmk.online.version>3.8.0-SNAPSHOT</fmk.online.version>
-        <webpack.mode>prod</webpack.mode>
+        <fmk.online.version>3.12.1</fmk.online.version>
     </properties>
-<!--
+
+    <scm>
+        <connection>scm:git:git@github.com:trifork/fsk-online.git</connection>
+        <url>scm:git:git@github.com:trifork/fsk-online.git</url>
+        <developerConnection>scm:git:git@github.com:trifork/fsk-online.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>trifork.snapshots</id>
+            <name>Trifork internal snapshot Nexus</name>
+            <url>https://ci.fmk.netic.dk/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+
+        <repository>
+            <id>trifork.releases</id>
+            <name>Trifork internal releases Nexus</name>
+            <url>https://ci.fmk.netic.dk/nexus/content/repositories/releases</url>
+        </repository>
+    </distributionManagement>
+
     <repositories>
         <repository>
             <id>trifork-public</id>
@@ -45,33 +66,6 @@
         </repository>
     </repositories>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>trifork.snapshots</id>
-            <name>Trifork internal snapshot Nexus</name>
-            <url>https://ci.fmk.netic.dk/nexus/content/repositories/snapshots/</url>
-        </snapshotRepository>
-
-        <repository>
-            <id>trifork.releases</id>
-            <name>Trifork internal releases Nexus</name>
-            <url>https://ci.fmk.netic.dk/nexus/content/repositories/releases</url>
-        </repository>
-
-    </distributionManagement>
-
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.5.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
     <pluginRepositories>
         <pluginRepository>
@@ -96,16 +90,8 @@
             <releases>
                 <updatePolicy>never</updatePolicy>
             </releases>
-
         </pluginRepository>
     </pluginRepositories>
--->
-    <scm>
-        <connection>scm:git:git@github.com:trifork/fsk-online.git</connection>
-        <url>scm:git:git@github.com:trifork/fsk-online.git</url>
-        <developerConnection>scm:git:git@github.com:trifork/fsk-online.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
 
     <modules>
         <module>fsk-online-schemas</module>
