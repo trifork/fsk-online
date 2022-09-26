@@ -16,16 +16,16 @@
     "webpack": "5.72.0",
     "webpack-cli": "4.9.2",
     "tslib": "2.4.0",
-    "fmko-ts-build": "6.2.0"
+    "fmko-ts-build": "6.3.0"
   },
   "dependencies": {
-    "fmko-ts-common": "6.2.0",
-    "fmko-ts-grid": "6.2.0",
-    "fmko-ts-ioc": "6.2.0",
-    "fmko-ts-mvc": "6.2.0",
-    "fmko-ts-validation": "6.2.0",
-    "fmko-ts-widgets": "6.2.0",
-    "fmko-ts-components": "6.2.0",
+    "fmko-ts-common": "6.3.0",
+    "fmko-ts-grid": "6.3.0",
+    "fmko-ts-ioc": "6.3.0",
+    "fmko-ts-mvc": "6.3.0",
+    "fmko-ts-validation": "6.3.0",
+    "fmko-ts-widgets": "6.3.0",
+    "fmko-ts-components": "6.3.0",
     "moment": "2.29.3"
   },
   "registry": "https://ci.fmk.netic.dk/nexus/content/groups/npm-fmk-all/"
