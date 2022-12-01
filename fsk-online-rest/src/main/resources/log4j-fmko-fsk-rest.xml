@@ -35,8 +35,7 @@
         </Logger>
 
         <Logger
-            name="org.apache.cxf.services.LookupServiceService.LookupServicePort.LookupService"
-            additivity="false" level="info">
+            name="org.apache.cxf.services" additivity="false" level="info">
             <!-- Change this to warn if you don't want payload logging -->
             <AppenderRef ref="ASYNC" />
         </Logger>
