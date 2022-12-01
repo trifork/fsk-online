@@ -9,8 +9,8 @@
         </Console>
 
         <RollingFile name="FILE"
-            fileName="fmk_log/fmko-fsk-rest.log"
-            filePattern="fmk_log/fmko-fsk-rest.log%d.%i">
+            fileName="fmk_log/fmko-fsk-rest-redesign.log"
+            filePattern="fmk_log/fmko-fsk-rest-redesign.log%d.%i">
 
             <PatternLayout
                 pattern="%d [%-2p] [%X{RequestHandle}] %c - %m%n" />
