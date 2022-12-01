@@ -14,8 +14,13 @@
     </context-param>
 
     <context-param>
+        <param-name>disableLog4JConsoleLoggingInProduction</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <context-param>
         <param-name>log4jConfigLocation</param-name>
-        <param-value>/log4j-fsk-online-rest.xml</param-value>
+        <param-value>/log4j-fmko-fsk-rest.xml</param-value>
     </context-param>
 
     <context-param>

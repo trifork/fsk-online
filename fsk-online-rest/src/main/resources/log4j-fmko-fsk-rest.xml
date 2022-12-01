@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration>
+
+    <Appenders>
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout
+                pattern="%d [%-2p] [%X{RequestHandle}] %c - %m%n" />
+        </Console>
+
+        <RollingFile name="FILE"
+            fileName="fmk_log/fmko-fsk-rest.log"
+            filePattern="fmk_log/fmko-fsk-rest.log%d.%i">
+
+            <PatternLayout
+                pattern="%d [%-2p] [%X{RequestHandle}] %c - %m%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy
+                    size="20 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="8" />
+        </RollingFile>
+
+        <Async name="ASYNC">
+            <AppenderRef ref="CONSOLE" />
+            <AppenderRef ref="FILE" />
+        </Async>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="dk.fmkonline.fmkrest" additivity="false"
+            level="info">
+            <AppenderRef ref="ASYNC" />
+        </Logger>
+
+        <Logger
+            name="org.apache.cxf.services.LookupServiceService.LookupServicePort.LookupService"
+            additivity="false" level="info">
+            <!-- Change this to warn if you don't want payload logging -->
+            <AppenderRef ref="ASYNC" />
+        </Logger>
+
+        <Root level="info">
+            <AppenderRef ref="ASYNC" />
+        </Root>
+    </Loggers>
+</Configuration>
