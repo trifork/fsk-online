@@ -117,31 +117,13 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
     }
 
     public async showLogDialog(): Promise<void> {
-        const yesOption = <DialogOption>{
-            buttonStyle: ButtonStyle.DEFAULT,
-            text: `Videre`
-        };
-
-        const noOption = <DialogOption>{
-            buttonStyle: ButtonStyle.SECONDARY,
-            text: `Fortryd`
-        };
-
-        const yesClicked = await PopupDialog.display(
+        const yesClicked = await PopupDialog.displayConfirmCancel(
             PopupDialogKind.WARNING,
-            "Bekræft",
-            `<h4 style='font-size:18px'>Visning af testamente</h4><br>
-            Testamente bør kun fremsøges såfremt<br><br>
-            <ul style='list-style: inherit; padding-left:32px'>
-            <li>Patienten ligger for døden (dvs. er uafvendeligt døende)</li>
-            <li>Patienten er hjælpeløs pga. sygdom, ulykke mv., og der ikke er tegn på bedring</li>
-            <li>Behandlingen kan føre til overlevelse, men de fysiske konsekvenser af sygdommen eller behandlingen vurderes at være meget alvorlige og lidelsesfulde</li>
-            <li>Man overvejer at iværksætte behandling ved anvendelse af tvang efter lov om anvendelse af tvang ved somatisk behandling af varigt inhabile</li>
-            </ul>
-            <br>Bemærk: Tilgang til data for testamentet vil blive logget, givet at der er data. Tilgang vil fremgå af patientens minlog.`,
-            noOption,
-            yesOption);
-        if (yesClicked === yesOption) {
+            "Bekræft visning af Livs/Behandlingstestamente",
+            require("./confirm-viewing-will-tab.html"),
+            "Fortryd",
+            "Videre");
+        if (yesClicked) {
             this.addListeners();
         }
     }
