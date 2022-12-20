@@ -9,13 +9,13 @@
     <parent>
         <groupId>dk.fmkonline</groupId>
         <artifactId>fol-parent</artifactId>
-        <version>3.19.0</version>
+        <version>3.25.2</version>
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>11</java.version>
-        <fmk.online.version>3.19.0</fmk.online.version>
+        <fmk.online.version>3.25.2</fmk.online.version>
     </properties>
 
     <scm>
