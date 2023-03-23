@@ -1,7 +1,7 @@
 import {LoginTypeUtil, ModuleContext, TabbedPanel, UserContext, ValueChangeHandler} from "fmko-ts-common";
 import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
-import {ButtonStyle, DialogOption, PopupDialog, PopupDialogKind} from "fmko-ts-widgets";
+import {PopupDialog, PopupDialogKind} from "fmko-ts-widgets";
 import TreatmentWillCache from "../services/TreatmentWillCache";
 import FSKService from "../services/FSKService";
 import FSKConfig from "../main/FSKConfig";
@@ -13,9 +13,8 @@ import LivingWillPanel from "../panels/living-will-panels/LivingWillPanel";
 import LivingWillType = FSKTypes.LivingWillType;
 import TreatmentWillType = FSKTypes.TreatmentWillType;
 
-export default class DoctorOrNurseWillTab extends TemplateWidget implements TabbedPanel {
+export default class DoctorOrNurseOrDentistWillTab extends TemplateWidget implements TabbedPanel {
     private ID = "DoctorOrNurseWillTab_TS";
-    private TITLE = "Livs/Behandlingstestamente";
     private shown: boolean;
     private initialized: boolean;
     private treatmentWillChangeHandler: ValueChangeHandler<FSKTypes.RegistrationTypeWrapper<TreatmentWillType>>;
@@ -45,7 +44,7 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
     }
 
     public getTemplate(): string {
-        return require("./doctorOrNurseWillTab.html");
+        return require("./doctorOrNurseOrDentistWillTab.html");
     }
 
     public setupBindings(): any {
@@ -61,7 +60,7 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
     }
 
     public getTitle(): string {
-        return this.TITLE;
+        return this.isDentist() ? "Behandlingstestamente" : "Livs/Behandlingstestamente";
     }
 
     public autoActivationAllowed(): boolean {
@@ -95,7 +94,7 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
-        return !LoginTypeUtil.loggedInWithPoces() && FSKUserUtil.isDoctorOrNurseWithoutElevatedRights(userContext);
+        return !LoginTypeUtil.loggedInWithPoces() && FSKUserUtil.isDoctorOrNurseOrDentistWithoutElevatedRights(userContext);
     }
 
     public applicationContextIdChanged(applicationContextId: string): void {
@@ -117,12 +116,9 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
     }
 
     public async showLogDialog(): Promise<void> {
-        const yesClicked = await PopupDialog.displayConfirmCancel(
-            PopupDialogKind.WARNING,
-            "Bekræft visning af Livs/Behandlingstestamente",
-            require("./confirm-viewing-will-tab.html"),
-            "Fortryd",
-            "Videre");
+        const yesClicked = await PopupDialog.displayConfirmCancel(PopupDialogKind.WARNING,
+            "Bekræft visning af " + this.getTitle(),
+            require("./confirm-viewing-will-tab.html"),"Fortryd", "Videre");
         if (yesClicked) {
             this.addListeners();
         }
@@ -166,8 +162,12 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
         this.appendWidgetOnVarName(livingPanel, `will-container`);
     }
 
+    private isDentist(): boolean {
+        return FSKUserUtil.isDentistWithoutElevatedRights(this.moduleContext.getUserContext());
+    }
+
     private async addListeners() {
-        if (await this.livingWillCache.loadHasRegistration() === RegistrationState.REGISTERED) {
+        if (!this.isDentist() && await this.livingWillCache.loadHasRegistration() === RegistrationState.REGISTERED) {
             if (!this.livingWillChangeHandler) {
                 this.livingWillChangeHandler = (() => {
                     if (this.isVisible()) {

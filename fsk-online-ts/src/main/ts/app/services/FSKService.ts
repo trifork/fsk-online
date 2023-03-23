@@ -59,6 +59,11 @@ export default class FSKService {
         return await this.restClient.get<RegistrationTypeWrapper<TreatmentWillType>>(url, `Henter behandlingstestamente for cpr: ${cpr}`);
     }
 
+    public async getTreatmentWillWithOnlyForcedTreatmentForPatient(cpr: string): Promise<RegistrationTypeWrapper<TreatmentWillType>> {
+        const url = this.btrRestUrls.getTreatmentWillWithOnlyForcedTreatmentForPatient(cpr);
+        return await this.restClient.get<RegistrationTypeWrapper<TreatmentWillType>>(url, `Henter behandlingstestamente (kun tvang) for cpr: ${cpr}`);
+    }
+
     public async hasTreatmentWillForPatient(cpr: string): Promise<HasWillResponse> {
         const url = this.btrRestUrls.hasTreatmentWillForPatient(cpr);
         return await this.restClient.get<HasWillResponse>(url, `Undersøger om cpr ${cpr} har et behandlingstestamente`);

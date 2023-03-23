@@ -1,6 +1,6 @@
 package dk.sundhedsdatastyrelsen.fskrest.resource;
 
-import org.hl7.btrv2.TreatmentWillV2;
+import org.hl7.btrv2.TreatmentWillWithOnlyForcedTreatment;
 import org.springframework.stereotype.Component;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -9,19 +9,19 @@ import javax.xml.bind.annotation.XmlType;
 
 @Component
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "TreatmentWillResponseWrapper", propOrder = {
+@XmlType(name = "TreatmentWillWithOnlyForcedTreatmentResponseWrapper", propOrder = {
         "registrationType",
         "datetime"
 })
-public class TreatmentWillResponseWrapper {
-    private TreatmentWillV2 registrationType;
+public class TreatmentWillWithOnlyForcedTreatmentResponseWrapper {
+    private TreatmentWillWithOnlyForcedTreatment registrationType;
     private String datetime;
 
-    public TreatmentWillV2 getRegistrationType() {
+    public TreatmentWillWithOnlyForcedTreatment getRegistrationType() {
         return registrationType;
     }
 
-    public void setRegistrationType(TreatmentWillV2 registrationType) {
+    public void setRegistrationType(TreatmentWillWithOnlyForcedTreatment registrationType) {
         this.registrationType = registrationType;
     }
 

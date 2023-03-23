@@ -54,7 +54,7 @@
 									</bindingFiles>
 								</wsdlOption>
 								<wsdlOption>
-									<wsdl>${basedir}/src/main/resources/wsdl/behandlingstestamente_service_2018_05_01.wsdl</wsdl>
+									<wsdl>${basedir}/src/main/resources/wsdl/behandlingstestamente_service_2020_03_16.wsdl</wsdl>
 									<bindingFiles>
 										<bindingFile>${basedir}/src/main/resources/bindings.xjb</bindingFile>
 									</bindingFiles>

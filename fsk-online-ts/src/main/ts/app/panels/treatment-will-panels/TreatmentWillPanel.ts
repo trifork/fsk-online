@@ -63,7 +63,10 @@ export default class TreatmentWillPanel extends TemplateWidget {
 
     public setupBindings(): any {
         this.setupButtons();
-        this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), this.isAdministratorUser);
+
+        if (!this.isDentist()) { // don't check livingWill existence for dentists
+            this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), this.isAdministratorUser);
+        }
 
         this.terminallyIllCheckbox = new CheckboxWrapper(this.getElementByVarName(`terminally-ill-checkbox`));
         this.terminallyIllPanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
@@ -85,6 +88,9 @@ export default class TreatmentWillPanel extends TemplateWidget {
         this.addHandlerForCheckboxAndPanel(this.illWithPermanentPainCheckbox, this.illWithPermanentPainPanel);
 
         this.addAndReplaceWidgetByVarName(this.illWithPermanentPainPanel, `ill-with-permanent-pain-panel`);
+
+        // hide the section with the fields above for dentists
+        setElementVisible(this.getElementByVarName("life-prolonging-section"), !this.isDentist());
 
         this.treatmentByForceCheckbox = new CheckboxWrapper(this.getElementByVarName(`treatment-by-force-checkbox`));
         this.treatmentByForcePanel = this.container.resolve<TreatmentWillWishPanel>(TreatmentWillWishPanel);
@@ -232,7 +238,11 @@ export default class TreatmentWillPanel extends TemplateWidget {
         Widget.setVisible(this.getElementByVarName(`registration-date-row`), !!treatmentWill);
 
         this.getElementByVarName(`empty-state-patient`).innerText = PatientUtil.getFullName(this.moduleContext.getPatient());
-        this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), this.isAdministratorUser);
+
+        if (!this.isDentist()) { // don't check livingWill existence for dentists
+            this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration(), this.isAdministratorUser);
+        }
+
         if (treatmentWill) {
             Object.entries(treatmentWill).forEach(([property, will]) => {
                 switch (property) {
@@ -273,6 +283,10 @@ export default class TreatmentWillPanel extends TemplateWidget {
     private async warningIfLivingWillExist(livingWillExist: Promise<RegistrationState>, isAdmin: boolean) {
         const hasRegisteredLivingWillAndIsAdmin = await livingWillExist === RegistrationState.REGISTERED && isAdmin;
         setElementVisible(this.getElementByVarName(`living-will-exists`), hasRegisteredLivingWillAndIsAdmin);
+    }
+
+    private isDentist(): boolean {
+        return FSKUserUtil.isDentistWithoutElevatedRights(this.moduleContext.getUserContext());
     }
 
     private addHandlerForCheckboxAndPanel(checkBox: CheckboxWrapper, panel?: TreatmentWillWishPanel) {

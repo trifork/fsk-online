@@ -6,7 +6,7 @@ import TreatmentWillTab from "../tabs/TreatmentWillTab";
 import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
 import TreatmentWillCache from "../services/TreatmentWillCache";
 import LivingWillCache from "../services/LivingWillCache";
-import DoctorOrNurseWillTab from "../tabs/DoctorOrNurseWillTab";
+import DoctorOrNurseOrDentistWillTab from "../tabs/DoctorOrNurseOrDentistWillTab";
 import {RegistrationState} from "../model/RegistrationState";
 
 export default class FSKOnlineModule extends DefaultModule {
@@ -21,7 +21,7 @@ export default class FSKOnlineModule extends DefaultModule {
     private organDonorRegisterTab: OrganDonorRegistrationTab;
     private livingWillTestamentTab: LivingWillTestamentTab;
     private treatmentWillTestamentTab: TreatmentWillTab;
-    private doctorOrNurseWillTab: DoctorOrNurseWillTab;
+    private doctorOrNurseOrDentistWillTab: DoctorOrNurseOrDentistWillTab;
 
     constructor(private container: FSKOnlineContainer) {
         super(FSKOnlineModule.MODULE_IDENTIFIER);
@@ -45,8 +45,8 @@ export default class FSKOnlineModule extends DefaultModule {
         this.addTabbedPanel(this.livingWillTestamentTab);
         this.treatmentWillTestamentTab = this.container.resolve<TreatmentWillTab>(TreatmentWillTab);
         this.addTabbedPanel(this.treatmentWillTestamentTab);
-        this.doctorOrNurseWillTab = this.container.resolve<DoctorOrNurseWillTab>(DoctorOrNurseWillTab);
-        this.addTabbedPanel(this.doctorOrNurseWillTab);
+        this.doctorOrNurseOrDentistWillTab = this.container.resolve<DoctorOrNurseOrDentistWillTab>(DoctorOrNurseOrDentistWillTab);
+        this.addTabbedPanel(this.doctorOrNurseOrDentistWillTab);
         this.loadLocalStylesheet("/fmk/u/fsk-online-ts/css/fsk-online-temporary.css");
     }
 
@@ -71,10 +71,10 @@ export default class FSKOnlineModule extends DefaultModule {
     }
 
     public override refreshPatient(): void {
-        if (this.doctorOrNurseWillTab.isVisible()) {
+        if (this.doctorOrNurseOrDentistWillTab.isVisible()) {
             this.livingWillCache.registrationState = RegistrationState.UNCHECKED;
             this.treatmentWillCache.registrationState = RegistrationState.UNCHECKED;
-            this.doctorOrNurseWillTab.setVisible(true);
+            this.doctorOrNurseOrDentistWillTab.setVisible(true);
         } else {
             this.organDonorCache.setStale(true);
             this.treatmentWillCache.setStale(true);

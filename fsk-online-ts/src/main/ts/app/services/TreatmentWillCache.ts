@@ -3,6 +3,7 @@ import FSKService from "./FSKService";
 import RegistrationStateUtil from "../util/RegistrationStateUtil";
 import {RegistrationState} from "../model/RegistrationState";
 import {ErrorDisplay} from "fmko-ts-widgets";
+import FSKUserUtil from "../util/FSKUserUtil";
 import TreatmentWillType = FSKTypes.TreatmentWillType;
 import RegistrationTypeWrapper = FSKTypes.RegistrationTypeWrapper;
 
@@ -51,10 +52,18 @@ export default class TreatmentWillCache {
     }
 
     private async getRegistration(): Promise<RegistrationTypeWrapper<TreatmentWillType>> {
-        return await this.fskService.getTreatmentWillForPatient(this.getPatientCpr());
+        if (this.isDentist()) {
+            return await this.fskService.getTreatmentWillWithOnlyForcedTreatmentForPatient(this.getPatientCpr());
+        } else {
+            return await this.fskService.getTreatmentWillForPatient(this.getPatientCpr());
+        }
     }
 
     private getPatientCpr(): string {
         return this.moduleContext.getPatient().getCpr();
+    }
+
+    private isDentist(): boolean {
+        return FSKUserUtil.isDentistWithoutElevatedRights(this.moduleContext.getUserContext());
     }
 }

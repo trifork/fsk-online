@@ -21,20 +21,25 @@ export default class FSKUserUtil {
         return (userContext.getAuthorisations() || []).length > 0;
     }
 
-    public static isDoctorOrNurseWithoutElevatedRights(userContext: UserContext): boolean {
+    public static isDoctorOrNurseOrDentistWithoutElevatedRights(userContext: UserContext): boolean {
+        return FSKUserUtil.hasEducationWithoutElevatedRights(userContext, ["læge", "sygeplejerske", "tandlæge"]);
+    }
+
+    public static isDentistWithoutElevatedRights(userContext: UserContext): boolean {
+        return FSKUserUtil.hasEducationWithoutElevatedRights(userContext, ["tandlæge"]);
+    }
+
+    private static hasEducationWithoutElevatedRights(userContext: UserContext, educations: string[]) {
         if (!userContext) {
             return false;
         }
-        if(userContext.isAdministratorLogin()){
+        if (userContext.isAdministratorLogin()) {
             return false;
         }
-        if(userContext.isSupporterLogin()){
+        if (userContext.isSupporterLogin()) {
             return false;
         }
-        const userHasEducation = (education: string) => ["læge", "sygeplejerske"].includes(education);
+        const userHasEducation = (education: string) => educations.includes(education);
         return (userContext.getEducations() || []).some(userHasEducation);
-
-        /* const userHasEducation = education => ["7170", "5166"].includes(education);
-        return (userContext.getAuthorisations().map(x => x.getEducationCode()) || []).some(userHasEducation);*/
     }
 }

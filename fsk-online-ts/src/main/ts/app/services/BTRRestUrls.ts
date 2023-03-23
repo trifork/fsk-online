@@ -12,6 +12,10 @@ export default class BTRRestUrls {
         return `${this.url}/btr/getTreatmentWill?cpr=${cpr}`;
     }
 
+    public getTreatmentWillWithOnlyForcedTreatmentForPatient(cpr: string): string {
+        return `${this.url}/btr/getTreatmentWillWithOnlyForcedTreatment?cpr=${cpr}`;
+    }
+
     public hasTreatmentWillForPatient(cpr: string): string {
         return `${this.url}/btr/hasTreatmentWill?cpr=${cpr}`;
     }

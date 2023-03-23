@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<xs:schema version="2.0" targetNamespace="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2018/05/01/" xmlns:hl7="urn:hl7-org:v3" xmlns:btr="urn:hl7-org:btr"
+<xs:schema version="2.0" targetNamespace="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2020/03/16/" xmlns:hl7="urn:hl7-org:v3" xmlns:btr="urn:hl7-org:btrv2"
            xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
     <xs:import schemaLocation="../cda/POCD_MT000040_SDTC.xsd" namespace="urn:hl7-org:v3"/>
-    <xs:import schemaLocation="../cda/TreatmentWill.xsd" namespace="urn:hl7-org:btr"/>
+    <xs:import schemaLocation="../cda/TreatmentWillV2.xsd" namespace="urn:hl7-org:btrv2"/>
 
     <xs:element name="GetTreatmentWillRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema">
         <xs:complexType>
@@ -21,11 +21,27 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="GetTreatmentWillWithOnlyForcedTreatmentRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="hl7:II" minOccurs="1" maxOccurs="1"/> <!-- cprnr -->
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetTreatmentWillWithOnlyForcedTreatmentResponse" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="ClinicalDocument" type="hl7:POCD_MT000040.ClinicalDocument" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="CreateTreatmentWillRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="id" type="hl7:II" minOccurs="1" maxOccurs="1"/> <!-- cprnr -->
-                <xs:element name="treatmentWill" type="btr:TreatmentWill" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="treatmentWillV2" type="btr:TreatmentWillV2" minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -37,11 +53,27 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="UpgradeToTreatmentWillRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="hl7:II" minOccurs="1" maxOccurs="1"/> <!-- cprnr -->
+                <xs:element name="treatmentWillV2" type="btr:TreatmentWillV2" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UpgradeToTreatmentWillResponse" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+        <xs:complexType>
+            <xs:sequence>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="UpdateTreatmentWillRequest" xmlns:xs="http://www.w3.org/2001/XMLSchema">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="id" type="hl7:II" minOccurs="1" maxOccurs="1"/> <!-- cprnr -->
-                <xs:element name="treatmentWill" type="btr:TreatmentWill" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="treatmentWill" type="btr:TreatmentWillV2" minOccurs="1" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -83,4 +115,4 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
- </xs:schema>
+</xs:schema>

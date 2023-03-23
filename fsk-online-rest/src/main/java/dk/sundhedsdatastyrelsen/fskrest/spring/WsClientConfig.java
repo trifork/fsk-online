@@ -5,7 +5,7 @@ import com.trifork.web.security.userinfo.UserInfo;
 import com.trifork.web.security.userinfo.UserInfoHolder;
 import dk.fmkonline.common.shared.Role;
 import dk.fmkonline.dgwsidwsclient.*;
-import dk.sundhedsdatastyrelsen.behandlingstestamente._2018._05._01.TreatmentWillPortType;
+import dk.sundhedsdatastyrelsen.behandlingstestamente._2020._03._16.TreatmentWillPortType;
 import dk.sundhedsdatastyrelsen.livstestamente._2018._05._01.LivingWillPortType;
 import dk.sundhedsdatastyrelsen.organdonor._2018._05._01.OrganDonorRegistrationPortType;
 import org.apache.commons.codec.binary.Base64;
@@ -26,14 +26,13 @@ import org.springframework.core.env.Environment;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.soap.SOAPException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 @Configuration
-@ImportResource( {"classpath:META-INF/cxf/cxf.xml"})
+@ImportResource({"classpath:META-INF/cxf/cxf.xml"})
 public class WsClientConfig {
-   @Autowired
+    @Autowired
     Environment env;
 
     Logger logger = Logger.getLogger(WsClientConfig.class);
@@ -56,7 +55,7 @@ public class WsClientConfig {
         return () -> {
             UserInfo userInfo = UserInfoHolder.get();
             if (userInfo != null) {
-                Role role =  Role.forName(UserInfoHolder.get().requestedRole);
+                Role role = Role.forName(UserInfoHolder.get().requestedRole);
                 return role.getSchemaName();
             } else {
                 return Role.Citizen.getSchemaName();
@@ -148,7 +147,7 @@ public class WsClientConfig {
         OrganDonorRegistrationPortType client = jaxWsProxyFactoryBean.create(OrganDonorRegistrationPortType.class);
         Client cl = ClientProxy.getClient(client);
         HTTPConduit httpConduit = (HTTPConduit) cl.getConduit();
-        httpConduit.getClient().setReceiveTimeout( env.getProperty("ws.receive.timeout", Integer.class, 60000));
+        httpConduit.getClient().setReceiveTimeout(env.getProperty("ws.receive.timeout", Integer.class, 60000));
         return client;
     }
 
@@ -157,7 +156,7 @@ public class WsClientConfig {
         LivingWillPortType client = jaxWsProxyFactoryBean.create(LivingWillPortType.class);
         Client cl = ClientProxy.getClient(client);
         HTTPConduit httpConduit = (HTTPConduit) cl.getConduit();
-        httpConduit.getClient().setReceiveTimeout( env.getProperty("ws.receive.timeout", Integer.class, 60000));
+        httpConduit.getClient().setReceiveTimeout(env.getProperty("ws.receive.timeout", Integer.class, 60000));
         return client;
     }
 
@@ -166,7 +165,7 @@ public class WsClientConfig {
         TreatmentWillPortType client = jaxWsProxyFactoryBean.create(TreatmentWillPortType.class);
         Client cl = ClientProxy.getClient(client);
         HTTPConduit httpConduit = (HTTPConduit) cl.getConduit();
-        httpConduit.getClient().setReceiveTimeout( env.getProperty("ws.receive.timeout", Integer.class, 60000));
+        httpConduit.getClient().setReceiveTimeout(env.getProperty("ws.receive.timeout", Integer.class, 60000));
         return client;
     }
 }
