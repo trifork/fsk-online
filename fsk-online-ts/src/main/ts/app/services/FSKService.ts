@@ -74,6 +74,11 @@ export default class FSKService {
         return await this.restClient.post<{}>(url, treatmentWill, `Opretter behandlingstestamente for cpr: ${cpr}`);
     }
 
+    public async upgradeToTreatmentWillForPatient(cpr: string, treatmentWill: TreatmentWillType): Promise<{}> {
+        const url = this.btrRestUrls.upgradeToTreatmentWillForPatient(cpr);
+        return await this.restClient.post<{}>(url, treatmentWill, `Opgraderer livstestamente til behandlingstestamente for cpr: ${cpr}`);
+    }
+
     public async updateTreatmentWillForPatient(cpr: string, treatmentWill: TreatmentWillType): Promise<{}> {
         const url = this.btrRestUrls.updateTreatmentWillForPatient(cpr);
         return await this.restClient.put<{}>(url, treatmentWill, `Opdaterer behandlingstestamente for cpr: ${cpr}`);

@@ -94,6 +94,18 @@ public class TreatmentWillResource extends AbstractResource {
         return buildNonCacheableResponse(response);
     }
 
+    @POST
+    @Path("/upgradeToTreatmentWill")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response upgradeToTreatmentWill(@QueryParam("cpr") String cpr, TreatmentWillV2 treatmentWill) {
+        accessControl.checkWriteAccess();
+        UpgradeToTreatmentWillRequest request = new UpgradeToTreatmentWillRequest();
+        request.setId(getId(cpr));
+        request.setTreatmentWillV2(treatmentWill);
+        UpgradeToTreatmentWillResponse response = treatmentWillPortType.upgradeToTreatmentWill20200316(request);
+        return buildNonCacheableResponse(response);
+    }
+
     @PUT
     @Path("/updateTreatmentWill")
     @Produces(MediaType.APPLICATION_JSON)

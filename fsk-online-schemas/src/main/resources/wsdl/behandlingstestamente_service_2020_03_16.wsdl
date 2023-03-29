@@ -18,6 +18,12 @@
     <wsdl:message name="CreateTreatmentWillResponse_2020_03_16">
         <wsdl:part element="btr20200316:CreateTreatmentWillResponse" name="CreateTreatmentWillResponse"/>
     </wsdl:message>
+    <wsdl:message name="UpgradeToTreatmentWillRequest_2020_03_16">
+        <wsdl:part element="btr20200316:UpgradeToTreatmentWillRequest" name="UpgradeToTreatmentWillRequest"/>
+    </wsdl:message>
+    <wsdl:message name="UpgradeToTreatmentWillResponse_2020_03_16">
+        <wsdl:part element="btr20200316:UpgradeToTreatmentWillResponse" name="UpgradeToTreatmentWillResponse"/>
+    </wsdl:message>
     <wsdl:message name="UpdateTreatmentWillRequest_2020_03_16">
         <wsdl:part element="btr20200316:UpdateTreatmentWillRequest" name="UpdateTreatmentWillRequest"/>
     </wsdl:message>
@@ -54,6 +60,10 @@
             <wsdl:input message="tns:CreateTreatmentWillRequest_2020_03_16" name="CreateTreatmentWillRequest_2020_03_16"/>
             <wsdl:output message="tns:CreateTreatmentWillResponse_2020_03_16" name="CreateTreatmentWillResponse_2020_03_16"/>
         </wsdl:operation>
+        <wsdl:operation name="UpgradeToTreatmentWill_2020_03_16">
+            <wsdl:input message="tns:UpgradeToTreatmentWillRequest_2020_03_16" name="UpgradeToTreatmentWillRequest_2020_03_16"/>
+            <wsdl:output message="tns:UpgradeToTreatmentWillResponse_2020_03_16" name="UpgradeToTreatmentWillResponse_2020_03_16"/>
+        </wsdl:operation>
         <wsdl:operation name="UpdateTreatmentWill_2020_03_16">
             <wsdl:input message="tns:UpdateTreatmentWillRequest_2020_03_16" name="UpdateTreatmentWillRequest_2020_03_16"/>
             <wsdl:output message="tns:UpdateTreatmentWillResponse_2020_03_16" name="UpdateTreatmentWillResponse_2020_03_16"/>
@@ -85,6 +95,16 @@
                 <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output name="CreateTreatmentWillResponse_2020_03_16">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="UpgradeToTreatmentWill_2020_03_16">
+            <soap:operation soapAction="http://sundhedsdatastyrelsen.dk/behandlingstestamente/2020/03/16#UpgradeToTreatmentWill"/>
+            <wsdl:input name="UpgradeToTreatmentWillRequest_2020_03_16">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="UpgradeToTreatmentWillResponse_2020_03_16">
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>

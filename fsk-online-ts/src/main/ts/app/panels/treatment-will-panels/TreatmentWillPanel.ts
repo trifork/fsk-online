@@ -134,15 +134,15 @@ export default class TreatmentWillPanel extends TemplateWidget {
         this.buttonStrategy = new FSKButtonStrategy(this.moduleContext.getUserContext());
         const createHandler = async () => {
             try {
-                if (this.livingWillCache.registrationState === RegistrationState.REGISTERED
-                    && (await this.livingWillCache.deleteRegistration() === RegistrationState.REGISTERED)) {
-                    return;
-                }
-                this.warningIfLivingWillExist(Promise.resolve(RegistrationState.NOT_REGISTERED), false);
+                const hasRegisteredLivingWill: boolean = this.livingWillCache.registrationState === RegistrationState.REGISTERED;
+                this.warningIfLivingWillExist(Promise.resolve(RegistrationState.NOT_REGISTERED), false); // remove warning
+
                 this.buttonStrategy.disableButtons();
-                await this.fskService.createTreatmentWillForPatient(
-                    this.moduleContext.getPatient().getCpr(),
-                    this.getValue());
+                if (hasRegisteredLivingWill) {
+                    await this.fskService.upgradeToTreatmentWillForPatient(this.moduleContext.getPatient().getCpr(), this.getValue());
+                } else {
+                    await this.fskService.createTreatmentWillForPatient(this.moduleContext.getPatient().getCpr(), this.getValue());
+                }
                 this.updateCache(true, `Behandlingstestamente oprettet`);
                 this.moduleContext.setApplicationContextId(`PATIENT`);
 
@@ -247,8 +247,8 @@ export default class TreatmentWillPanel extends TemplateWidget {
             Object.entries(treatmentWill).forEach(([property, will]) => {
                 switch (property) {
                     case "noLifeProlongingIfDying":
-                        this.terminallyIllPanel.setValue(will.acceptanceNeeded);
-                        this.terminallyIllCheckbox.setValue(will.$, true);
+                        this.terminallyIllPanel.setValue(null);
+                        this.terminallyIllCheckbox.setValue(will, true);
                         break;
                     case "noLifeProlongingIfSeverelyDegraded":
                         this.illNoImprovementPanel.setValue(will.acceptanceNeeded);
