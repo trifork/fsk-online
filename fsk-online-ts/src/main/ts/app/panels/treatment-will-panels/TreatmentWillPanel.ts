@@ -234,7 +234,15 @@ export default class TreatmentWillPanel extends TemplateWidget {
         }
 
         Widget.setVisible(this.getElementByVarName(`main-panel`), this.isAdministratorUser || !!treatmentWill);
-        Widget.setVisible(this.getElementByVarName(`empty-panel`), !this.isAdministratorUser && !treatmentWill);
+
+        const emptyPanel = this.getElementByVarName(`empty-panel`);
+        if (!this.isAdministratorUser && !treatmentWill) {
+            this.getElementByVarName(`empty-state-text`).innerText = this.isDentist() ? "har ikke et behandlingstestamente" : "har hverken et livs- eller behandlingstestamente";
+            Widget.setVisible(emptyPanel, true);
+        } else {
+            Widget.setVisible(emptyPanel, false);
+        }
+
         Widget.setVisible(this.getElementByVarName(`registration-date-row`), !!treatmentWill);
 
         this.getElementByVarName(`empty-state-patient`).innerText = PatientUtil.getFullName(this.moduleContext.getPatient());
