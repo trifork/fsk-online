@@ -1,4 +1,4 @@
-import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler, Widget} from "fmko-ts-common";
+import {IdSynthesizer, ModuleContext, TabbedPanel, UserContext, ValueChangeHandler, Widget} from "fmko-ts-common";
 import {TemplateWidget} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
 import {
@@ -8,7 +8,8 @@ import {
     PopupDialog,
     PopupDialogKind,
     RadioButton,
-    RadioGroup, SnackBar,
+    RadioGroup,
+    SnackBar,
     TextBoxField
 } from "fmko-ts-widgets";
 import LimitedAccessPermissionPanel from "../panels/organdonor-panels/LimitedAccessPermissionPanel";
@@ -39,14 +40,16 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
     private limitedAccessPanel: LimitedAccessPermissionPanel;
     private radioGroup: RadioGroup<FSKTypes.OrganDonorPermissionType>;
 
-    public static deps = () => [IoC, "ModuleContext", FSKOrganDonorCache, FSKService, "RootElement"];
+    public static deps = () => [IoC, "ModuleContext", FSKOrganDonorCache, FSKService, "RootElement", IdSynthesizer];
 
     constructor(protected container: IoC,
         private moduleContext: ModuleContext,
         private fskOrganDonorCache: FSKOrganDonorCache,
         private fskService: FSKService,
-        private rootElement: HTMLElement) {
+        private rootElement: HTMLElement,
+        private idSynth: IdSynthesizer) {
         super(container);
+        this.idSynthesizer = idSynth;
         this.element = document.createElement("div");
     }
 
