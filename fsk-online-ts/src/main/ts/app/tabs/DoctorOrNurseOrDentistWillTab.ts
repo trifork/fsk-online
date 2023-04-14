@@ -70,8 +70,8 @@ export default class DoctorOrNurseOrDentistWillTab extends TemplateWidget implem
     public override setVisible(visible: boolean): void {
         super.setVisible(visible);
         if (this.moduleContext.getPatient()) {
-            // Check if we the user has clicked accept on the dialog
-            if (visible && this.livingWillCache.registrationState === RegistrationState.UNCHECKED) {
+            // Check if the user has clicked accept on the dialog
+            if (visible && this.treatmentWillCache.registrationState === RegistrationState.UNCHECKED) {
                 if (this.initialized) {
                     this.cleanChildrenOnVarName(`will-container`);
                 }
