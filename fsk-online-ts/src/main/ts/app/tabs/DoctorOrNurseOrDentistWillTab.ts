@@ -71,7 +71,9 @@ export default class DoctorOrNurseOrDentistWillTab extends TemplateWidget implem
         super.setVisible(visible);
         if (this.moduleContext.getPatient()) {
             // Check if the user has clicked accept on the dialog
-            if (visible && this.treatmentWillCache.registrationState === RegistrationState.UNCHECKED) {
+            if (visible && this.livingWillCache.registrationState === RegistrationState.UNCHECKED &&
+                this.treatmentWillCache.registrationState === RegistrationState.UNCHECKED) {
+
                 if (this.initialized) {
                     this.cleanChildrenOnVarName(`will-container`);
                 }
@@ -118,7 +120,7 @@ export default class DoctorOrNurseOrDentistWillTab extends TemplateWidget implem
     public async showLogDialog(): Promise<void> {
         const yesClicked = await PopupDialog.displayConfirmCancel(PopupDialogKind.WARNING,
             "Bekræft visning af " + this.getTitle(),
-            require("./confirm-viewing-will-tab.html"),"Fortryd", "Videre");
+            require("./confirm-viewing-will-tab.html"), "Fortryd", "Videre");
         if (yesClicked) {
             this.addListeners();
         }
