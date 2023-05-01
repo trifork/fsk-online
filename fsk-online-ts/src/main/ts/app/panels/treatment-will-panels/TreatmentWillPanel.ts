@@ -135,10 +135,10 @@ export default class TreatmentWillPanel extends TemplateWidget {
         const createHandler = async () => {
             try {
                 const hasRegisteredLivingWill: boolean = this.livingWillCache.registrationState === RegistrationState.REGISTERED;
-                this.warningIfLivingWillExist(Promise.resolve(RegistrationState.NOT_REGISTERED), false); // remove warning
-
                 this.buttonStrategy.disableButtons();
                 if (hasRegisteredLivingWill) {
+                    this.warningIfLivingWillExist(Promise.resolve(RegistrationState.NOT_REGISTERED), false); // remove warning
+                    this.livingWillCache.setStale(true);
                     await this.fskService.upgradeToTreatmentWillForPatient(this.moduleContext.getPatient().getCpr(), this.getValue());
                 } else {
                     await this.fskService.createTreatmentWillForPatient(this.moduleContext.getPatient().getCpr(), this.getValue());
