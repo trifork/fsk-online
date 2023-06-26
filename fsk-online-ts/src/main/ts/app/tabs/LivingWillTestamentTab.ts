@@ -125,6 +125,10 @@ export default class LivingWillTestamentTab extends TemplateWidget implements Ta
         }
     }
 
+    public autoActivationAllowed() {
+        return true;
+    }
+
     private addListeners() {
         if (!this.livingWillChangeHandler) {
             this.livingWillChangeHandler = (() => {

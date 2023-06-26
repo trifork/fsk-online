@@ -150,12 +150,8 @@ module.exports = {
         "no-fallthrough": "error",
         "no-new-wrappers": "error",
         "no-redeclare": "error",
-        "no-shadow": [
-            "error",
-            {
-                "hoist": "all"
-            }
-        ],
+        "@typescript-eslint/no-shadow": "error",
+        "no-shadow": "off",
         "no-trailing-spaces": "error",
         "no-underscore-dangle": "off",
         "no-unused-labels": "error",

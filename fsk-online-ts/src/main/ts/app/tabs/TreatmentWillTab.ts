@@ -122,6 +122,10 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
         }
     }
 
+    public autoActivationAllowed() {
+        return true;
+    }
+
     private addListeners() {
         if (!this.treatmentWillChangeHandler) {
             this.treatmentWillChangeHandler = (() => {

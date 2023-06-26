@@ -346,6 +346,10 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
         }
     }
 
+    public autoActivationAllowed() {
+        return true;
+    }
+
     private addListeners() {
         if (this.fskOrganDonorCache.organDonorRegister.getValue() !== undefined) {
             this.render();

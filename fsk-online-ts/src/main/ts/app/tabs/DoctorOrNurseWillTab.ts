@@ -180,6 +180,10 @@ export default class DoctorOrNurseWillTab extends TemplateWidget implements Tabb
         this.appendWidgetOnVarName(livingPanel, `will-container`);
     }
 
+    public autoActivationAllowed() {
+        return true;
+    }
+
     private async addListeners() {
         if (await this.livingWillCache.loadHasRegistration() === RegistrationState.REGISTERED) {
             if (!this.livingWillChangeHandler) {
