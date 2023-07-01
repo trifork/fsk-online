@@ -54,6 +54,7 @@
                             <executable>${npm.command}</executable>
                             <arguments>
                                 <argument>install</argument>
+                                <argument>--legacy-peer-deps</argument>
                             </arguments>
                         </configuration>
                     </execution>

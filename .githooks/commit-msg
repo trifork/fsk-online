@@ -1,0 +1,11 @@
+#!/bin/sh
+
+MSG="$1"
+
+# Negative lookup is too problematic with grep
+if ! grep -qE 'FMKO-[0-9]{3,6}(\.|,|/| |$)' "$MSG"; then
+    cat "$MSG"
+    echo "Your commit message must contain a valid Jira number. example 'FMKO-1234'"
+    echo "if you want to skip this validation use --no-verify"
+    exit 1
+fi

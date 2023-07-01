@@ -26,7 +26,7 @@
     "fmko-ts-validation": "6.25.0",
     "fmko-ts-widgets": "6.25.0",
     "fmko-ts-components": "6.25.0",
-    "moment": "2.29.3"
+    "moment": "2.29.4"
   },
   "registry": "https://ci.fmk.netic.dk/nexus/content/groups/npm-fmk-all/"
 }
