@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<jar name="fsk-online-ts.war">
+	<var name="pomVersion" regex="&lt;version>(.*)&lt;/version>" from="../pom.xml" />
+	<var name="target" value="../target" />
+	<var name="src" value="../src" />
+
+	<dir path="" from="${src}/main/webapp" />
+	<dir path="src/main/ts" from="${src}/main/ts" />
+	<dir path="js" from="${target}/js" />
+	<dir path="css" from="${target}/css" />
+	<dir path="WEB-INF/classes" from="${target}/fsk-online-ts-${pomVersion}/WEB-INF/classes" />
+</jar>

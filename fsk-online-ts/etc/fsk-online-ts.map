@@ -1,8 +1,0 @@
-<?xml version="1.0" ?>
-<jar name="fsk-online-ts.war">
-	<dir path="" from="../src/main/webapp" />
-	<dir path="js" from="../target/js" />
-	<dir path="css" from="../target/css" />
-    <dir path="src/main/ts" from="../src/main/ts" />
-	<dir path="WEB-INF/classes" from="../target/fsk-online-ts-2.12.0-SNAPSHOT/WEB-INF/classes" /> <!-- TEMPLATE DONT EDIT <dir path="WEB-INF/classes" from="../target/fsk-online-ts-@POM_VERSION/WEB-INF/classes" /> -->
-</jar>
