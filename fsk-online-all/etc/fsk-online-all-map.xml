@@ -3,6 +3,6 @@
 <jar name="fsk-online-all.ear">
 	<file path="META-INF/application.xml" from="${target}/fsk-online-all-${pomVersion}/META-INF/application.xml" />
 
-    <map path="fsk-online-rest-${pomVersion}.war" from="../../fsk-online-rest/etc/fsk-online-rest.map" />
-	<map path="fsk-online-ts-${pomVersion}.war" from="../../fsk-online-ts/etc/fsk-online-ts.map" />
+    <map path="fsk-online-rest-${pomVersion}.war" from="../../fsk-online-rest/etc/fsk-online-rest-map.xml" />
+	<map path="fsk-online-ts-${pomVersion}.war" from="../../fsk-online-ts/etc/fsk-online-ts-map.xml" />
 </jar>
