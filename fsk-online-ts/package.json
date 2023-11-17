@@ -1,6 +1,6 @@
 {
   "name": "fsk-online",
-  "version": "2.11.0",
+  "version": "2.11.1",
   "scripts": {
     "dev": "node node_modules/webpack/bin/webpack --mode=development",
     "prod": "node node_modules/webpack/bin/webpack --mode=production",
