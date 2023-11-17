@@ -7,8 +7,6 @@ package dk.sundhedsdatastyrelsen.fskrest.spring;
 
 import dk.fmkonline.server.shared.audit.AuditLogBackend;
 import dk.fmkonline.server.shared.audit.Log4jBackend;
-import dk.fmkonline.server.shared.service.TimeService;
-import dk.fmkonline.server.shared.service.TimeServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -18,11 +16,6 @@ import org.springframework.context.annotation.Import;
 @ComponentScan(basePackages = {"dk.sundhedsdatastyrelsen.fskrest"})
 @Import({PropertyConfig.class, WebConfig.class, WsClientConfig.class})
 public class ApplicationConfig {
-
-    @Bean
-    public TimeService timeService() {
-        return new TimeServiceImpl();
-    }
 
     @Bean
     public AuditLogBackend log4jAuditLog() {
