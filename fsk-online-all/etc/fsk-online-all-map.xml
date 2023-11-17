@@ -1,8 +1,10 @@
-<?xml version="1.0" ?>
+<?xml version="1.0"?>
 
 <jar name="fsk-online-all.ear">
-	<file path="META-INF/application.xml" from="${target}/fsk-online-all-${pomVersion}/META-INF/application.xml" />
+	<var name="pomVersion" regex="&lt;version>(.*)&lt;/version>" from="../pom.xml" />
+	<var name="target" value="../target" />
 
-    <map path="fsk-online-rest-${pomVersion}.war" from="../../fsk-online-rest/etc/fsk-online-rest-map.xml" />
+	<file path="META-INF/application.xml" from="${target}/fsk-online-all-${pomVersion}/META-INF/application.xml" />
+	<map path="fsk-online-rest-${pomVersion}.war" from="../../fsk-online-rest/etc/fsk-online-rest-map.xml" />
 	<map path="fsk-online-ts-${pomVersion}.war" from="../../fsk-online-ts/etc/fsk-online-ts-map.xml" />
 </jar>
