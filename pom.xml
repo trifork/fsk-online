@@ -14,7 +14,7 @@
     </parent>
 
     <properties>
-        <revision>1.0.20-SNAPSHOT</revision>
+        <revision>1.0.21-SNAPSHOT</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
         <fmk.online.version>3.31.0</fmk.online.version>
