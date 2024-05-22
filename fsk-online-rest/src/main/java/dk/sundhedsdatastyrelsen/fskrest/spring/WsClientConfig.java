@@ -3,6 +3,7 @@ package dk.sundhedsdatastyrelsen.fskrest.spring;
 import com.trifork.web.security.userinfo.OrganisationIdType;
 import com.trifork.web.security.userinfo.UserInfo;
 import com.trifork.web.security.userinfo.UserInfoHolder;
+import dk.fmkonline.common.shared.IRole;
 import dk.fmkonline.common.shared.Role;
 import dk.fmkonline.dgwsidwsclient.*;
 import dk.sundhedsdatastyrelsen.behandlingstestamente._2020._03._16.TreatmentWillPortType;
@@ -16,7 +17,8 @@ import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.transport.http.HTTPConduit;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -32,17 +34,17 @@ import java.util.HashMap;
 @Configuration
 @ImportResource({"classpath:META-INF/cxf/cxf.xml"})
 public class WsClientConfig {
+    private static final Logger log = LogManager.getLogger(WsClientConfig.class);
+
     @Autowired
     Environment env;
-
-    Logger logger = Logger.getLogger(WsClientConfig.class);
 
     @Bean
     public IdCardProvider idCardProvider(final HttpServletRequest req) {
         return () -> {
             String idCardHeader = req.getHeader("X-ID-Card");
             if (idCardHeader == null) {
-                logger.info("No ID-card found for user. Request: " + req.getRequestURI());
+                log.info("No ID-card found for user. Request: " + req.getRequestURI());
                 return null;
             }
             byte[] decodedIdCardBytes = Base64.decodeBase64(idCardHeader);
@@ -55,7 +57,7 @@ public class WsClientConfig {
         return () -> {
             UserInfo userInfo = UserInfoHolder.get();
             if (userInfo != null) {
-                Role role = Role.forName(UserInfoHolder.get().requestedRole);
+                IRole role = Role.forName(UserInfoHolder.get().requestedRole);
                 return role.getSchemaName();
             } else {
                 return Role.Citizen.getSchemaName();
@@ -105,7 +107,7 @@ public class WsClientConfig {
         bean.getHandlers().add(dgwsClientMessageHandler);
         if (env.getProperty("ws.message.content.logging", Boolean.class, true)) {
             int maxLogBytes = env.getProperty("ws.message.content.logging.max.length", Integer.class, 1000 * 1024);
-            logger.info("MinLogClient client: Logging of full message content enabled");
+            log.info("MinLogClient client: Logging of full message content enabled");
             bean.getInInterceptors().add(new LoggingInInterceptor(maxLogBytes));
             bean.getOutInterceptors().add(new LoggingOutInterceptor(maxLogBytes));
         }

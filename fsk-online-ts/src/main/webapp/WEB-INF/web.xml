@@ -24,20 +24,28 @@
 	<filter-mapping>
 		<filter-name>StaticResourceFilter</filter-name>
 		<url-pattern>*.js</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
 	</filter-mapping>
 
 	<filter-mapping>
 		<filter-name>StaticResourceFilter</filter-name>
 		<url-pattern>*.css</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
 	</filter-mapping>
 
 	<filter-mapping>
 		<filter-name>StaticResourceFilter</filter-name>
 		<url-pattern>*.png</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
 	</filter-mapping>
 
 	<filter-mapping>
 		<filter-name>StaticResourceFilter</filter-name>
 		<url-pattern>*.map</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
 	</filter-mapping>
 </web-app>

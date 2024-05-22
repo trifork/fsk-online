@@ -1,7 +1,8 @@
 package dk.sundhedsdatastyrelsen.fskrest.resource;
 
 import dk.fmkonline.server.shared.filter.Log4jExceptionLoggerFilter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 @Component
 @Provider
 public class FSKExceptionMapper implements ExceptionMapper<Exception> {
-    private static Logger logger = Logger.getLogger(FSKExceptionMapper.class);
+    private static final Logger log = LogManager.getLogger(FSKExceptionMapper.class);
 
     private static final int WEBSERVICE_COMMUNICATION_ERROR = 100;
 
@@ -32,26 +33,25 @@ public class FSKExceptionMapper implements ExceptionMapper<Exception> {
     public Response toResponse(Exception e){
 
         final String tag = randomAlphanumeric(5);
-        logger.info("Created supportTag=" + tag);
+        log.info("Created supportTag=" + tag);
 
-        if (e instanceof WebApplicationException) {
-            logger.info("User denied access: ", e);
+        if (e instanceof WebApplicationException we) {
+            log.info("User denied access: ", e);
             // It was decided somewhere else what status code to return.
-            WebApplicationException we = (WebApplicationException) e;
             return Response.fromResponse(we.getResponse()).header(Log4jExceptionLoggerFilter.HTTP_X_SUPPORT_TAG, tag).build();
         }
 
         FSKFault vaccinationFault;
 
          if (e instanceof WebServiceException) {
-            logger.warn("Problem communicating with webservice", e);
+            log.warn("Problem communicating with webservice", e);
 
             vaccinationFault = new FSKFault();
             vaccinationFault.setMessage("Fejl ved kommunikation med webservice: " + e.getMessage());
             vaccinationFault.setCode(WEBSERVICE_COMMUNICATION_ERROR);
          } else {
              // Runtime errors
-             logger.error("Unexpected exception", e);
+             log.error("Unexpected exception", e);
              return Response.status(500).header(Log4jExceptionLoggerFilter.HTTP_X_SUPPORT_TAG, tag).entity(e.getMessage()).build();
          }
 

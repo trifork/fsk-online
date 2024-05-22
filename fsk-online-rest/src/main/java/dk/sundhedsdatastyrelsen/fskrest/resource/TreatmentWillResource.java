@@ -1,7 +1,8 @@
 package dk.sundhedsdatastyrelsen.fskrest.resource;
 
 import dk.sundhedsdatastyrelsen.behandlingstestamente._2020._03._16.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hl7.btrv2.TreatmentWillV2;
 import org.hl7.btrv2.TreatmentWillWithOnlyForcedTreatment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import javax.ws.rs.core.Response;
 @Path("/btr")
 @Component
 public class TreatmentWillResource extends AbstractResource {
-    Logger logger = Logger.getLogger(TreatmentWillResource.class);
+    private static final Logger log = LogManager.getLogger(TreatmentWillResource.class);
 
     @Autowired
     TreatmentWillPortType treatmentWillPortType;
@@ -43,7 +44,7 @@ public class TreatmentWillResource extends AbstractResource {
             treatmentWillResponseWrapper.setRegistrationType(treatmentWill);
             return buildNonCacheableResponse(treatmentWillResponseWrapper);
         } catch (Exception e) {
-            logger.error("Error extracting treatmentwill from response: " +  e.getMessage());
+            log.error("Error extracting treatmentwill from response: " +  e.getMessage());
             return Response.status(Response.Status.NO_CONTENT).build();
         }
     }
@@ -66,7 +67,7 @@ public class TreatmentWillResource extends AbstractResource {
             treatmentWillWithOnlyForcedTreatmentResponseWrapper.setRegistrationType(treatmentWill);
             return buildNonCacheableResponse(treatmentWillWithOnlyForcedTreatmentResponseWrapper);
         } catch (Exception e) {
-            logger.error("Error extracting treatmentwilllwithonlyforcedtreatment from response: " +  e.getMessage());
+            log.error("Error extracting treatmentwilllwithonlyforcedtreatment from response: " +  e.getMessage());
             return Response.status(Response.Status.NO_CONTENT).build();
         }
     }
