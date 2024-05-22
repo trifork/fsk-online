@@ -7,7 +7,7 @@ export default class PatientUtil {
         }
         const firstName = patient.getFirstName() || ``;
         // If the person has a middle name, then add it and create a space for the last name otherwise leave the space empty
-        const middleName = `${patient.getMiddleName()} ` || ``;
+        const middleName = patient.getMiddleName() ? patient.getMiddleName() + ` ` : ``;
         const lastName = patient.getLastName() || ``;
 
         return `${firstName} ${middleName}${lastName}`;
