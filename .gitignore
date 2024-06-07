@@ -9,3 +9,4 @@ luceneindex
 .project
 .settings
 */.factorypath
+**/.flattened-pom.xml
