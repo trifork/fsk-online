@@ -10,14 +10,14 @@
     <parent>
         <groupId>dk.fmkonline</groupId>
         <artifactId>fol-parent</artifactId>
-        <version>3.36.12</version>
+        <version>3.37.0</version>
     </parent>
 
     <properties>
         <revision>2.12.0-SNAPSHOT</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
-        <fmk.online.version>3.36.12</fmk.online.version>
+        <fmk.online.version>3.37.0</fmk.online.version>
     </properties>
 
     <scm>
