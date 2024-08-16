@@ -1,32 +1,41 @@
 {
-  "version": "4.0.2",
-  "exclude": [
-    "node_modules",
-    "target",
-    "typings/browser",
-    "typings/browser.d.ts",
-    "typings/main"
-  ],
-  "compilerOptions": {
- "sourceMap": true,
-        "moduleResolution": "node",
+    "exclude": [
+        "node_modules",
+        "target",
+        "typings/browser",
+        "typings/browser.d.ts",
+        "typings/main",
+        "detect-browser"
+    ],
+    "compilerOptions": {
+        "moduleResolution": "bundler",
         "target": "ES2019",
-        "outDir": "target/js",
+        "skipLibCheck": true,
         "allowSyntheticDefaultImports": true,
         "strictNullChecks": false,
         "noImplicitAny": true,
         "esModuleInterop": true,
         "importHelpers": true,
+        "sourceMap": true,
         "noEmitHelpers": true,
         "experimentalDecorators": true,
         "noImplicitOverride": true,
+        "downlevelIteration": true,
         "lib": [
-            "dom", "es2017", "es2018.promise"
-        ],
-        "downlevelIteration": false
-  },
-  "atom": {
-    "rewriteTsconfig": true
-  },
-  "compileOnSave": false
+            "dom",
+            "ES2023"
+        ]
+    },
+    "atom": {
+        "rewriteTsconfig": true
+    },
+    "compileOnSave": false,
+    "ts-node": {
+        "compilerOptions": {
+            "moduleResolution": "nodenext",
+            "module": "NodeNext",
+            "esModuleInterop": true,
+            "allowSyntheticDefaultImports": true
+        }
+    }
 }

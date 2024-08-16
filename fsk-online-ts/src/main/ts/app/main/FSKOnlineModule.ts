@@ -1,4 +1,4 @@
-import {AsyncResponse, DefaultModule, getVersionInfo, ModuleRegistryFactory, PersonInfo, VersionImpl} from "fmko-ts-common";
+import {AsyncResponse, DefaultModule, getVersionInfo, ModuleRegistryFactory, PersonInfo, Version, VersionImpl} from "fmko-ts-common";
 import FSKOnlineContainer from "./FSKOnlineContainer";
 import OrganDonorRegistrationTab from "../tabs/OrganDonorRegistrationTab";
 import LivingWillTestamentTab from "../tabs/LivingWillTestamentTab";
@@ -48,6 +48,10 @@ export default class FSKOnlineModule extends DefaultModule {
         this.doctorOrNurseOrDentistWillTab = this.container.resolve<DoctorOrNurseOrDentistWillTab>(DoctorOrNurseOrDentistWillTab);
         this.addTabbedPanel(this.doctorOrNurseOrDentistWillTab);
         this.loadLocalStylesheet("/fmk/u/fsk-online-ts/css/fsk-online-temporary.css");
+    }
+
+    public override getVersion(): Version | undefined {
+        return this.container.resolve<Version>("Version");
     }
 
     public override getVersionInfo(): string {

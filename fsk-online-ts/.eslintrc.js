@@ -12,8 +12,7 @@ module.exports = {
         "createDefaultProgram": true
     },
     "plugins": [
-        "@typescript-eslint",
-        "@typescript-eslint/tslint"
+        "@typescript-eslint"
     ],
     "rules": {
         "@typescript-eslint/dot-notation": "error",
