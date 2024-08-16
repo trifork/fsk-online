@@ -40,17 +40,11 @@
         <dependency>
             <groupId>dk.fmkonline</groupId>
             <artifactId>fmk-online-common</artifactId>
-            <version>${fmk.online.version}</version>
         </dependency>
         <dependency>
             <groupId>dk.fmkonline</groupId>
             <artifactId>dgws-idws-client</artifactId>
-            <version>${fmk.online.version}</version>
             <exclusions>
-                <exclusion>
-                    <groupId>dk.fmkonline</groupId>
-                    <artifactId>fmk-online-common</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>log4j-over-slf4j</artifactId>

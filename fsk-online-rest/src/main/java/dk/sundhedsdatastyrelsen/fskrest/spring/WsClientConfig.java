@@ -26,8 +26,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.env.Environment;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.soap.SOAPException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.xml.soap.SOAPException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 

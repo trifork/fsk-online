@@ -4,9 +4,9 @@ import dk.sundhedsdatastyrelsen.fskrest.service.AccessControl;
 import org.hl7.v3.II;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
 
 public class AbstractResource {
     private final String cprRoot = "1.2.208.176.1.2";

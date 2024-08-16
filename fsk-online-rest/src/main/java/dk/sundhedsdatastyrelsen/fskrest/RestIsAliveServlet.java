@@ -7,8 +7,8 @@ import dk.fmkonline.common.server.isalive.tasks.UrlRespondingTask;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
 import java.util.Set;
 
 public class RestIsAliveServlet extends CachingIsAliveServlet {

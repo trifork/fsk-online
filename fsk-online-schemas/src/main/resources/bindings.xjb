@@ -1,11 +1,9 @@
-<jaxb:bindings
-        xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-        xmlns:xs="http://www.w3.org/2001/XMLSchema"
-        xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
-        jaxb:extensionBindingPrefixes="xjc"
-        version="2.1">
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<jaxb:bindings xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	jaxb:extensionBindingPrefixes="xjc"
+	jaxb:version="3.0">
 
     <jaxb:bindings schemaLocation="schema/cda/POCD_MT000040_SDTC.xsd">
         <jaxb:bindings node="//xs:complexType[@name='POCD_MT000040.ObservationMedia']/xs:attribute[@name='ID']">

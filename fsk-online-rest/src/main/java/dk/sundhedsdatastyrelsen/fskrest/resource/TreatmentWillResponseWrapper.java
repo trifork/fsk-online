@@ -3,9 +3,9 @@ package dk.sundhedsdatastyrelsen.fskrest.resource;
 import org.hl7.btrv2.TreatmentWillV2;
 import org.springframework.stereotype.Component;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @Component
 @XmlAccessorType(XmlAccessType.FIELD)

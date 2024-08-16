@@ -1,6 +1,6 @@
-<?xml version="1.0" ?>
+<?xml version="1.0"?>
 <jar name="fsk-online-rest.war">
-	<var name="pomVersion" regex="&lt;version>(.*)&lt;/version>" from="../pom.xml" />
+	<var name="pomVersion" regex="&lt;revision>(.*)&lt;/revision>" from="../../pom.xml" />
 	<var name="target" value="../target" />
 	<var name="src" value="../src" />
 

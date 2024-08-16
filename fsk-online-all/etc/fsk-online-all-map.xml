@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <jar name="fsk-online-all.ear">
-	<var name="pomVersion" regex="&lt;version>(.*)&lt;/version>" from="../pom.xml" />
+	<var name="pomVersion" regex="&lt;revision>(.*)&lt;/revision>" from="../../pom.xml" />
 	<var name="target" value="../target" />
 
 	<file path="META-INF/application.xml" from="${target}/fsk-online-all-${pomVersion}/META-INF/application.xml" />
