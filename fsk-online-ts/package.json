@@ -1,6 +1,6 @@
 {
   "name": "fsk-online",
-  "version": "2.13.0-build-performance-SNAPSHOT",
+  "version": "2.13.0-master-SNAPSHOT",
   "scripts": {
     "dev": "node node_modules/webpack/bin/webpack --mode=development",
     "prod": "node node_modules/webpack/bin/webpack --mode=production",
