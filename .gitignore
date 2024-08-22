@@ -10,3 +10,4 @@ luceneindex
 .settings
 */.factorypath
 **/.flattened-pom.xml
+.vscode

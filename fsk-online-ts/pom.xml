@@ -53,30 +53,14 @@
                     <execution>
                         <id>npm-install</id>
                         <phase>process-resources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
                         <configuration>
-                            <executable>${npm.command}</executable>
-                            <arguments>
-                                <argument>install</argument>
-                                <argument>--legacy-peer-deps</argument>
-                            </arguments>
                             <skip>${skipNpmBuild}</skip>
                         </configuration>
                     </execution>
                     <execution>
                         <id>npm-build</id>
                         <phase>compile</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
                         <configuration>
-                            <executable>${npm.command}</executable>
-                            <arguments>
-                                <argument>run</argument>
-                                <argument>${webpack.mode}</argument>
-                            </arguments>
                             <skip>${skipNpmBuild}</skip>
                         </configuration>
                     </execution>
