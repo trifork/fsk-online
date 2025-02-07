@@ -234,7 +234,7 @@ export default class OrganDonorRegistrationTab extends TemplateWidget implements
 
         if (registrationDate) {
             const dateString = moment(registrationDate, "YYYYMMDDHHmmss").format("DD.MM.YYYY");
-            this.registrationDateTextBox.element.innerHTML = `Registreringen er senest ændret: <b>${dateString}</b>`;
+            this.registrationDateTextBox.element.innerHTML = `Registreringen er bekræftet og senest ændret: <b>${dateString}</b>`;
         }
 
         const type = organDonorRegistration ? organDonorRegistration.permissionType : undefined;
