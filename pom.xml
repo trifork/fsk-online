@@ -10,7 +10,7 @@
     <parent>
         <groupId>dk.fmkonline</groupId>
         <artifactId>fol-parent</artifactId>
-        <version>3.42.7</version>
+        <version>3.44.0</version>
     </parent>
 
     <properties>
