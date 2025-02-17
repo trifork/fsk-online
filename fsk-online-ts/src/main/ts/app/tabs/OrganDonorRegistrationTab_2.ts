@@ -25,7 +25,7 @@ import {
     WCAGRadioButton
 } from "fmko-ts-widgets";
 import FullAccessPermissionPanel from "../panels/organdonor-panels/FullAccessPermissionPanel";
-import LimitedAccessPermissionPanel from "../panels/organdonor-panels/LimitedAccessPermissionPanel";
+import LimitedAccessPermissionPanel_2 from "../panels/organdonor-panels/LimitedAccessPermissionPanel_2";
 import FSKButtonStrategy_2 from "../model/FSKButtonStrategy_2";
 import ErrorUtil from "../util/ErrorUtil";
 import FSKUserUtil from "../util/FSKUserUtil";
@@ -54,7 +54,7 @@ export default class OrganDonorRegistrationTab_2 implements TabbedPanel, Render 
     @WidgetElement private registrationDate: InfoPanel;
 
     @WidgetElement private fullPermissionPanel: FullAccessPermissionPanel;
-    @WidgetElement private limitedPermissionPanel: LimitedAccessPermissionPanel;
+    @WidgetElement private limitedPermissionPanel: LimitedAccessPermissionPanel_2;
 
     private radioGroup: WCAGRadioButton<FSKTypes.OrganDonorPermissionType>[] = [];
     private radioGroupValue: FSKTypes.OrganDonorPermissionType;
@@ -122,11 +122,16 @@ export default class OrganDonorRegistrationTab_2 implements TabbedPanel, Render 
             label: "udelukkende til transplantation"
         });
 
-        // TODO fix LimitedAccessPermissionPanel
-        this.limitedPermissionPanel = this.container.resolve(LimitedAccessPermissionPanel);
+        this.limitedPermissionPanel = this.container.resolve(LimitedAccessPermissionPanel_2);
+        this.limitedPermissionPanel.setIsFSKSupporter(this.isOdrCoordinator);
+        this.limitedPermissionPanel.render();
         this.limitedPermissionPanel.setVisible(false);
         this.limitedPermissionPanel.setEnabled(this.isAdminUser);
-        // this.limitedPermissionPanel.setUpdateButton(this.updateButton); //TODO wrong button type inside panel
+        this.limitedPermissionPanel.addValueChangeHandler(() => {
+            const isCheckboxChosen = this.limitedPermissionPanel.isACheckboxChosen();
+            this.updateButton.setEnabled(isCheckboxChosen);
+            this.createButton.setEnabled(!!this.radioGroupValue && isCheckboxChosen);
+        });
 
         this.dontKnowPermissionRadio = new WCAGRadioButton({
             checkedValue: "DONT_KNOW",
@@ -339,8 +344,13 @@ export default class OrganDonorRegistrationTab_2 implements TabbedPanel, Render 
         if (!!matchingRadio) {
             matchingRadio.setChecked(true);
             this.radioGroupValue = matchingRadio.getCheckedValue();
-            this.createButton.setEnabled(!!this.radioGroupValue);
-            this.updateButton.setEnabled(true);
+            if (newValue === "LIMITED" || newValue === "LIMITED_WITH_RESEARCH") {
+                this.createButton.setEnabled(!!this.radioGroupValue && this.limitedPermissionPanel.isACheckboxChosen());
+                this.updateButton.setEnabled(this.limitedPermissionPanel.isACheckboxChosen());
+            } else {
+                this.createButton.setEnabled(!!this.radioGroupValue);
+                this.updateButton.setEnabled(true);
+            }
             this.showCorrespondingDetailPanel(this.radioGroupValue);
         }
     }
@@ -415,18 +425,7 @@ export default class OrganDonorRegistrationTab_2 implements TabbedPanel, Render 
         const organDonorRegistration = value && value.registrationType;
         const registrationDate = value && value.datetime;
 
-        if (registrationDate) {
-            const formattedDate = moment(registrationDate, "YYYYMMDDHHmmss").format("DD.MM.YYYY");
-            this.registrationDate = new InfoPanel({
-                description: `Registreringen er bekræftet og ændret: ${formattedDate}`,
-                severity: InfoPanelSeverity.INFO,
-                imageOptions: {
-                    alt: "info sign",
-                    src: ImageSrc.INFO,
-                    imageSize: ImageDimensions.S
-                }
-            });
-        }
+
 
         const type = organDonorRegistration ? organDonorRegistration.permissionType : undefined;
 
@@ -436,7 +435,19 @@ export default class OrganDonorRegistrationTab_2 implements TabbedPanel, Render 
 
         setElementVisible(this.mainPanel, this.isAdminUser || !!type);
         setElementVisible(this.noRegistrationPanel, !this.isAdminUser && !type);
-        this.registrationDate.setVisible(!!type);
+        if (registrationDate) {
+            const formattedDate = moment(registrationDate, "YYYYMMDDHHmmss").format("DD.MM.YYYY");
+            this.registrationDate = new InfoPanel({
+                description: `Registreringen er bekræftet og ændret: ${formattedDate}`,
+                severity: InfoPanelSeverity.INFO,
+                imageOptions: {
+                    alt: "info sign",
+                    src: ImageSrc.INFO,
+                    imageSize: ImageDimensions.L
+                }
+            });
+            this.registrationDate.setVisible(!!type);
+        }
 
         const patientNameElement = document.createElement("strong");
         patientNameElement.textContent = PatientUtil.getFullName(this.moduleContext.getPatient());
@@ -463,27 +474,19 @@ export default class OrganDonorRegistrationTab_2 implements TabbedPanel, Render 
                 !!value.registrationType.requiresRelativeAcceptance,
                 this.isOdrCoordinator
             );
-            this.limitedPermissionPanel.setValue(
-                undefined,
-                this.isOdrCoordinator
-            );
+            this.limitedPermissionPanel.setValue(undefined);
         } else if (type === "LIMITED" || type === "LIMITED_WITH_RESEARCH") {
             this.fullPermissionPanel.setRequiresRelativeAcceptance(
                 false,
                 this.isOdrCoordinator
             );
-            this.limitedPermissionPanel.setValue(
-                value.registrationType,
-                this.isOdrCoordinator
-            );
+            this.limitedPermissionPanel.setValue(value.registrationType);
         } else {
             this.fullPermissionPanel.setRequiresRelativeAcceptance(
                 false,
                 this.isOdrCoordinator
             );
-            this.limitedPermissionPanel.setValue(
-                undefined,
-                this.isOdrCoordinator);
+            this.limitedPermissionPanel.setValue(undefined);
         }
         this.showCorrespondingDetailPanel(type);
 
