@@ -24,7 +24,7 @@ import {
     StyledButton,
     WCAGRadioButton
 } from "fmko-ts-widgets";
-import FullAccessPermissionPanel from "../panels/organdonor-panels/FullAccessPermissionPanel";
+import FullAccessPermissionPanel_2 from "../panels/organdonor-panels/FullAccessPermissionPanel_2";
 import LimitedAccessPermissionPanel_2 from "../panels/organdonor-panels/LimitedAccessPermissionPanel_2";
 import FSKButtonStrategy_2 from "../model/FSKButtonStrategy_2";
 import ErrorUtil from "../util/ErrorUtil";
@@ -45,6 +45,8 @@ export default class OrganDonorRegistrationTab_2 implements TabbedPanel, Render 
     private initialized: boolean;
     private shown: boolean;
 
+    private lastSavedValue: FSKTypes.OrganDonorRegistrationType;
+
     private organRegistrationChangeHandler: ValueChangeHandler<FSKTypes.RegistrationTypeWrapper<FSKTypes.OrganDonorRegistrationType>>;
 
     private isAdminUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
@@ -53,7 +55,7 @@ export default class OrganDonorRegistrationTab_2 implements TabbedPanel, Render 
     @WidgetElement private mainPanel: HTMLDivElement;
     @WidgetElement private registrationDate: InfoPanel;
 
-    @WidgetElement private fullPermissionPanel: FullAccessPermissionPanel;
+    @WidgetElement private fullPermissionPanel: FullAccessPermissionPanel_2;
     @WidgetElement private limitedPermissionPanel: LimitedAccessPermissionPanel_2;
 
     private radioGroup: WCAGRadioButton<FSKTypes.OrganDonorPermissionType>[] = [];
@@ -93,6 +95,7 @@ export default class OrganDonorRegistrationTab_2 implements TabbedPanel, Render 
     public render(): void | Promise<never> {
         setElementVisible(this.mainPanel, false);
         setElementVisible(this.noRegistrationPanel, false);
+
         // Main panel
         this.fullPermissionWithResearchRadio = new WCAGRadioButton<FSKTypes.OrganDonorPermissionType>({
             checkedValue: "FULL_WITH_RESEARCH",
@@ -105,11 +108,24 @@ export default class OrganDonorRegistrationTab_2 implements TabbedPanel, Render 
             label: "udelukkende til transplantation"
         });
 
-        // TODO fix FullAccessPermissionPanel
-        this.fullPermissionPanel = this.container.resolve(FullAccessPermissionPanel);
+        this.fullPermissionPanel = this.container.resolve(FullAccessPermissionPanel_2);
+        this.fullPermissionPanel.setIsFSKSupporter(this.isOdrCoordinator);
+        this.fullPermissionPanel.render();
         this.fullPermissionPanel.setVisible(false);
-        this.fullPermissionPanel.setEnabled();
-        // this.fullPermissionPanel.setUpdateButton(this.updateButton); //TODO wrong button type inside panel
+        this.fullPermissionPanel.setEnabled(this.isAdminUser);
+        this.fullPermissionPanel.addValueChangeHandler(() => {
+            if (this.isAdminUser) {
+                const valueHasChanged = this.isValueChanged();
+                this.updateButton.setEnabled(
+                    valueHasChanged
+                    && isElementVisible(this.updateButton.element)
+                );
+                this.createButton.setEnabled(
+                    valueHasChanged
+                    && isElementVisible(this.createButton.element)
+                );
+            }
+        });
 
         this.limitedPermissionWithResearchRadio = new WCAGRadioButton({
             checkedValue: "LIMITED_WITH_RESEARCH",
@@ -128,9 +144,21 @@ export default class OrganDonorRegistrationTab_2 implements TabbedPanel, Render 
         this.limitedPermissionPanel.setVisible(false);
         this.limitedPermissionPanel.setEnabled(this.isAdminUser);
         this.limitedPermissionPanel.addValueChangeHandler(() => {
-            const isCheckboxChosen = this.limitedPermissionPanel.isACheckboxChosen();
-            this.updateButton.setEnabled(isCheckboxChosen);
-            this.createButton.setEnabled(!!this.radioGroupValue && isCheckboxChosen);
+            if (this.isAdminUser) {
+                const isCheckboxChosen = this.limitedPermissionPanel.isAnyCheckboxChosen();
+                const valueHasChanged = this.isValueChanged();
+                this.updateButton.setEnabled(
+                    valueHasChanged
+                    && isCheckboxChosen
+                    && isElementVisible(this.updateButton.element)
+                );
+                this.createButton.setEnabled(
+                    valueHasChanged
+                    && isCheckboxChosen
+                    && isElementVisible(this.createButton.element)
+                    && !!this.radioGroupValue
+                );
+            }
         });
 
         this.dontKnowPermissionRadio = new WCAGRadioButton({
@@ -169,10 +197,15 @@ export default class OrganDonorRegistrationTab_2 implements TabbedPanel, Render 
         this.radioGroup.forEach((radioButton) => {
             radioButton.setEnabled(this.isAdminUser);
 
-            radioButton.addValueChangeHandler(() =>
-                this.setValue(radioButton.getCheckedValue()));
+            radioButton.addValueChangeHandler(() => {
+                this.setValue(radioButton.getCheckedValue());
+                if (this.isAdminUser) {
+                    this.updateButton.setEnabled(
+                        this.isValueChanged()
+                        && isElementVisible(this.updateButton.element));
+                }
+            });
         });
-
 
         // Buttons
         this.createButton = new StyledButton({
@@ -222,7 +255,7 @@ export default class OrganDonorRegistrationTab_2 implements TabbedPanel, Render 
                         text: "Fortryd"
                     };
                     const yesIsClicked = await PopupDialog.display(PopupDialogKind.WARNING, "Bekræft sletning",
-                        "<p>Er du sikker på du vil slette patientens organdonorregistrering?</p>",
+                        "Er du sikker på du vil slette patientens organdonorregistrering?",
                         noOption, yesOption);
                     if (yesIsClicked === yesOption) {
                         this.buttonStrategy.disableButtons();
@@ -345,8 +378,8 @@ export default class OrganDonorRegistrationTab_2 implements TabbedPanel, Render 
             matchingRadio.setChecked(true);
             this.radioGroupValue = matchingRadio.getCheckedValue();
             if (newValue === "LIMITED" || newValue === "LIMITED_WITH_RESEARCH") {
-                this.createButton.setEnabled(!!this.radioGroupValue && this.limitedPermissionPanel.isACheckboxChosen());
-                this.updateButton.setEnabled(this.limitedPermissionPanel.isACheckboxChosen());
+                this.createButton.setEnabled(!!this.radioGroupValue && this.limitedPermissionPanel.isAnyCheckboxChosen());
+                this.updateButton.setEnabled(this.limitedPermissionPanel.isAnyCheckboxChosen());
             } else {
                 this.createButton.setEnabled(!!this.radioGroupValue);
                 this.updateButton.setEnabled(true);
@@ -366,7 +399,7 @@ export default class OrganDonorRegistrationTab_2 implements TabbedPanel, Render 
             if (type === "FULL" || type === "FULL_WITH_RESEARCH") {
                 return {
                     permissionType: type,
-                    requiresRelativeAcceptance: this.fullPermissionPanel.getRequiresRelativeAcceptance()
+                    requiresRelativeAcceptance: this.fullPermissionPanel.getValue().requiresRelativeAcceptance
                 };
             } else if (type === "LIMITED" || type === "LIMITED_WITH_RESEARCH") {
                 const value = this.limitedPermissionPanel.getValue();
@@ -422,12 +455,10 @@ export default class OrganDonorRegistrationTab_2 implements TabbedPanel, Render 
     }
 
     private setData(value: FSKTypes.RegistrationTypeWrapper<FSKTypes.OrganDonorRegistrationType> | null | undefined): void {
-        const organDonorRegistration = value && value.registrationType;
+        this.lastSavedValue = value && value.registrationType;
         const registrationDate = value && value.datetime;
 
-
-
-        const type = organDonorRegistration ? organDonorRegistration.permissionType : undefined;
+        const type = this.lastSavedValue ? this.lastSavedValue.permissionType : undefined;
 
         if (!type) {
             this.radioGroupValue = null;
@@ -470,27 +501,22 @@ export default class OrganDonorRegistrationTab_2 implements TabbedPanel, Render 
         });
 
         if (type === "FULL" || type === "FULL_WITH_RESEARCH") {
-            this.fullPermissionPanel.setRequiresRelativeAcceptance(
-                !!value.registrationType.requiresRelativeAcceptance,
-                this.isOdrCoordinator
-            );
+            this.fullPermissionPanel.setValue(this.lastSavedValue);
             this.limitedPermissionPanel.setValue(undefined);
         } else if (type === "LIMITED" || type === "LIMITED_WITH_RESEARCH") {
-            this.fullPermissionPanel.setRequiresRelativeAcceptance(
-                false,
-                this.isOdrCoordinator
-            );
+            this.fullPermissionPanel.setValue(undefined);
             this.limitedPermissionPanel.setValue(value.registrationType);
         } else {
-            this.fullPermissionPanel.setRequiresRelativeAcceptance(
-                false,
-                this.isOdrCoordinator
-            );
+            this.fullPermissionPanel.setValue(undefined);
             this.limitedPermissionPanel.setValue(undefined);
         }
         this.showCorrespondingDetailPanel(type);
 
         // set edit or create mode
-        organDonorRegistration ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
+        this.lastSavedValue ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
+    }
+
+    private isValueChanged(): boolean {
+        return !CompareUtil.deepEquals(this.lastSavedValue, this.getValue());
     }
 }
