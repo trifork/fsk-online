@@ -10,6 +10,7 @@ export default class LimitedAccessPermissionPanel_2
     extends HasValueWidget<FSKTypes.OrganDonorRegistrationType>
     implements Render {
     private isFSKSupporter: boolean;
+    private anyChecked = false;
 
     @WidgetElement private noCheckboxSelected: InfoPanel;
 
@@ -108,38 +109,22 @@ export default class LimitedAccessPermissionPanel_2
     }
 
     public getValue(): FSKTypes.OrganDonorRegistrationType {
-        this.updateValue();
         return this.value;
     }
 
     public setEnabled(enabled: boolean): void {
-        if (!enabled) {
-            this.checkboxes.forEach(checkbox => checkbox.setEnabled(false));
-        }
-        this.checkboxes.forEach(checkbox => checkbox.setEnabled(true));
+        this.checkboxes.forEach(checkbox => checkbox.setEnabled(enabled));
     }
 
     public setIsFSKSupporter(value: boolean) {
         this.isFSKSupporter = value;
     }
 
-    public isACheckboxChosen(): boolean {
-        let anyChecked = false;
-        this.checkboxes.forEach((checkbox, key) => {
-            if (key === `requiresRelativeAcceptance`) {
-                return;
-            }
-            if (checkbox.isChecked() === true) {
-                anyChecked = true;
-            }
-        });
-        return anyChecked;
+    public isAnyCheckboxChosen(): boolean {
+        return this.anyChecked;
     }
 
     private updateValue(): void {
-        const checkboxChosen = this.isACheckboxChosen();
-        this.showCheckboxError(!checkboxChosen);
-
         const oldValue = this.value;
         const newValue = <FSKTypes.OrganDonorRegistrationType>{
             permissionForCornea: !!this.corneasCheckbox.isChecked(),
@@ -153,6 +138,12 @@ export default class LimitedAccessPermissionPanel_2
             requiresRelativeAcceptance: !!this.consentCheckbox.isChecked()
         };
         this.value = newValue;
+
+        this.anyChecked = Object.entries(newValue)
+            .filter(([key, value]) => key !== `requiresRelativeAcceptance` && value)
+            .some(([key, value]) => value === true);
+        console.log("anyChecked?: ", this.anyChecked);
+        this.showCheckboxError(!this.anyChecked);
 
         ValueChangeEvent.fireIfNotEqual(this, oldValue, newValue);
     }
