@@ -18,8 +18,7 @@ export default class FSKOnlineModule extends DefaultModule {
     private treatmentWillCache: TreatmentWillCache;
     private livingWillCache: LivingWillCache;
 
-    // TODO - remove this when the new organ donor registration is ready
-    private organDonorRegisterTab_2: OrganDonorRegistrationTab;
+    private organDonorRegisterTab: OrganDonorRegistrationTab;
     private livingWillTestamentTab: LivingWillTestamentTab;
     private treatmentWillTestamentTab: TreatmentWillTab;
     private doctorOrNurseOrDentistWillTab: DoctorOrNurseOrDentistWillTab;
@@ -40,8 +39,8 @@ export default class FSKOnlineModule extends DefaultModule {
     }
 
     public initAfterModuleRegistered(): void {
-        this.organDonorRegisterTab_2 = this.container.resolve<OrganDonorRegistrationTab>(OrganDonorRegistrationTab);
-        this.addTabbedPanel(this.organDonorRegisterTab_2);
+        this.organDonorRegisterTab = this.container.resolve<OrganDonorRegistrationTab>(OrganDonorRegistrationTab);
+        this.addTabbedPanel(this.organDonorRegisterTab);
         this.livingWillTestamentTab = this.container.resolve<LivingWillTestamentTab>(LivingWillTestamentTab);
         this.addTabbedPanel(this.livingWillTestamentTab);
         this.treatmentWillTestamentTab = this.container.resolve<TreatmentWillTab>(TreatmentWillTab);
