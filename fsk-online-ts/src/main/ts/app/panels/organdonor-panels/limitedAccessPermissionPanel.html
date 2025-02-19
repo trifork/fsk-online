@@ -1,27 +1,22 @@
-<div class="card limited-access-panel">
-    <div id="{checkbox-container}">
-        <div id="{no-checkbox-selected}" style="display:none">
-            <div class="row" style="text-align: center">
-                <div class="col-12">
-                    <div style="padding:12px">Angiv mindst ét organ</div>
-                </div>
-            </div>
+<div>
+    <div id="no-checkbox-selected"></div>
+    <div class="flex-row flex-wrap-wrap full-gap">
+        <div class="flex-column">
+            <div id="heart-checkbox"></div>
+            <div id="kidneys-checkbox"></div>
         </div>
-        <div id="{limited-access-checkboxes}">
-            <div class="flexrow">
-                <div class="col-3"><input id="{corneas-checkbox}" type="checkbox"/><label for="{corneas-checkbox}">Hornhinder</label></div>
-                <div class="col-3"><input id="{heart-checkbox}" type="checkbox"/><label for="{heart-checkbox}">Hjerte</label></div>
-                <div class="col-3"><input id="{kidney-checkbox}" type="checkbox"/><label for="{kidney-checkbox}">Nyrer</label></div>
-                <div class="col-3"><input id="{liver-checkbox}" type="checkbox"/><label for="{liver-checkbox}">Lever</label></div>
-            </div>
-            <div class="flexrow">
-                <div class="col-3"><input id="{lungs-checkbox}" type="checkbox"/><label for="{lungs-checkbox}">Lunger</label></div>
-                <div class="col-3"><input id="{pancreas-checkbox}" type="checkbox"/><label for="{pancreas-checkbox}">Bugspytkirtel</label></div>
-                <div class="col-3"><input id="{skin-checkbox}" type="checkbox"/><label for="{skin-checkbox}">Hud</label></div>
-                <div class="col-3"><input id="{intestine-checkbox}" type="checkbox"/><label for="{intestine-checkbox}">Tyndtarm</label></div>
-            </div>
-            <div class="flexrow"></div>
+        <div class="flex-column">
+            <div id="lungs-checkbox"></div>
+            <div id="corneas-checkbox"></div>
+        </div>
+        <div class="flex-column">
+            <div id="liver-checkbox"></div>
+            <div id="small-intestine-checkbox"></div>
+        </div>
+        <div class="flex-column">
+            <div id="pancreas-checkbox"></div>
+            <div id="skin-checkbox"></div>
         </div>
     </div>
-    <input id="{consent-checkbox}" type="checkbox"/><label for="{consent-checkbox}">Forudsætter accept fra patientens pårørende</label>
+    <div id="consent-checkbox"></div>
 </div>

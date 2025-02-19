@@ -1,4 +1,4 @@
-export interface ButtonStrategy_2 {
+export interface ButtonStrategy_ODR {
     hideButtons(): void;
     enableButtons(): void;
     disableButtons(): void;

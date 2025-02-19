@@ -1,7 +1,6 @@
 import {AsyncResponse, DefaultModule, getVersionInfo, ModuleRegistryFactory, PersonInfo, Version, VersionImpl} from "fmko-ts-common";
 import FSKOnlineContainer from "./FSKOnlineContainer";
 import OrganDonorRegistrationTab from "../tabs/OrganDonorRegistrationTab";
-import OrganDonorRegistrationTab_2 from "../tabs/OrganDonorRegistrationTab_2";
 import LivingWillTestamentTab from "../tabs/LivingWillTestamentTab";
 import TreatmentWillTab from "../tabs/TreatmentWillTab";
 import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
@@ -20,8 +19,7 @@ export default class FSKOnlineModule extends DefaultModule {
     private livingWillCache: LivingWillCache;
 
     // TODO - remove this when the new organ donor registration is ready
-    private organDonorRegisterTab: OrganDonorRegistrationTab;
-    private organDonorRegisterTab_2: OrganDonorRegistrationTab_2;
+    private organDonorRegisterTab_2: OrganDonorRegistrationTab;
     private livingWillTestamentTab: LivingWillTestamentTab;
     private treatmentWillTestamentTab: TreatmentWillTab;
     private doctorOrNurseOrDentistWillTab: DoctorOrNurseOrDentistWillTab;
@@ -42,10 +40,7 @@ export default class FSKOnlineModule extends DefaultModule {
     }
 
     public initAfterModuleRegistered(): void {
-        // TODO - remove this when the new organ donor registration is ready
-        // this.organDonorRegisterTab = this.container.resolve<OrganDonorRegistrationTab>(OrganDonorRegistrationTab);
-        // this.addTabbedPanel(this.organDonorRegisterTab);
-        this.organDonorRegisterTab_2 = this.container.resolve<OrganDonorRegistrationTab_2>(OrganDonorRegistrationTab_2);
+        this.organDonorRegisterTab_2 = this.container.resolve<OrganDonorRegistrationTab>(OrganDonorRegistrationTab);
         this.addTabbedPanel(this.organDonorRegisterTab_2);
         this.livingWillTestamentTab = this.container.resolve<LivingWillTestamentTab>(LivingWillTestamentTab);
         this.addTabbedPanel(this.livingWillTestamentTab);

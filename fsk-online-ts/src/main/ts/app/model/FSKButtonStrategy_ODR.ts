@@ -1,9 +1,9 @@
-import {ButtonStrategy_2} from "./ButtonStrategy_2";
+import {ButtonStrategy_ODR} from "./ButtonStrategy_ODR";
 import {UserContext} from "fmko-ts-common";
 import FSKUserUtil from "../util/FSKUserUtil";
 import {StyledButton} from "fmko-ts-widgets";
 
-export default class FSKButtonStrategy_2 implements ButtonStrategy_2 {
+export default class FSKButtonStrategy_ODR implements ButtonStrategy_ODR {
 
     constructor(
         private userContext: UserContext,

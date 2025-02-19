@@ -1,50 +1,60 @@
-import {CheckboxWrapper} from "fmko-ts-widgets";
-import SDSButton from "../../elements/SDSButton";
-import {IoC} from "fmko-ts-ioc";
-import {TemplateWidget} from "fmko-ts-mvc";
+import {Component, Render, WidgetElement} from "fmko-ts-mvc";
+import {HasValueWidget, TypedWCAGCheckbox} from "fmko-ts-widgets";
+import {ValueChangeEvent} from "fmko-ts-common";
+import OrganDonorRegistrationType = FSKTypes.OrganDonorRegistrationType;
 
-export default class FullAccessPermissionPanel extends TemplateWidget {
-    private requiresRelativeAcceptanceCheckBox: CheckboxWrapper;
-    private updateButton: SDSButton;
+@Component({
+    template: require("./fullAccessPermissionPanel.html")
+})
+export default class FullAccessPermissionPanel
+    extends HasValueWidget<FSKTypes.OrganDonorRegistrationType>
+    implements Render {
+    private isFSKSupporter: boolean;
 
-    public static deps = () => [IoC];
+    @WidgetElement private consentCheckbox: TypedWCAGCheckbox<boolean>;
 
-    constructor(protected container: IoC) {
-        super(container);
-        this.element = document.createElement(`div`);
-        this.init();
-    }
-
-    public getTemplate(): string {
-        return require(`./fullAccessPermissionPanel.html`);
-    }
-
-    public setupBindings(): any {
-        this.requiresRelativeAcceptanceCheckBox = new CheckboxWrapper(this.getElementByVarName(`consent-checkbox`));
-        this.requiresRelativeAcceptanceCheckBox.addValueChangeHandler(() => {
-            if (this.updateButton) {
-                this.updateButton.setEnabled(true);
-            }
+    public render(): void | Promise<never> {
+        this.consentCheckbox = new TypedWCAGCheckbox({
+            checkedValue: undefined, label: "Forudsætter accept fra patientens pårørende"
+        });
+        this.consentCheckbox.addValueChangeHandler(() => {
+            this.updateValue();
         });
     }
 
-    public getRequiresRelativeAcceptance(): boolean {
-        return this.requiresRelativeAcceptanceCheckBox.getValue();
-    }
-
-    public setUpdateButton(updateButton: SDSButton) {
-        this.updateButton = updateButton;
-    }
-
-    public setEnabled() {
-        this.requiresRelativeAcceptanceCheckBox.setEnabled(true);
-    }
-
-    public setRequiresRelativeAcceptance(value: boolean, isFSKSupporter: boolean) {
-        this.requiresRelativeAcceptanceCheckBox.setValue(value);
-        if (isFSKSupporter) {
-            this.requiresRelativeAcceptanceCheckBox.setEnabled(value);
-            this.requiresRelativeAcceptanceCheckBox.getInput().onclick = (() => false);
+    public setValue(newValue: OrganDonorRegistrationType | null | undefined, fireEvents?: boolean) {
+        if (newValue) {
+            this.consentCheckbox.setChecked(newValue.requiresRelativeAcceptance);
+            this.consentCheckbox.setEnabled(this.isFSKSupporter && newValue.requiresRelativeAcceptance || !this.isFSKSupporter);
+            if (this.isFSKSupporter && newValue.requiresRelativeAcceptance) {
+                this.consentCheckbox.getFieldElement().onclick = (() => false);
+            }
+        } else {
+            this.consentCheckbox.setChecked(false);
         }
+        this.updateValue();
+    }
+
+    public getValue(): FSKTypes.OrganDonorRegistrationType {
+        this.updateValue();
+        return this.value;
+    }
+
+    public setEnabled(enabled: boolean): void {
+        this.consentCheckbox.setEnabled(enabled);
+    }
+
+    public setIsFSKSupporter(value: boolean) {
+        this.isFSKSupporter = value;
+    }
+
+    private updateValue(): void {
+        const oldValue = this.value;
+        const newValue = <FSKTypes.OrganDonorRegistrationType>{
+            requiresRelativeAcceptance: !!this.consentCheckbox.isChecked()
+        };
+        this.value = newValue;
+
+        ValueChangeEvent.fireIfNotEqual(this, oldValue, newValue);
     }
 }

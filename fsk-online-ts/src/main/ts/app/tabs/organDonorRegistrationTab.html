@@ -1,123 +1,40 @@
-<div id="{main-panel}" style="display:none;">
-    <div class="card sds-title">
-        <h1 class="sds-h1">Organdonation</h1>
-    </div>
-    <div id="{registration-date-row}" class="row">
-        <div class="col-6"></div>
-        <div class="col-6">
-            <div class="row">
-                <div class="col-3"></div>
-                <div class="col-9">
-                    <div class="card fsk-registrationdate-info">
-                        <a class="registrationdate-info-button"></a>
-                        <span id="{registration-date}"></span>
-                    </div>
-                </div>
-            </div>
+<div>
+    <h1 class="sr-only">Organdonation</h1>
+    <div id="main-panel">
+        <div class="flex-row justify-flex-end">
+            <div id="registration-date"></div>
         </div>
-    </div>
+        <h2>FULD TILLADELSE</h2>
+        <p>Ja, patienten vil <strong>donere alle sine organer</strong> efter sin død</p>
+        <div id="full-permission-with-research-radio"></div>
+        <div id="full-permission-radio"></div>
+        <div id="full-permission-panel"></div>
 
-    <div class="card">
-        <div class="row">
-            <div class="col-12 treatment-will-panel-col-12">
-                <h2 class="sds-h3-no-margin">FULD TILLADELSE</h2>
-                <div class="sds-line"></div>
-                <h5 class="sds-h5">Ja, patienten vil <strong>donere alle sine organer</strong> efter sin død</h5>
-            </div>
-        </div>
-        <div style="padding-left:8px; padding-top: 16px; padding-bottom: 16px">
-            <div class="row">
-                <div class="col-25-px">
-                    <div id="{full-permission-with-research-radio}"></div>
-                </div>
-                <div class="col-11">
-                    <h5 class="sds-h5">til transplantation og forskning i forbindelse med donationen, som har til hensigt at forbedre transplantationsresultater</h5>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-25-px">
-                    <div id="{full-permission-radio}"></div>
-                </div>
-                <div class="col-11">
-                    <h5 class="sds-h5">udelukkende til transplantation</h5>
-                </div>
-            </div>
-            <div id="{full-permission-widget}"></div>
-        </div>
+        <div class="horizontal-divider"></div>
+        <h2>BEGRÆNSET TILLADELSE</h2>
+        <p>Ja, patienten vil <strong>donere de organer, der er sat kryds ud for</strong>, efter sin død</p>
+        <div id="limited-permission-with-research-radio"></div>
+        <div id="limited-permission-radio"></div>
+        <div id="limited-permission-panel"></div>
 
-        <div class="row">
-            <div class="col-12 treatment-will-panel-col-12">
-                <h2 class="sds-h3-no-margin">BEGRÆNSET TILLADELSE</h2>
-                <div class="sds-line"></div>
-                <h5 class="sds-h5">Ja, patienten vil <strong>donere de organer, der er sat kryds ud for</strong>, efter sin død</h5>
-            </div>
-        </div>
-        <div style="padding-left:8px; padding-top: 16px; padding-bottom: 16px">
-            <div class="row">
-                <div class="col-25-px">
-                    <div id="{limited-permission-with-research-radio}"></div>
-                </div>
-                <div class="col-11">
-                    <h5 class="sds-h5">til transplantation og forskning i forbindelse med donationen, som har til hensigt at forbedre transplantationsresultater</h5>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-25-px">
-                    <div id="{limited-permission-radio}"></div>
-                </div>
-                <div class="col-11">
-                    <h5 class="sds-h5">udelukkende til transplantation</h5>
-                </div>
-            </div>
-            <div id="{limited-permission-widget}"></div>
-        </div>
+        <div class="horizontal-divider"></div>
+        <h2>VED IKKE</h2>
+        <div id="dont-know-permission-radio"></div>
 
-        <div class="row">
-            <div class="col-12 treatment-will-panel-col-12">
-                <h2 class="sds-h3-no-margin">VED IKKE</h2>
-                <div class="sds-line"></div>
-            </div>
-        </div>
-        <div style="padding-left:8px; padding-bottom: 16px">
-            <div class="row">
-                <div class="col-25-px">
-                    <div id="{dont-know-permission-radio}"></div>
-                </div>
-                <div class="col-11">
-                    <h5 class="sds-h5">Patienten <strong>overlader det i stedet til sine nærmeste pårørende</strong> at tage stilling til, om patientens organer må anvendes til transplantation og forskning efter sin død</h5>
-                </div>
-            </div>
-        </div>
+        <div class="horizontal-divider"></div>
+        <h2>FORBUD</h2>
+        <div id="restricted-permission-radio"></div>
+        <div class="horizontal-divider"></div>
 
-        <div class="row">
-            <div class="col-12 treatment-will-panel-col-12">
-                <h2 class="sds-h3-no-margin">FORBUD</h2>
-                <div class="sds-line"></div>
-            </div>
-        </div>
-        <div style="padding-left:8px; padding-bottom: 16px">
-            <div class="row">
-                <div class="col-25-px">
-                    <div id="{restricted-permission-radio}"></div>
-                </div>
-                <div class="col-11">
-                    <h5 class="sds-h5">Patienten <strong>modsætter sig, at patientens organer anvendes</strong> til transplantation efter sin død</h5>
-                </div>
-            </div>
+        <div class="flex-row justify-flex-end half-gap">
+            <div id="print-button"></div>
+            <div id="delete-button"></div>
+            <div id="create-button"></div>
+            <div id="update-button"></div>
         </div>
     </div>
-</div>
-<div class="card" style="text-align: right">
-    <div id="{print-button}"></div>
-    <div id="{delete-button}"></div>
-    <div id="{create-button}"></div>
-    <div id="{update-button}"></div>
-</div>
-<div id="{empty-panel}" class="empty-state" style="display: none">
-    <div class="row">
-        <div class="col-12">
-            <h1 class="empty-state-header">Ingen bekræftet registrering</h1>
-            <p class="empty-state-body"><b id="{empty-state-patient}"></b> har ikke bekræftet sin tilmelding til Organdonorregistreret</p>
-        </div>
+    <div id="no-registration-panel">
+        <h2>Ingen bekræftet registrering</h2>
+        <p id="no-registration-text"></p>
     </div>
 </div>
