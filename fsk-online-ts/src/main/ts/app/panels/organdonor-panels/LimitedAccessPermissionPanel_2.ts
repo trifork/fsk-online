@@ -141,8 +141,7 @@ export default class LimitedAccessPermissionPanel_2
 
         this.anyChecked = Object.entries(newValue)
             .filter(([key, value]) => key !== `requiresRelativeAcceptance` && value)
-            .some(([key, value]) => value === true);
-        console.log("anyChecked?: ", this.anyChecked);
+            .some(([, value]) => value === true);
         this.showCheckboxError(!this.anyChecked);
 
         ValueChangeEvent.fireIfNotEqual(this, oldValue, newValue);
