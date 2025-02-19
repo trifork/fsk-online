@@ -1,65 +1,88 @@
-import {TemplateWidget} from "fmko-ts-mvc";
-import {IoC} from "fmko-ts-ioc";
-import {CheckboxWrapper} from "fmko-ts-widgets";
-import {Widget} from "fmko-ts-common";
-import SDSButton from "../../elements/SDSButton";
-import OrganDonorRegistration = FSKTypes.OrganDonorRegistrationType;
+import {Component, Render, WidgetElement} from "fmko-ts-mvc";
+import {HasValueWidget, ImageDimensions, InfoPanel, InfoPanelSeverity, TypedWCAGCheckbox} from "fmko-ts-widgets";
+import {ImageSrc, ValueChangeEvent} from "fmko-ts-common";
+import OrganDonorRegistrationType = FSKTypes.OrganDonorRegistrationType;
 
-export default class LimitedAccessPermissionPanel extends TemplateWidget {
+@Component({
+    template: require("./limitedAccessPermissionPanel.html")
+})
+export default class LimitedAccessPermissionPanel
+    extends HasValueWidget<FSKTypes.OrganDonorRegistrationType>
+    implements Render {
+    private isFSKSupporter: boolean;
+    private anyChecked = false;
 
-    private checkboxes: OrganRegistrationCheckBoxes;
-    private updateButton: SDSButton;
+    @WidgetElement private noCheckboxSelected: InfoPanel;
 
-    public static deps = () => [IoC];
+    @WidgetElement private corneasCheckbox: TypedWCAGCheckbox<boolean>;
+    @WidgetElement private heartCheckbox: TypedWCAGCheckbox<boolean>;
+    @WidgetElement private kidneysCheckbox: TypedWCAGCheckbox<boolean>;
+    @WidgetElement private liverCheckbox: TypedWCAGCheckbox<boolean>;
+    @WidgetElement private lungsCheckbox: TypedWCAGCheckbox<boolean>;
+    @WidgetElement private pancreasCheckbox: TypedWCAGCheckbox<boolean>;
+    @WidgetElement private skinCheckbox: TypedWCAGCheckbox<boolean>;
+    @WidgetElement private smallIntestineCheckbox: TypedWCAGCheckbox<boolean>;
+    @WidgetElement private consentCheckbox: TypedWCAGCheckbox<boolean>;
+    private checkboxes: Map<string, TypedWCAGCheckbox<boolean>>;
 
-    constructor(protected container: IoC) {
-        super(container);
-        this.element = document.createElement(`div`);
-        this.init();
+    public render(): void | Promise<never> {
+        this.noCheckboxSelected = new InfoPanel({
+            description: `Angiv mindst ét organ`,
+            severity: InfoPanelSeverity.WARNING,
+            imageOptions: {
+                alt: "warning sign",
+                src: ImageSrc.ATTENTION,
+                imageSize: ImageDimensions.L
+            }
+        });
+        this.corneasCheckbox = new TypedWCAGCheckbox({
+            checkedValue: undefined, label: "Hornhinder"
+        });
+        this.heartCheckbox = new TypedWCAGCheckbox({
+            checkedValue: undefined, label: "Hjerte"
+        });
+        this.kidneysCheckbox = new TypedWCAGCheckbox({
+            checkedValue: undefined, label: "Nyrer"
+        });
+        this.liverCheckbox = new TypedWCAGCheckbox({
+            checkedValue: undefined, label: "Lever"
+        });
+        this.lungsCheckbox = new TypedWCAGCheckbox({
+            checkedValue: undefined, label: "Lunger"
+        });
+        this.pancreasCheckbox = new TypedWCAGCheckbox({
+            checkedValue: undefined, label: "Bugspytkirtler"
+        });
+        this.skinCheckbox = new TypedWCAGCheckbox({
+            checkedValue: undefined, label: "Hud"
+        });
+        this.smallIntestineCheckbox = new TypedWCAGCheckbox({
+            checkedValue: undefined, label: "Tyndtarm"
+        });
+        this.consentCheckbox = new TypedWCAGCheckbox({
+            checkedValue: undefined, label: "Forudsætter accept fra patientens pårørende"
+        });
+        this.checkboxes = new Map<string, TypedWCAGCheckbox<boolean>>([
+            ["permissionForCornea", this.corneasCheckbox],
+            ["permissionForHeart", this.heartCheckbox],
+            ["permissionForKidneys", this.kidneysCheckbox],
+            ["permissionForLiver", this.liverCheckbox],
+            ["permissionForLungs", this.lungsCheckbox],
+            ["permissionForPancreas", this.pancreasCheckbox],
+            ["permissionForSkin", this.skinCheckbox],
+            ["permissionForSmallIntestine", this.smallIntestineCheckbox],
+            ["requiresRelativeAcceptance", this.consentCheckbox]
+        ]);
+        this.checkboxes.forEach(checkbox => {
+            checkbox.addValueChangeHandler(() => {
+                this.updateValue();
+            });
+        });
     }
 
-    public getTemplate(): string {
-        return require(`./limitedAccessPermissionPanel.html`);
-    }
-
-    public setupBindings(): any {
-        this.checkboxes = this.createCheckboxes();
-    }
-
-    public setEnabled(enabled: boolean): void {
-        if (!enabled) {
-            Object.values(this.checkboxes).forEach(checkbox => checkbox.getInput().onclick = (() => false));
-        }
-        Object.values(this.checkboxes).forEach(checkbox => checkbox.setEnabled(true));
-    }
-
-    public setUpdateButton(updateButton: SDSButton) {
-        this.updateButton = updateButton;
-    }
-
-    public getValue(): FSKTypes.OrganDonorRegistrationType {
-        const isCheckboxChosen = this.isACheckboxChosen();
-        if (!isCheckboxChosen) {
-            this.showCheckboxError(!isCheckboxChosen);
-            return null;
-        }
-        return <FSKTypes.OrganDonorRegistrationType>{
-            permissionForCornea: !!this.checkboxes.permissionForCornea.getValue(),
-            permissionForHeart: !!this.checkboxes.permissionForHeart.getValue(),
-            permissionForKidneys: !!this.checkboxes.permissionForKidneys.getValue(),
-            permissionForLiver: !!this.checkboxes.permissionForLiver.getValue(),
-            permissionForLungs: !!this.checkboxes.permissionForLungs.getValue(),
-            permissionForPancreas: !!this.checkboxes.permissionForPancreas.getValue(),
-            permissionForSkin: !!this.checkboxes.permissionForSkin.getValue(),
-            permissionForSmallIntestine: !!this.checkboxes.permissionForSmallIntestine.getValue(),
-            requiresRelativeAcceptance: !!this.checkboxes.requiresRelativeAcceptance.getValue()
-        };
-    }
-
-
-    public setValue(value: FSKTypes.OrganDonorRegistrationType, isFSKSupporter: boolean): void {
-        if (value) {
-            Object.entries(value).forEach(([key, objValue]) => {
+    public setValue(newValue: OrganDonorRegistrationType | null | undefined, fireEvents?: boolean) {
+        if (newValue) {
+            Object.entries(newValue).forEach(([yesNoPermissionType, permission]) => {
                 if ([
                     `permissionForHeart`,
                     `permissionForKidneys`,
@@ -70,82 +93,61 @@ export default class LimitedAccessPermissionPanel extends TemplateWidget {
                     `permissionForPancreas`,
                     `permissionForSkin`,
                     `requiresRelativeAcceptance`
-                ].includes(key)) {
-                    // @ts-ignore
-                    const checkBox = this.checkboxes[key];
-                    checkBox.setValue(objValue);
-                    checkBox.setEnabled(isFSKSupporter && objValue || !isFSKSupporter);
-                    if (isFSKSupporter && objValue) {
-                        checkBox.getInput().onclick = (() => false);
+                ].includes(yesNoPermissionType)) {
+                    const checkBox: TypedWCAGCheckbox<boolean> = this.checkboxes.get(yesNoPermissionType);
+                    checkBox.setChecked(permission);
+                    checkBox.setEnabled(this.isFSKSupporter && permission || !this.isFSKSupporter);
+                    if (this.isFSKSupporter && permission) {
+                        checkBox.getFieldElement().onclick = (() => false);
                     }
                 }
             });
         } else {
-            Object.values(this.checkboxes).forEach(checkbox => checkbox.setValue(false));
+            this.checkboxes.forEach(checkbox => checkbox.setChecked(false));
         }
+        this.updateValue();
     }
 
-    public override tearDownBindings(): any {
-        // Unused
+    public getValue(): FSKTypes.OrganDonorRegistrationType {
+        return this.value;
     }
 
-    public isACheckboxChosen(): boolean {
-        return Object.entries(this.checkboxes)
-            .some(([key, checkbox]) => key !== `requiresRelativeAcceptance`
-                ? !!checkbox.getValue()
-                : false
-            );
+    public setEnabled(enabled: boolean): void {
+        this.checkboxes.forEach(checkbox => checkbox.setEnabled(enabled));
     }
 
-    public showCheckboxError(show: boolean): void {
-        if (show) {
-            this.getElementByVarName(`checkbox-container`).classList.add(`fsk-warning`);
-        } else {
-            this.getElementByVarName(`checkbox-container`).classList.remove(`fsk-warning`);
-        }
-        Widget.setVisible(this.getElementByVarName(`no-checkbox-selected`), show);
+    public setIsFSKSupporter(value: boolean) {
+        this.isFSKSupporter = value;
     }
 
-    public createCheckboxes(): OrganRegistrationCheckBoxes {
-        const heartCheckbox = new CheckboxWrapper(this.getElementByVarName(`heart-checkbox`));
-        const lungsCheckbox = new CheckboxWrapper(this.getElementByVarName(`lungs-checkbox`));
-        const liverCheckbox = new CheckboxWrapper(this.getElementByVarName(`liver-checkbox`));
-        const pancreasCheckbox = new CheckboxWrapper(this.getElementByVarName(`pancreas-checkbox`));
-        const kidneyCheckbox = new CheckboxWrapper(this.getElementByVarName(`kidney-checkbox`));
-        const corneasCheckbox = new CheckboxWrapper(this.getElementByVarName(`corneas-checkbox`));
-        const intestineCheckbox = new CheckboxWrapper(this.getElementByVarName(`intestine-checkbox`));
-        const skinCheckbox = new CheckboxWrapper(this.getElementByVarName(`skin-checkbox`));
-        const consentCheckBox = new CheckboxWrapper(this.getElementByVarName(`consent-checkbox`));
+    public isAnyCheckboxChosen(): boolean {
+        return this.anyChecked;
+    }
 
-        this.checkboxes = <OrganRegistrationCheckBoxes>{
-            permissionForCornea: corneasCheckbox,
-            permissionForHeart: heartCheckbox,
-            permissionForKidneys: kidneyCheckbox,
-            permissionForLiver: liverCheckbox,
-            permissionForLungs: lungsCheckbox,
-            permissionForPancreas: pancreasCheckbox,
-            permissionForSkin: skinCheckbox,
-            permissionForSmallIntestine: intestineCheckbox,
-            requiresRelativeAcceptance: consentCheckBox
+    private updateValue(): void {
+        const oldValue = this.value;
+        const newValue = <FSKTypes.OrganDonorRegistrationType>{
+            permissionForCornea: !!this.corneasCheckbox.isChecked(),
+            permissionForHeart: !!this.heartCheckbox.isChecked(),
+            permissionForKidneys: !!this.kidneysCheckbox.isChecked(),
+            permissionForLiver: !!this.liverCheckbox.isChecked(),
+            permissionForLungs: !!this.lungsCheckbox.isChecked(),
+            permissionForPancreas: !!this.pancreasCheckbox.isChecked(),
+            permissionForSkin: !!this.skinCheckbox.isChecked(),
+            permissionForSmallIntestine: !!this.smallIntestineCheckbox.isChecked(),
+            requiresRelativeAcceptance: !!this.consentCheckbox.isChecked()
         };
+        this.value = newValue;
 
-        Object.values(this.checkboxes).forEach(currentCheckbox => {
-            currentCheckbox.addValueChangeHandler(handler => {
-                if (currentCheckbox !== consentCheckBox) {
-                    const value = handler.getValue();
-                    if (value) {
-                        this.showCheckboxError(false);
-                    }
-                }
+        this.anyChecked = Object.entries(newValue)
+            .filter(([key, value]) => key !== `requiresRelativeAcceptance` && value)
+            .some(([, value]) => value === true);
+        this.showCheckboxError(!this.anyChecked);
 
-                if (this.updateButton) {
-                    this.updateButton.setEnabled(true);
-                }
-            });
-        });
+        ValueChangeEvent.fireIfNotEqual(this, oldValue, newValue);
+    }
 
-        return this.checkboxes;
+    private showCheckboxError(show: boolean): void {
+        this.noCheckboxSelected.setVisible(show);
     }
 }
-
-type OrganRegistrationCheckBoxes = { [K in keyof OrganDonorRegistration]?: CheckboxWrapper; };
