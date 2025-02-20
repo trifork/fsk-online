@@ -227,45 +227,27 @@ button.sds-outline-button.danger:active {
     color: white;
 }
 
-.limited-access-panel {
-    transition: opacity .35s ease;
-    overflow: hidden;
-    opacity: 1;
-}
+/*.limited-access-panel {*/
+/*    transition: opacity .35s ease;*/
+/*    overflow: hidden;*/
+/*    opacity: 1;*/
+/*}*/
 
-.limited-access-panel[aria-hidden="true"] {
-    padding: 0 0 0 16px;
-    opacity: 0;
-}
+/*.limited-access-panel[aria-hidden="true"] {*/
+/*    padding: 0 0 0 16px;*/
+/*    opacity: 0;*/
+/*}*/
 
-.full-access-panel {
-    transition: opacity .35s ease;
-    overflow: hidden;
-    opacity: 1;
-}
+/*.full-access-panel {*/
+/*    transition: opacity .35s ease;*/
+/*    overflow: hidden;*/
+/*    opacity: 1;*/
+/*}*/
 
-.full-access-panel[aria-hidden="true"] {
-    padding: 0 0 0 16px;
-    opacity: 0;
-}
-
-.treatment-will-panel-container {
-    padding: 8px 16px 0 16px;
-    overflow: hidden;
-    opacity: 1;
-}
-
-.treatment-will-panel-container[aria-hidden="true"] {
-    padding: 0 0 0 16px;
-    margin-bottom: 0;
-    height: 0;
-    opacity: 0;
-}
-
-.treatment-will-panel-col-12 {
-    min-height: 32px;
-    padding: 0 8px;
-}
+/*.full-access-panel[aria-hidden="true"] {*/
+/*    padding: 0 0 0 16px;*/
+/*    opacity: 0;*/
+/*}*/
 
 .col-25-px {
     position: relative;
@@ -274,10 +256,10 @@ button.sds-outline-button.danger:active {
     float: left;
 }
 
-.organ-donor-panel {
-    margin: 0 16px;
-    padding-right: 33%;
-}
+/*.organ-donor-panel {*/
+/*    margin: 0 16px;*/
+/*    padding-right: 33%;*/
+/*}*/
 
 .sds-line {
     border-bottom: 2px solid #b2b2b2;
@@ -312,7 +294,7 @@ a.registrationdate-info-button {
     height: 18px;
     display: inline-block;
     vertical-align: middle;
-    margin: 0px 0px 0px 5px;
+    margin: 0 0 0 5px;
     background: transparent url(../styles/images/icon-info.png) no-repeat;
 }
 
