@@ -2,11 +2,13 @@ import {AsyncValueHolder, ModuleContext} from "fmko-ts-common";
 import FSKService from "./FSKService";
 import RegistrationStateUtil from "../util/RegistrationStateUtil";
 import {RegistrationState} from "../model/RegistrationState";
-import {ErrorDisplay} from "fmko-ts-widgets";
+import {PopupDialog} from "fmko-ts-widgets";
 import FSKUserUtil from "../util/FSKUserUtil";
+import {Dependency, Service} from "fmko-ts-mvc";
 import TreatmentWillType = FSKTypes.TreatmentWillType;
 import RegistrationTypeWrapper = FSKTypes.RegistrationTypeWrapper;
 
+@Service()
 export default class TreatmentWillCache {
     public registrationState: RegistrationState = RegistrationState.UNCHECKED;
 
@@ -16,14 +18,13 @@ export default class TreatmentWillCache {
         } else {
             return null;
         }
-    }, error => {
-        ErrorDisplay.showError("Der opstod en fejl", `Der opstod en uventet fejl ved aflæsning af patientens behandlingstestamente.`);
+    }, () => {
+        PopupDialog.warning("Der opstod en fejl", `Der opstod en uventet fejl ved aflæsning af patientens behandlingstestamente.`);
     });
 
-    public static deps = () => ["ModuleContext", FSKService];
-
-    constructor(private moduleContext: ModuleContext, private fskService: FSKService) {
-
+    constructor(
+        @Dependency("ModuleContext") private moduleContext: ModuleContext,
+        @Dependency(FSKService) private fskService: FSKService) {
     }
 
     public setStale(removeRegistration?: boolean) {

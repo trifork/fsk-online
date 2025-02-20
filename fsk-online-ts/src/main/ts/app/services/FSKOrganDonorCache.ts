@@ -1,9 +1,11 @@
 import {AsyncValueHolder, ModuleContext} from "fmko-ts-common";
 import FSKService from "./FSKService";
-import {ErrorDisplay} from "fmko-ts-widgets";
+import {PopupDialog} from "fmko-ts-widgets";
+import {Dependency, Service} from "fmko-ts-mvc";
 import OrganDonorRegistrationType = FSKTypes.OrganDonorRegistrationType;
 import RegistrationTypeWrapper = FSKTypes.RegistrationTypeWrapper;
 
+@Service()
 export default class FSKOrganDonorCache {
     public hasRegistration: boolean;
 
@@ -13,14 +15,13 @@ export default class FSKOrganDonorCache {
         } else {
             return null;
         }
-    }, error => {
-        ErrorDisplay.showError("Der opstod en fejl", `Der opstod en uventet fejl ved aflæsning af patientens organdonorregistrering.`);
+    }, () => {
+        PopupDialog.warning("Der opstod en fejl", `Der opstod en uventet fejl ved aflæsning af patientens organdonorregistrering.`);
     });
 
-    public static deps = () => ["ModuleContext", FSKService];
-
-    constructor(private moduleContext: ModuleContext, private fskService: FSKService) {
-
+    constructor(
+        @Dependency("ModuleContext") private moduleContext: ModuleContext,
+        @Dependency(FSKService) private fskService: FSKService) {
     }
 
     public setStale(removeRegistration: boolean) {
