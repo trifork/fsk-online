@@ -10,7 +10,7 @@ export default class FSKButtonStrategy_ODR implements ButtonStrategy_ODR {
         private createButton: StyledButton,
         private updateButton: StyledButton,
         private deleteButton: StyledButton,
-        private printButton: StyledButton
+        private printButton?: StyledButton
     ) {}
 
     public hideButtons() {
