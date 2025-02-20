@@ -1,6 +1,5 @@
 import {
     CompareUtil,
-    ImageSrc,
     isElementVisible,
     ModuleContext,
     setElementVisible,
@@ -15,9 +14,6 @@ import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
 import {
     ButtonStyle,
     DialogOption,
-    ImageDimensions,
-    InfoPanel,
-    InfoPanelSeverity,
     PopupDialog,
     PopupDialogKind,
     SnackBar,
@@ -29,8 +25,8 @@ import LimitedAccessPermissionPanel from "../panels/organdonor-panels/LimitedAcc
 import FSKButtonStrategy_ODR from "../model/FSKButtonStrategy_ODR";
 import ErrorUtil from "../util/ErrorUtil";
 import FSKUserUtil from "../util/FSKUserUtil";
-import moment from "moment/moment";
 import PatientUtil from "../util/PatientUtil";
+import RegistrationDatePanel from "../panels/registration-date-panel/RegistrationDatePanel";
 
 @Component({
     template: require("./organDonorRegistrationTab.html")
@@ -53,7 +49,7 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
     private isOdrCoordinator = FSKUserUtil.isFSKSupporter(this.moduleContext.getUserContext());
 
     @WidgetElement private mainPanel: HTMLDivElement;
-    @WidgetElement private registrationDate: InfoPanel;
+    @WidgetElement private registrationDatePanel: RegistrationDatePanel;
 
     @WidgetElement private fullPermissionPanel: FullAccessPermissionPanel;
     @WidgetElement private limitedPermissionPanel: LimitedAccessPermissionPanel;
@@ -97,6 +93,8 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
         setElementVisible(this.noRegistrationPanel, false);
 
         // Main panel
+        this.registrationDatePanel = this.container.resolve(RegistrationDatePanel);
+
         this.fullPermissionWithResearchRadio = new WCAGRadioButton<FSKTypes.OrganDonorPermissionType>({
             checkedValue: "FULL_WITH_RESEARCH",
             label: "til transplantation og forskning i forbindelse med donationen, " +
@@ -466,18 +464,10 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
 
         setElementVisible(this.mainPanel, this.isAdminUser || !!type);
         setElementVisible(this.noRegistrationPanel, !this.isAdminUser && !type);
-        if (registrationDate) {
-            const formattedDate = moment(registrationDate, "YYYYMMDDHHmmss").format("DD.MM.YYYY");
-            this.registrationDate = new InfoPanel({
-                description: `Registreringen er bekræftet og ændret: ${formattedDate}`,
-                severity: InfoPanelSeverity.INFO,
-                imageOptions: {
-                    alt: "info sign",
-                    src: ImageSrc.INFO,
-                    imageSize: ImageDimensions.L
-                }
-            });
-            this.registrationDate.setVisible(!!type);
+
+        this.registrationDatePanel.setValue(registrationDate);
+        if (!!type) {
+            this.registrationDatePanel.render();
         }
 
         const patientNameElement = document.createElement("strong");
