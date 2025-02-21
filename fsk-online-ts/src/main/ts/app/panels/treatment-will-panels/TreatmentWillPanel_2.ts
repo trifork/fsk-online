@@ -2,7 +2,8 @@ import {Component, Dependency, Injector, Render, WidgetElement} from "fmko-ts-mv
 import {IoC} from "fmko-ts-ioc";
 import {
     ButtonStyle,
-    DialogOption, HasValueWidget,
+    DialogOption,
+    HasValueWidget,
     ImageDimensions,
     InfoPanel,
     InfoPanelSeverity,
@@ -12,7 +13,7 @@ import {
     StyledButton,
     WCAGCheckbox
 } from "fmko-ts-widgets";
-import {CompareUtil, ImageSrc, ModuleContext, setElementVisible} from "fmko-ts-common";
+import {CompareUtil, ImageSrc, ModuleContext, setElementVisible, ValueChangeEvent} from "fmko-ts-common";
 import ErrorUtil from "../../util/ErrorUtil";
 import FSKUserUtil from "../../util/FSKUserUtil";
 import PatientUtil from "../../util/PatientUtil";
@@ -102,6 +103,7 @@ export default class TreatmentWillPanel_2
             label: "Hvis patienten ligger hjælpeløs hen pga. sygdom, ulykke mv, og der ikke er tegn på bedring"
         });
         this.illNoImprovementPanel = this.container.resolve(TreatmentWillWishPanel_2);
+        this.illNoImprovementPanel.render();
         this.addHandlerForCheckboxAndPanel(this.illNoImprovementCheckbox, this.illNoImprovementPanel);
 
         this.illWithPermanentPainCheckbox = new WCAGCheckbox({
@@ -109,6 +111,7 @@ export default class TreatmentWillPanel_2
                 "af patientens sygdom eller behandling vurderes at være meget alvorlige og lidelsesfulde"
         });
         this.illWithPermanentPainPanel = this.container.resolve(TreatmentWillWishPanel_2);
+        this.illWithPermanentPainPanel.render();
         this.addHandlerForCheckboxAndPanel(this.illWithPermanentPainCheckbox, this.illWithPermanentPainPanel);
 
         // hide the section with the fields above for dentists
@@ -118,20 +121,17 @@ export default class TreatmentWillPanel_2
             label: "Hvis patienten er umyndiggjort og der er tale om tvang"
         });
         this.treatmentByForcePanel = this.container.resolve(TreatmentWillWishPanel_2);
+        this.treatmentByForcePanel.render();
         this.addHandlerForCheckboxAndPanel(this.treatmentByForceCheckbox, this.treatmentByForcePanel);
     }
 
     public override setValue(newValue: TreatmentWillType, fireEvents?: boolean) {
-        throw new Error("Method not implemented.");
+        // Not used
     }
 
     public getValue(): TreatmentWillType {
-        return <TreatmentWillType>{
-            noLifeProlongingIfDying: this.getTreatmentValue(this.terminallyIllCheckbox),
-            noLifeProlongingIfSeverelyDegraded: this.getTreatmentValue(this.illNoImprovementCheckbox, this.illNoImprovementPanel),
-            noLifeProlongingIfSeverePain: this.getTreatmentValue(this.illWithPermanentPainCheckbox, this.illWithPermanentPainPanel),
-            noForcedTreatmentIfIncapable: this.getTreatmentValue(this.treatmentByForceCheckbox, this.treatmentByForcePanel)
-        };
+        this.updateValue();
+        return this.value;
     }
 
     public getTreatmentValue(checkBox: WCAGCheckbox, panel?: TreatmentWillWishPanel_2): TreatmentWillValueType | boolean {
@@ -139,10 +139,14 @@ export default class TreatmentWillPanel_2
         if (!panel) {
             return isChecked;
         }
-        const acceptanceNeeded = panel.getValue();
+        const panelValue = panel.getValue();
+        if (!isChecked || panelValue == undefined) {
+            return <TreatmentWillValueType>{
+                $: isChecked
+            };
+        }
         return <TreatmentWillValueType>{
-            acceptanceNeeded: acceptanceNeeded,
-            // tslint:disable-next-line:object-literal-sort-keys
+            acceptanceNeeded: panelValue,
             $: isChecked
         };
     }
@@ -272,6 +276,7 @@ export default class TreatmentWillPanel_2
 
     public async setData(value: FSKTypes.RegistrationTypeWrapper<FSKTypes.TreatmentWillType> | null | undefined): Promise<void> {
         this.lastSavedValue = value && value.registrationType;
+        this.value = this.lastSavedValue;
         const registrationDate = value && value.datetime;
 
         this.registrationDatePanel.setValue(registrationDate);
@@ -325,6 +330,18 @@ export default class TreatmentWillPanel_2
         this.lastSavedValue ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
     }
 
+    private updateValue() {
+        const oldValue = this.value;
+        const newValue = <TreatmentWillType>{
+            noLifeProlongingIfDying: this.getTreatmentValue(this.terminallyIllCheckbox),
+            noLifeProlongingIfSeverelyDegraded: this.getTreatmentValue(this.illNoImprovementCheckbox, this.illNoImprovementPanel),
+            noLifeProlongingIfSeverePain: this.getTreatmentValue(this.illWithPermanentPainCheckbox, this.illWithPermanentPainPanel),
+            noForcedTreatmentIfIncapable: this.getTreatmentValue(this.treatmentByForceCheckbox, this.treatmentByForcePanel)
+        };
+        this.value = newValue;
+
+        ValueChangeEvent.fireIfNotEqual(this, oldValue, newValue);
+    }
     // TODO: Test this
     private async warningIfLivingWillExist(livingWillExist: Promise<RegistrationState>) {
         const hasRegisteredLivingWillAndIsAdmin = await livingWillExist === RegistrationState.REGISTERED && this.isAdminUser;
@@ -346,6 +363,11 @@ export default class TreatmentWillPanel_2
                 }
             }
         });
+        if (!!panel) {
+            panel.addValueChangeHandler(() => {
+                this.updateButton.setEnabled(this.isValueChanged());
+            });
+        }
     }
 
     private isValueChanged(): boolean {
