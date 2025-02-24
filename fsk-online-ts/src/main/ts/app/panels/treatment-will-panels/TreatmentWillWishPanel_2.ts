@@ -2,7 +2,7 @@ import {Component, Dependency, Injector, Render, WidgetElement} from "fmko-ts-mv
 import {IoC} from "fmko-ts-ioc";
 import {ModuleContext, ValueChangeEvent} from "fmko-ts-common";
 import FSKUserUtil from "../../util/FSKUserUtil";
-import {HasValueWidget, WCAGRadioButton, WCAGRadioGroup} from "fmko-ts-widgets";
+import {HasValueWidget, TypedWCAGCheckbox, TypedWCAGCheckboxGroup} from "fmko-ts-widgets";
 import TreatmentWillAcceptanceType = FSKTypes.TreatmentWillAcceptanceType;
 
 @Component({
@@ -13,7 +13,7 @@ export default class TreatmentWillWishPanel
     implements Render {
     private readonly isAdminUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
 
-    @WidgetElement private consentRadioGroup: WCAGRadioGroup<TreatmentWillAcceptanceType>;
+    @WidgetElement private consentCheckboxGroup: TypedWCAGCheckboxGroup<TreatmentWillAcceptanceType>;
 
     constructor(
         @Injector private container: IoC,
@@ -23,35 +23,34 @@ export default class TreatmentWillWishPanel
     }
 
     public render(): void | Promise<never> {
-        const relativeAcceptanceRequiredRadioButton = new WCAGRadioButton<TreatmentWillAcceptanceType>({
+        const relativeAcceptanceRequiredRadioButton = new TypedWCAGCheckbox<TreatmentWillAcceptanceType>({
             checkedValue: "relativeAcceptanceRequired",
             label: "Hvis patientens nærmeste pårørende meddeler sin accept i den konkrete situation"
         });
-        const guardianAcceptanceRequiredRadioButton = new WCAGRadioButton<TreatmentWillAcceptanceType>({
+        const guardianAcceptanceRequiredRadioButton = new TypedWCAGCheckbox<TreatmentWillAcceptanceType>({
             checkedValue: "guardianAcceptanceRequired",
             label: "Hvis patientens værge meddeler sin accept i den konkrete situation"
         });
-        const trustedAgentAcceptanceRequiredRadioButton = new WCAGRadioButton<TreatmentWillAcceptanceType>({
+        const trustedAgentAcceptanceRequiredRadioButton = new TypedWCAGCheckbox<TreatmentWillAcceptanceType>({
             checkedValue: "trustedAgentAcceptanceRequired",
             label: "Hvis patientens fremtidsfuldmægtige meddeler sin accept i den konkrete situation"
         });
 
-        this.consentRadioGroup = new WCAGRadioGroup({
+        this.consentCheckboxGroup = new TypedWCAGCheckboxGroup({
             label: "",
-            radioButtons: [
+            typedCheckboxes: [
                 relativeAcceptanceRequiredRadioButton,
                 guardianAcceptanceRequiredRadioButton,
                 trustedAgentAcceptanceRequiredRadioButton
             ]
         });
         const strongElement = document.createElement("strong");
-        strongElement.textContent = "Patientens ønske skal respekteres";
-        this.consentRadioGroup.element.firstChild.appendChild(strongElement);
-        this.consentRadioGroup.setEnabled(this.isAdminUser);
+        strongElement.textContent = "Patientens ønske kun skal respekteres";
+        this.consentCheckboxGroup.getLabelElement().appendChild(strongElement);
 
-        // Run for each radio button
-        this.consentRadioGroup.getGroupChildElements().forEach(radioButton => {
-            radioButton.addValueChangeHandler(() => {
+        this.consentCheckboxGroup.getGroupChildElements().forEach(checkbox => {
+            checkbox.addValueChangeHandler(() => {
+                this.consentCheckboxGroup.setValue([checkbox.getValue()]);
                 this.updateValue();
             });
         });
@@ -62,23 +61,24 @@ export default class TreatmentWillWishPanel
     }
 
     public setValue(value: TreatmentWillAcceptanceType | null | undefined) {
-        this.consentRadioGroup.setValue(value);
+        this.consentCheckboxGroup.setValue([value]);
         if (!this.isAdminUser) {
-            this.setReadOnly();
-            this.consentRadioGroup.setEnabled(false);
+            this.consentCheckboxGroup.getGroupChildElements().forEach(checkbox => {
+                const castedCheckbox = checkbox as TypedWCAGCheckbox<TreatmentWillAcceptanceType>;
+                const isChecked = castedCheckbox.isChecked();
+                castedCheckbox.setEnabled(isChecked);
+                checkbox.addClickHandler((event) => event.preventDefault());
+            });
         }
         this.updateValue();
     }
 
-    public setReadOnly() {
-        this.consentRadioGroup.getGroupChildElements().forEach(radioButton => {
-            radioButton.addClickHandler(() => false);
-        });
-    }
-
     private updateValue() {
         const oldValue = this.value;
-        const newValue = this.consentRadioGroup.getValue();
+        const newValue =
+            this.consentCheckboxGroup.getValue().length === 1
+                ? this.consentCheckboxGroup.getValue()[0]
+                : undefined;
         this.value = newValue;
 
         ValueChangeEvent.fireIfNotEqual(this, oldValue, newValue);

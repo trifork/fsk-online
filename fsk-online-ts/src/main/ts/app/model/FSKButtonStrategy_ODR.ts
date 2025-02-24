@@ -4,6 +4,7 @@ import FSKUserUtil from "../util/FSKUserUtil";
 import {StyledButton} from "fmko-ts-widgets";
 
 export default class FSKButtonStrategy_ODR implements ButtonStrategy_ODR {
+    private readonly isAdminUser = FSKUserUtil.isFSKAdmin(this.userContext);
 
     constructor(
         private userContext: UserContext,
@@ -32,18 +33,16 @@ export default class FSKButtonStrategy_ODR implements ButtonStrategy_ODR {
     }
 
     public setCreateMode(createButtonCondition = true): void {
-        const isFSKAdmin = FSKUserUtil.isFSKAdmin(this.userContext);
-        this.createButton.setVisible(isFSKAdmin && createButtonCondition);
+        this.createButton.setVisible(this.isAdminUser && createButtonCondition);
         this.updateButton.setVisible(false);
         this.deleteButton.setVisible(false);
     }
 
     public setEditMode(updateButtonCondition = true, deleteButtonCondition = true): void {
-        const isFSKAdmin = FSKUserUtil.isFSKAdmin(this.userContext);
         this.createButton.setVisible(false);
-        this.updateButton.setVisible(isFSKAdmin && updateButtonCondition);
+        this.updateButton.setVisible(this.isAdminUser && updateButtonCondition);
         this.updateButton.setEnabled(false);
-        this.deleteButton.setVisible(isFSKAdmin && deleteButtonCondition);
+        this.deleteButton.setVisible(this.isAdminUser && deleteButtonCondition);
     }
 
     public enablePrintButton() {
