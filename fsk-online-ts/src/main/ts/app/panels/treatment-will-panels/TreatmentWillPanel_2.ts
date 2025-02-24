@@ -11,7 +11,7 @@ import {
     PopupDialogKind,
     SnackBar,
     StyledButton,
-    WCAGCheckbox
+    TypedWCAGCheckbox
 } from "fmko-ts-widgets";
 import {CompareUtil, ImageSrc, ModuleContext, setElementVisible, ValueChangeEvent} from "fmko-ts-common";
 import ErrorUtil from "../../util/ErrorUtil";
@@ -20,7 +20,6 @@ import PatientUtil from "../../util/PatientUtil";
 import TreatmentWillCache from "../../services/TreatmentWillCache";
 import FSKService from "../../services/FSKService";
 import LivingWillCache from "../../services/LivingWillCache";
-import FSKConfig from "../../main/FSKConfig";
 import {RegistrationState} from "../../model/RegistrationState";
 import RegistrationStateUtil from "../../util/RegistrationStateUtil";
 import TreatmentWillWishPanel_2 from "./TreatmentWillWishPanel_2";
@@ -53,10 +52,10 @@ export default class TreatmentWillPanel_2
     @WidgetElement private livingWillExistsWarning: InfoPanel;
     @WidgetElement private lifeProlongingSection: HTMLDivElement;
 
-    @WidgetElement private terminallyIllCheckbox: WCAGCheckbox;
-    @WidgetElement private illNoImprovementCheckbox: WCAGCheckbox;
-    @WidgetElement private illWithPermanentPainCheckbox: WCAGCheckbox;
-    @WidgetElement private treatmentByForceCheckbox: WCAGCheckbox;
+    @WidgetElement private terminallyIllCheckbox: TypedWCAGCheckbox<string>;
+    @WidgetElement private illNoImprovementCheckbox: TypedWCAGCheckbox<string>;
+    @WidgetElement private illWithPermanentPainCheckbox: TypedWCAGCheckbox<string>;
+    @WidgetElement private treatmentByForceCheckbox: TypedWCAGCheckbox<string>;
 
     @WidgetElement private illNoImprovementPanel: TreatmentWillWishPanel_2;
     @WidgetElement private illWithPermanentPainPanel: TreatmentWillWishPanel_2;
@@ -73,7 +72,6 @@ export default class TreatmentWillPanel_2
     constructor(
         @Injector private container: IoC,
         @Dependency("ModuleContext") private moduleContext: ModuleContext,
-        @Dependency("FSKConfig") private fskConfig: FSKConfig,
         @Dependency(FSKService) private fskService: FSKService,
         @Dependency(LivingWillCache) private livingWillCache: LivingWillCache,
         @Dependency(TreatmentWillCache) private treatmentWillCache: TreatmentWillCache
@@ -83,6 +81,9 @@ export default class TreatmentWillPanel_2
 
     public render(): void | Promise<never> {
         this.setupButtons();
+
+        setElementVisible(this.mainPanel, false);
+        setElementVisible(this.noRegistrationPanel, false);
 
         this.registrationDatePanel = this.container.resolve(RegistrationDatePanel);
 
@@ -100,34 +101,41 @@ export default class TreatmentWillPanel_2
             this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration());
         }
 
-        this.terminallyIllCheckbox = new WCAGCheckbox({
+        this.terminallyIllCheckbox = new TypedWCAGCheckbox({
+            checkedValue: "noLifeProlongingIfDying",
             label: "Hvis patienten ligger for døden (dvs. er uafvendeligt døende)"
         });
         this.addHandlerForCheckboxAndPanel(this.terminallyIllCheckbox);
 
-        this.illNoImprovementCheckbox = new WCAGCheckbox({
+        this.illNoImprovementCheckbox = new TypedWCAGCheckbox({
+            checkedValue: "noLifeProlongingIfSeverelyDegraded",
             label: "Hvis patienten ligger hjælpeløs hen pga. sygdom, ulykke mv, og der ikke er tegn på bedring"
         });
         this.illNoImprovementPanel = this.container.resolve(TreatmentWillWishPanel_2);
         this.illNoImprovementPanel.render();
+        this.illNoImprovementPanel.setVisible(false);
         this.addHandlerForCheckboxAndPanel(this.illNoImprovementCheckbox, this.illNoImprovementPanel);
 
-        this.illWithPermanentPainCheckbox = new WCAGCheckbox({
+        this.illWithPermanentPainCheckbox = new TypedWCAGCheckbox({
+            checkedValue: "noLifeProlongingIfSeverePain",
             label: "Hvis livsforlængende behandling kan føre til, at patienten overlever, men de fysiske konsekvenser" +
                 "af patientens sygdom eller behandling vurderes at være meget alvorlige og lidelsesfulde"
         });
         this.illWithPermanentPainPanel = this.container.resolve(TreatmentWillWishPanel_2);
         this.illWithPermanentPainPanel.render();
+        this.illWithPermanentPainPanel.setVisible(false);
         this.addHandlerForCheckboxAndPanel(this.illWithPermanentPainCheckbox, this.illWithPermanentPainPanel);
 
         // hide the section with the fields above for dentists
         setElementVisible(this.lifeProlongingSection, !this.isDentist);
 
-        this.treatmentByForceCheckbox = new WCAGCheckbox({
+        this.treatmentByForceCheckbox = new TypedWCAGCheckbox({
+            checkedValue: "noForcedTreatmentIfIncapable",
             label: "Hvis patienten er umyndiggjort og der er tale om tvang"
         });
         this.treatmentByForcePanel = this.container.resolve(TreatmentWillWishPanel_2);
         this.treatmentByForcePanel.render();
+        this.treatmentByForcePanel.setVisible(false);
         this.addHandlerForCheckboxAndPanel(this.treatmentByForceCheckbox, this.treatmentByForcePanel);
     }
 
@@ -151,19 +159,19 @@ export default class TreatmentWillPanel_2
 
     public setEnabled(): void {
         if (!this.isAdminUser) {
-            this.terminallyIllCheckbox.setEnabled(this.terminallyIllCheckbox.getValue());
+            this.terminallyIllCheckbox.setEnabled(this.terminallyIllCheckbox.isChecked());
             this.terminallyIllCheckbox.getFieldElement().addEventListener("click", event => {
                 event.preventDefault();
             }, true);
-            this.illNoImprovementCheckbox.setEnabled((this.illNoImprovementCheckbox.getValue()));
+            this.illNoImprovementCheckbox.setEnabled((this.illNoImprovementCheckbox.isChecked()));
             this.illNoImprovementCheckbox.getFieldElement().addEventListener("click", event => {
                 event.preventDefault();
             }, true);
-            this.illWithPermanentPainCheckbox.setEnabled((this.illWithPermanentPainCheckbox.getValue()));
+            this.illWithPermanentPainCheckbox.setEnabled((this.illWithPermanentPainCheckbox.isChecked()));
             this.illWithPermanentPainCheckbox.getFieldElement().addEventListener("click", event => {
                 event.preventDefault();
             }, true);
-            this.treatmentByForceCheckbox.setEnabled((this.treatmentByForceCheckbox.getValue()));
+            this.treatmentByForceCheckbox.setEnabled((this.treatmentByForceCheckbox.isChecked()));
             this.treatmentByForceCheckbox.getFieldElement().addEventListener("click", event => {
                 event.preventDefault();
             }, true);
@@ -200,30 +208,30 @@ export default class TreatmentWillPanel_2
             Object.entries(this.lastSavedValue).forEach(([property, will]) => {
                 switch (property) {
                     case "noLifeProlongingIfDying":
-                        this.terminallyIllCheckbox.setValue(will, true);
+                        this.setCheckboxAndFireEvent(this.terminallyIllCheckbox, will);
                         break;
                     case "noLifeProlongingIfSeverelyDegraded":
                         this.illNoImprovementPanel.setValue(will.acceptanceNeeded);
-                        this.illNoImprovementCheckbox.setValue(will.$, true);
+                        this.setCheckboxAndFireEvent(this.illNoImprovementCheckbox, will.$);
                         break;
                     case "noLifeProlongingIfSeverePain":
                         this.illWithPermanentPainPanel.setValue(will.acceptanceNeeded);
-                        this.illWithPermanentPainCheckbox.setValue(will.$, true);
+                        this.setCheckboxAndFireEvent(this.illWithPermanentPainCheckbox, will.$);
                         break;
                     case "noForcedTreatmentIfIncapable":
                         this.treatmentByForcePanel.setValue(will.acceptanceNeeded);
-                        this.treatmentByForceCheckbox.setValue(will.$, true);
+                        this.setCheckboxAndFireEvent(this.treatmentByForceCheckbox, will.$);
                         break;
                 }
             });
         } else {
-            this.terminallyIllCheckbox.setValue(null, true);
+            this.setCheckboxAndFireEvent(this.terminallyIllCheckbox, false);
             this.illNoImprovementPanel.setValue(null);
-            this.illNoImprovementCheckbox.setValue(null, true);
+            this.setCheckboxAndFireEvent(this.illNoImprovementCheckbox, false);
             this.illWithPermanentPainPanel.setValue(null);
-            this.illWithPermanentPainCheckbox.setValue(null, true);
+            this.setCheckboxAndFireEvent(this.illWithPermanentPainCheckbox, false);
             this.treatmentByForcePanel.setValue(null);
-            this.treatmentByForceCheckbox.setValue(null, true);
+            this.setCheckboxAndFireEvent(this.treatmentByForceCheckbox, false);
         }
         if (!this.isReadOnlySet) {
             this.setEnabled();
@@ -231,8 +239,13 @@ export default class TreatmentWillPanel_2
         this.lastSavedValue ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
     }
 
-    private getTreatmentValue(checkBox: WCAGCheckbox, panel?: TreatmentWillWishPanel_2): TreatmentWillValueType | boolean {
-        const isChecked = !!checkBox.getValue();
+    private setCheckboxAndFireEvent(checkbox: TypedWCAGCheckbox<string>, value: any) {
+        checkbox.setChecked(value);
+        ValueChangeEvent.fire(checkbox, value);
+    }
+
+    private getTreatmentValue(checkBox: TypedWCAGCheckbox<string>, panel?: TreatmentWillWishPanel_2): TreatmentWillValueType | boolean {
+        const isChecked = !!checkBox.isChecked();
         if (!panel) {
             return isChecked;
         }
@@ -358,23 +371,27 @@ export default class TreatmentWillPanel_2
         this.livingWillExistsWarning.setVisible(hasRegisteredLivingWillAndIsAdmin);
     }
 
-    private addHandlerForCheckboxAndPanel(checkBox: WCAGCheckbox, panel?: TreatmentWillWishPanel_2) {
-        checkBox.addValueChangeHandler(handler => {
-            // If you are administrator you can do whatever, otherwise you can only set it to tru, which is in the initial
-            if (this.isAdminUser || handler.getValue()) {
-                const value = handler.getValue();
+    private addHandlerForCheckboxAndPanel(checkBox: TypedWCAGCheckbox<string>, panel?: TreatmentWillWishPanel_2) {
+        if (this.isAdminUser) {
+            checkBox.addValueChangeHandler(() => {
                 const isValueChanged = this.isValueChanged();
                 this.updateButton.setEnabled(isValueChanged);
                 this.createButton.setEnabled(isValueChanged);
-                if (panel) {
-                    panel.setVisible(value);
-                    if (!value) {
-                        panel.setValue(null);
-                    }
-                }
-            }
-        });
+            });
+        } else {
+            checkBox.setEnabled(checkBox.isChecked());
+            checkBox.addClickHandler((event) => event.preventDefault());
+        }
+
         if (!!panel) {
+            checkBox.addValueChangeHandler((event) => {
+                const stringvalue = event.getValue();
+                const value = !!stringvalue;
+                panel.setVisible(value);
+                if (!value) {
+                    panel.setValue(null);
+                }
+            });
             panel.addValueChangeHandler(() => {
                 const isValueChanged = this.isValueChanged();
                 this.updateButton.setEnabled(isValueChanged);
