@@ -1,68 +1,21 @@
-<div id="{main-panel}" style="display:none;">
-    <div class="card sds-title">
-        <h1 class="sds-h1">Livstestamente</h1>
+<div>
+    <div id="main-panel">
+        <div id="registration-date-panel"></div>
+
+        <h2>Patienten ønsker ikke livsforlængende behandling</h2>
+        <div id="terminally-ill-checkbox"></div>
+        <div id="severely-handicapped-checkbox"></div>
     </div>
-    <div id="{registration-date-row}" class="row">
-        <div class="col-6"></div>
-        <div class="col-6">
-            <div class="row">
-                <div class="col-3"></div>
-                <div class="col-9">
-                    <div class="card fsk-registrationdate-info">
-                        <a class="registrationdate-info-button"></a>
-                        <span id="{registration-date}"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
+
+    <div class="flex-row justify-flex-end half-gap">
+        <div id="print-button"></div>
+        <div id="delete-button"></div>
+        <div id="create-button"></div>
+        <div id="update-button"></div>
     </div>
-    <div class="card">
-        <div class="row">
-            <div class="col-12 treatment-will-panel-col-12">
-                <h2 class="sds-h3-no-margin">
-                    Patienten ønsker ikke livsforlængende behandling
-                </h2>
-                <div class="sds-line"></div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12" style="padding-left:16px">
-                <input id="{terminally-ill-checkbox}" type="checkbox">
-                <label for="{terminally-ill-checkbox}" class="sds-label">
-                    Patienten er i en situation, hvor patienten er uafvendeligt døende</label>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12" style="padding-left:16px; font-size: 14px">
-                <div id="{terminally-ill-panel}"></div>
-            </div>
-        </div>
-        <div class="row" style="padding-top:16px; padding-left:16px">
-            <div class="col-25-px">
-                <input id="{severely-handicapped-checkbox}" type="checkbox">
-            </div>
-            <div class="col-11">
-                <label for="{severely-handicapped-checkbox}" class="sds-label">
-                    Patienten ønsker ikke livsforlængende behandling i tilfælde af, at sygdom, fremskreden
-                    alderdomssvækkelse,
-                    ulykke, hjertestop el.lign. har medført en så svær invaliditet, at patienten varigt vil være ude af
-                    stand
-                    til at tage vare på sig selv fysisk og mentalt.
-                </label>
-            </div>
-        </div>
-    </div>
-    <div class="card" style="text-align: right">
-        <div id="{delete-button}"></div>
-        <div id="{create-button}"></div>
-        <div id="{update-button}"></div>
-    </div>
-</div>
-<div id="{empty-panel}" class="empty-state" style="display: none">
-    <div class="row">
-        <div class="col-12">
-            <h1 class="empty-state-header">Ingen registrering</h1>
-            <p class="empty-state-body"><b id="{empty-state-patient}"></b> har hverken et livs- eller behandlingstestamente</p>
-        </div>
+
+    <div id="no-registration-panel">
+        <h2>Ingen bekræftet registrering</h2>
+        <p id="no-registration-text"></p>
     </div>
 </div>
