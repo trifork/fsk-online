@@ -22,7 +22,7 @@ export default class TreatmentWillWishPanel
         super();
     }
 
-    render(): void | Promise<never> {
+    public render(): void | Promise<never> {
         const relativeAcceptanceRequiredRadioButton = new WCAGRadioButton<TreatmentWillAcceptanceType>({
             checkedValue: "relativeAcceptanceRequired",
             label: "Hvis patientens nærmeste pårørende meddeler sin accept i den konkrete situation"
