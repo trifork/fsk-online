@@ -1,79 +1,83 @@
-import {ModuleContext, TabbedPanel, UserContext, ValueChangeHandler} from "fmko-ts-common";
-import {TemplateWidget} from "fmko-ts-mvc";
+import {
+    isElementVisible,
+    ModuleContext,
+    setElementVisible,
+    TabbedPanel,
+    UserContext,
+    ValueChangeHandler
+} from "fmko-ts-common";
+import {Component, Dependency, Injector, Render, WidgetElement} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
 import TreatmentWillCache from "../services/TreatmentWillCache";
 import FSKConfig from "../main/FSKConfig";
 import FSKUserUtil from "../util/FSKUserUtil";
+import TreatmentWillType = FSKTypes.TreatmentWillType;
 import TimelineUtil from "../util/TimelineUtil";
 import TreatmentWillPanel from "../panels/treatment-will-panels/TreatmentWillPanel";
-import TreatmentWillType = FSKTypes.TreatmentWillType;
 
-export default class TreatmentWillTab extends TemplateWidget implements TabbedPanel {
-    private ID = "TreatmentWillTab_TS";
-    private TITLE = "Behandlingstestamente";
+@Component({
+    template: require("./treatmentWillTab.html")
+
+})
+export default class TreatmentWillTab implements TabbedPanel, Render {
+    private static TAB_ID = "TreatmentWillTab_TS";
+    private static TAB_TITLE = "Behandlingstestamente";
+
+    public element: HTMLElement;
+
     private shown: boolean;
     private initialized: boolean;
+
     private treatmentWillChangeHandler: ValueChangeHandler<FSKTypes.RegistrationTypeWrapper<TreatmentWillType>>;
-    private treatmentWillPanel: TreatmentWillPanel;
 
-    public static deps = () => [IoC, "ModuleContext", "FSKConfig", TreatmentWillCache, "RootElement"];
+    @WidgetElement private treatmentWillPanel: TreatmentWillPanel;
 
-    constructor(protected container: IoC,
-        private moduleContext: ModuleContext,
-        private fskConfig: FSKConfig,
-        private treatmentWillCache: TreatmentWillCache,
-        private rootElement: HTMLElement) {
-        super(container);
-        this.element = document.createElement(`div`);
+    constructor(
+        @Injector private container: IoC,
+        @Dependency("ModuleContext") private moduleContext: ModuleContext,
+        @Dependency("FSKConfig") private fskConfig: FSKConfig,
+        @Dependency(TreatmentWillCache) private treatmentWillCache: TreatmentWillCache
+    ) {
     }
 
-    public override init() {
+    public init() {
         if (this.initialized) {
             return;
         }
         this.initialized = true;
-        super.init();
+        this.moduleContext.getRootElement().appendChild(this.element);
     }
 
-    public getTemplate(): string {
-        return require("./treatmentWillTab.html");
-    }
-
-    public setupBindings(): any {
-        this.treatmentWillPanel = this.container.resolve<TreatmentWillPanel>(TreatmentWillPanel);
-        this.addAndReplaceWidgetByVarName(this.treatmentWillPanel, `treatment-will-panel`);
-        this.rootElement.appendChild(this.element);
-    }
-
-    public override tearDownBindings(): void {
-        // unused
+    public render(): void | Promise<never> {
+        this.treatmentWillPanel = this.container.resolve(TreatmentWillPanel);
+        this.treatmentWillPanel.render();
+        this.element.appendChild(this.treatmentWillPanel.element);
     }
 
     public getId(): string {
-        return this.ID;
+        return TreatmentWillTab.TAB_ID;
     }
 
     public getTitle(): string {
-        return this.TITLE;
+        return TreatmentWillTab.TAB_TITLE;
     }
 
-    public autoActivationAllowed(): boolean {
-        return true;
-    }
-
-    public override async setVisible(visible: boolean): Promise<void> {
-        super.setVisible(visible);
-
+    public setVisible(visible: boolean): void {
+        setElementVisible(this.element, visible);
         if (this.shown === visible) {
             // Debounce..
             return;
         }
 
         if (visible) {
-            this.addListeners();
+            // Tab was selected
+            if (!this.initialized) {
+                this.render();
+            }
             this.init();
-            this.render();
+            this.addListeners();
         } else {
+            // Tab was de-selected
             this.removeListeners();
         }
 
@@ -95,9 +99,9 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
             const isPatientContext = applicationContextId === "PATIENT";
 
             if (isTreatmentWillStarted && isFSKAdmin && isPatientContext) {
-                this.moduleContext.showTab(this.ID);
+                this.moduleContext.showTab(TreatmentWillTab.TAB_ID);
             } else {
-                this.moduleContext.hideTab(this.ID);
+                this.moduleContext.hideTab(TreatmentWillTab.TAB_ID);
             }
         }
     }
@@ -107,10 +111,18 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     }
 
     public getLeftToRightPriority(): number {
-        return 203;
+        return 204;
     }
 
-    public render() {
+    public autoActivationAllowed(): boolean {
+        return true;
+    }
+
+    public isTestFunctionality?(): boolean {
+        return false;
+    }
+
+    private fetchDataFromCache() {
         const value = this.treatmentWillCache.treatmentWill.getValue();
         const loading = this.treatmentWillCache.treatmentWill.isLoading();
         const failed = this.treatmentWillCache.treatmentWill.isFailed();
@@ -129,8 +141,8 @@ export default class TreatmentWillTab extends TemplateWidget implements TabbedPa
     private addListeners() {
         if (!this.treatmentWillChangeHandler) {
             this.treatmentWillChangeHandler = (() => {
-                if (this.isVisible()) {
-                    this.render();
+                if (isElementVisible(this.element)) {
+                    this.fetchDataFromCache();
                 }
             });
             this.treatmentWillCache.treatmentWill.addValueChangeHandler(this.treatmentWillChangeHandler);

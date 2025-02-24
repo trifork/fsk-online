@@ -1,68 +1,57 @@
-import {TemplateWidget} from "fmko-ts-mvc";
+import {Component, Dependency, Injector, Render, WidgetElement} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
-import SDSButton from "../../elements/SDSButton";
-import {ModuleContext} from "fmko-ts-common";
+import {ModuleContext, ValueChangeEvent} from "fmko-ts-common";
 import FSKUserUtil from "../../util/FSKUserUtil";
-import {CheckboxWrapper} from "fmko-ts-widgets";
+import {HasValueWidget, TypedWCAGCheckbox, TypedWCAGCheckboxGroup} from "fmko-ts-widgets";
 import TreatmentWillAcceptanceType = FSKTypes.TreatmentWillAcceptanceType;
 
-export default class TreatmentWillWishPanel extends TemplateWidget {
+@Component({
+    template: require("./treatmentWillWishPanel.html")
+})
+export default class TreatmentWillWishPanel
+    extends HasValueWidget<TreatmentWillAcceptanceType>
+    implements Render {
+    private readonly isAdminUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
 
-    private value: TreatmentWillAcceptanceType | null | undefined;
-    private checkboxes: CheckboxWrapper[];
-    private checkboxToStringMap: WeakMap<CheckboxWrapper, TreatmentWillAcceptanceType>;
-    private isAdministratorUser: boolean;
+    @WidgetElement private consentCheckboxGroup: TypedWCAGCheckboxGroup<TreatmentWillAcceptanceType>;
 
-    private updateButton: SDSButton;
-
-    public static deps = () => [IoC, "ModuleContext"];
-
-    constructor(protected container: IoC,
-        private moduleContext: ModuleContext) {
-        super(container);
-        this.element = document.createElement(`div`);
-        this.isAdministratorUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
-        this.init();
-        this.setVisible(false);
+    constructor(
+        @Injector private container: IoC,
+        @Dependency("ModuleContext") private moduleContext: ModuleContext
+    ) {
+        super();
     }
 
-    public getTemplate(): string {
-        return require(`./treatmentWillWishPanel.html`);
-    }
-
-    public setupBindings(): any {
-        const familyConsentCheckBox = new CheckboxWrapper(this.getElementByVarName(`family-consent-checkboxes`));
-        const guardianConsentCheckBox = new CheckboxWrapper(this.getElementByVarName(`guardian-consent-checkboxes`));
-        const agentConsentCheckBox = new CheckboxWrapper(this.getElementByVarName(`agent-consent-checkboxes`));
-
-        this.checkboxes = [familyConsentCheckBox, guardianConsentCheckBox, agentConsentCheckBox];
-        this.checkboxes.forEach(checkbox => {
-            checkbox.setEnabled(this.isAdministratorUser);
+    public render(): void | Promise<never> {
+        const relativeAcceptanceRequiredRadioButton = new TypedWCAGCheckbox<TreatmentWillAcceptanceType>({
+            checkedValue: "relativeAcceptanceRequired",
+            label: "Hvis patientens nærmeste pårørende meddeler sin accept i den konkrete situation"
+        });
+        const guardianAcceptanceRequiredRadioButton = new TypedWCAGCheckbox<TreatmentWillAcceptanceType>({
+            checkedValue: "guardianAcceptanceRequired",
+            label: "Hvis patientens værge meddeler sin accept i den konkrete situation"
+        });
+        const trustedAgentAcceptanceRequiredRadioButton = new TypedWCAGCheckbox<TreatmentWillAcceptanceType>({
+            checkedValue: "trustedAgentAcceptanceRequired",
+            label: "Hvis patientens fremtidsfuldmægtige meddeler sin accept i den konkrete situation"
         });
 
-        this.checkboxToStringMap = new WeakMap<CheckboxWrapper, TreatmentWillAcceptanceType>();
+        this.consentCheckboxGroup = new TypedWCAGCheckboxGroup({
+            label: "",
+            typedCheckboxes: [
+                relativeAcceptanceRequiredRadioButton,
+                guardianAcceptanceRequiredRadioButton,
+                trustedAgentAcceptanceRequiredRadioButton
+            ]
+        });
+        const strongElement = document.createElement("strong");
+        strongElement.textContent = "Patientens ønske kun skal respekteres";
+        this.consentCheckboxGroup.getLabelElement().appendChild(strongElement);
 
-        this.checkboxToStringMap.set(familyConsentCheckBox, `relativeAcceptanceRequired`);
-        this.checkboxToStringMap.set(guardianConsentCheckBox, `guardianAcceptanceRequired`);
-        this.checkboxToStringMap.set(agentConsentCheckBox, `trustedAgentAcceptanceRequired`);
-
-        this.addHandlersForCheckbox();
-    }
-
-    public addHandlersForCheckbox(): void {
-        this.checkboxes.forEach(checkbox => {
-            checkbox.getInput().addEventListener(`click`, event => {
-                this.updateButton.setEnabled(true);
-                this.checkboxes.forEach(innerCheckBox => {
-                    const target = event.target as HTMLInputElement;
-                    const isClicked = target === innerCheckBox.getInput();
-                    if (isClicked) {
-                        const thisValue = target.checked ? this.checkboxToStringMap.get(checkbox) : null;
-                        this.setValue(thisValue);
-                    } else {
-                        innerCheckBox.setValue(false);
-                    }
-                });
+        this.consentCheckboxGroup.getGroupChildElements().forEach(checkbox => {
+            checkbox.addValueChangeHandler(() => {
+                this.consentCheckboxGroup.setValue([checkbox.getValue()]);
+                this.updateValue();
             });
         });
     }
@@ -71,38 +60,27 @@ export default class TreatmentWillWishPanel extends TemplateWidget {
         return this.value;
     }
 
-    public override setVisible(visible: boolean): void {
-        this.element.setAttribute("aria-hidden", `${!visible}`);
-    }
-
-    public setUpdateButton(updateButton: SDSButton) {
-        this.updateButton = updateButton;
-    }
-
     public setValue(value: TreatmentWillAcceptanceType | null | undefined) {
-        this.value = value;
-        if (value) {
-            this.checkboxes.forEach(checkbox => {
-                checkbox.setValue(this.checkboxToStringMap.get(checkbox) === value);
-                if (!this.isAdministratorUser) {
-                    this.setReadOnly();
-                    checkbox.setEnabled(checkbox.getValue());
-                }
-            });
-        } else {
-            this.checkboxes.forEach(checkbox => {
-                checkbox.setValue(null);
+        this.consentCheckboxGroup.setValue([value]);
+        if (!this.isAdminUser) {
+            this.consentCheckboxGroup.getGroupChildElements().forEach(checkbox => {
+                const castedCheckbox = checkbox as TypedWCAGCheckbox<TreatmentWillAcceptanceType>;
+                const isChecked = castedCheckbox.isChecked();
+                castedCheckbox.setEnabled(isChecked);
+                checkbox.addClickHandler((event) => event.preventDefault());
             });
         }
+        this.updateValue();
     }
 
-    public setReadOnly() {
-        this.checkboxes.forEach(checkbox => {
-            checkbox.getInput().onclick = () => false;
-        });
-    }
+    private updateValue() {
+        const oldValue = this.value;
+        const newValue =
+            this.consentCheckboxGroup.getValue().length === 1
+                ? this.consentCheckboxGroup.getValue()[0]
+                : undefined;
+        this.value = newValue;
 
-    public override tearDownBindings(): any {
-        // Unused
+        ValueChangeEvent.fireIfNotEqual(this, oldValue, newValue);
     }
 }
