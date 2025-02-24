@@ -29,23 +29,22 @@ export default class FSKOnlineModule extends DefaultModule {
 
     public override register(): void {
         ModuleRegistryFactory.getInstance().setupModuleContextByReference(this);
-        this.organDonorCache = this.container.resolve<FSKOrganDonorCache>(FSKOrganDonorCache);
-        this.treatmentWillCache = this.container.resolve<TreatmentWillCache>(TreatmentWillCache);
-        this.livingWillCache = this.container.resolve<LivingWillCache>(LivingWillCache);
+        this.organDonorCache = this.container.resolve(FSKOrganDonorCache);
+        this.treatmentWillCache = this.container.resolve(TreatmentWillCache);
+        this.livingWillCache = this.container.resolve(LivingWillCache);
 
         this.initAfterModuleRegistered();
         ModuleRegistryFactory.getInstance().moduleInitializationCompletedByReference(this);
-
     }
 
     public initAfterModuleRegistered(): void {
-        this.organDonorRegisterTab = this.container.resolve<OrganDonorRegistrationTab>(OrganDonorRegistrationTab);
+        this.organDonorRegisterTab = this.container.resolve(OrganDonorRegistrationTab);
         this.addTabbedPanel(this.organDonorRegisterTab);
-        this.livingWillTestamentTab = this.container.resolve<LivingWillTestamentTab>(LivingWillTestamentTab);
+        this.livingWillTestamentTab = this.container.resolve(LivingWillTestamentTab);
         this.addTabbedPanel(this.livingWillTestamentTab);
-        this.treatmentWillTestamentTab = this.container.resolve<TreatmentWillTab>(TreatmentWillTab);
+        this.treatmentWillTestamentTab = this.container.resolve(TreatmentWillTab);
         this.addTabbedPanel(this.treatmentWillTestamentTab);
-        this.doctorOrNurseOrDentistWillTab = this.container.resolve<DoctorOrNurseOrDentistWillTab>(DoctorOrNurseOrDentistWillTab);
+        this.doctorOrNurseOrDentistWillTab = this.container.resolve(DoctorOrNurseOrDentistWillTab);
         this.addTabbedPanel(this.doctorOrNurseOrDentistWillTab);
         this.loadLocalStylesheet("/fmk/u/fsk-online-ts/css/fsk-online-temporary.css");
         this.loadLocalStylesheet("/fmk/u/fsk-online-ts/css/fsk-online.css");
