@@ -37,6 +37,12 @@ export default class TreatmentWillPanel_2
     extends HasValueWidget<FSKTypes.TreatmentWillType>
     implements Render {
     private lastSavedValue: FSKTypes.TreatmentWillType;
+    private emptyValue: TreatmentWillType = {
+        noLifeProlongingIfDying: false,
+        noLifeProlongingIfSeverelyDegraded: <TreatmentWillValueType>{$: false},
+        noLifeProlongingIfSeverePain: <TreatmentWillValueType>{$: false},
+        noForcedTreatmentIfIncapable: <TreatmentWillValueType>{$: false}
+    };
 
     private readonly isAdminUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
     private readonly isDentist = FSKUserUtil.isDentistWithoutElevatedRights(this.moduleContext.getUserContext());
@@ -134,13 +140,104 @@ export default class TreatmentWillPanel_2
         return this.value;
     }
 
-    public getTreatmentValue(checkBox: WCAGCheckbox, panel?: TreatmentWillWishPanel_2): TreatmentWillValueType | boolean {
+    public updateCache(hasRegistration: boolean, snackbarText: string) {
+        this.treatmentWillCache.registrationState = RegistrationStateUtil.registrationStateMapper(hasRegistration);
+        hasRegistration ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
+        this.treatmentWillCache.treatmentWill.setStale();
+        SnackBar.show({headerText: snackbarText, delay: 5000});
+
+        this.buttonStrategy.enableButtons();
+    }
+
+    public setEnabled(): void {
+        if (!this.isAdminUser) {
+            this.terminallyIllCheckbox.setEnabled(this.terminallyIllCheckbox.getValue());
+            this.terminallyIllCheckbox.getFieldElement().addEventListener("click", event => {
+                event.preventDefault();
+            }, true);
+            this.illNoImprovementCheckbox.setEnabled((this.illNoImprovementCheckbox.getValue()));
+            this.illNoImprovementCheckbox.getFieldElement().addEventListener("click", event => {
+                event.preventDefault();
+            }, true);
+            this.illWithPermanentPainCheckbox.setEnabled((this.illWithPermanentPainCheckbox.getValue()));
+            this.illWithPermanentPainCheckbox.getFieldElement().addEventListener("click", event => {
+                event.preventDefault();
+            }, true);
+            this.treatmentByForceCheckbox.setEnabled((this.treatmentByForceCheckbox.getValue()));
+            this.treatmentByForceCheckbox.getFieldElement().addEventListener("click", event => {
+                event.preventDefault();
+            }, true);
+        }
+        this.isReadOnlySet = true;
+    }
+
+    public async setData(value: FSKTypes.RegistrationTypeWrapper<FSKTypes.TreatmentWillType> | null | undefined): Promise<void> {
+        this.lastSavedValue = value && value.registrationType;
+
+        this.value = this.lastSavedValue;
+        const registrationDate = value && value.datetime;
+
+        this.registrationDatePanel.setValue(registrationDate);
+        if (!!this.lastSavedValue) {
+            this.registrationDatePanel.render();
+        }
+
+        setElementVisible(this.mainPanel, this.isAdminUser || !!this.lastSavedValue);
+        setElementVisible(this.noRegistrationPanel, !this.isAdminUser && !this.lastSavedValue);
+
+        const patientNameElement = document.createElement("strong");
+        patientNameElement.textContent = PatientUtil.getFullName(this.moduleContext.getPatient());
+        this.noRegistrationText.append(
+            patientNameElement,
+            this.isDentist ? " har ikke et behandlingstestamente" : " har hverken et livs- eller behandlingstestamente"
+        );
+
+        if (!this.isDentist) { // don't check livingWill existence for dentists
+            this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration());
+        }
+
+        if (this.lastSavedValue) {
+            Object.entries(this.lastSavedValue).forEach(([property, will]) => {
+                switch (property) {
+                    case "noLifeProlongingIfDying":
+                        this.terminallyIllCheckbox.setValue(will, true);
+                        break;
+                    case "noLifeProlongingIfSeverelyDegraded":
+                        this.illNoImprovementPanel.setValue(will.acceptanceNeeded);
+                        this.illNoImprovementCheckbox.setValue(will.$, true);
+                        break;
+                    case "noLifeProlongingIfSeverePain":
+                        this.illWithPermanentPainPanel.setValue(will.acceptanceNeeded);
+                        this.illWithPermanentPainCheckbox.setValue(will.$, true);
+                        break;
+                    case "noForcedTreatmentIfIncapable":
+                        this.treatmentByForcePanel.setValue(will.acceptanceNeeded);
+                        this.treatmentByForceCheckbox.setValue(will.$, true);
+                        break;
+                }
+            });
+        } else {
+            this.terminallyIllCheckbox.setValue(null, true);
+            this.illNoImprovementPanel.setValue(null);
+            this.illNoImprovementCheckbox.setValue(null, true);
+            this.illWithPermanentPainPanel.setValue(null);
+            this.illWithPermanentPainCheckbox.setValue(null, true);
+            this.treatmentByForcePanel.setValue(null);
+            this.treatmentByForceCheckbox.setValue(null, true);
+        }
+        if (!this.isReadOnlySet) {
+            this.setEnabled();
+        }
+        this.lastSavedValue ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
+    }
+
+    private getTreatmentValue(checkBox: WCAGCheckbox, panel?: TreatmentWillWishPanel_2): TreatmentWillValueType | boolean {
         const isChecked = !!checkBox.getValue();
         if (!panel) {
             return isChecked;
         }
         const panelValue = panel.getValue();
-        if (!isChecked || panelValue == undefined) {
+        if (!isChecked || panelValue === undefined) {
             return <TreatmentWillValueType>{
                 $: isChecked
             };
@@ -151,7 +248,7 @@ export default class TreatmentWillPanel_2
         };
     }
 
-    public setupButtons(): void {
+    private setupButtons(): void {
         const createHandler = async () => {
             try {
                 const hasRegisteredLivingWill: boolean = this.livingWillCache.registrationState === RegistrationState.REGISTERED;
@@ -243,93 +340,6 @@ export default class TreatmentWillPanel_2
         this.buttonStrategy.hideButtons();
     }
 
-    public updateCache(hasRegistration: boolean, snackbarText: string) {
-        this.treatmentWillCache.registrationState = RegistrationStateUtil.registrationStateMapper(hasRegistration);
-        hasRegistration ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
-        this.treatmentWillCache.treatmentWill.setStale();
-        SnackBar.show({headerText: snackbarText, delay: 5000});
-
-        this.buttonStrategy.enableButtons();
-    }
-
-    public setEnabled(): void {
-        if (!this.isAdminUser) {
-            this.terminallyIllCheckbox.setEnabled(this.terminallyIllCheckbox.getValue());
-            this.terminallyIllCheckbox.getFieldElement().addEventListener("click", event => {
-                event.preventDefault();
-            }, true);
-            this.illNoImprovementCheckbox.setEnabled((this.illNoImprovementCheckbox.getValue()));
-            this.illNoImprovementCheckbox.getFieldElement().addEventListener("click", event => {
-                event.preventDefault();
-            }, true);
-            this.illWithPermanentPainCheckbox.setEnabled((this.illWithPermanentPainCheckbox.getValue()));
-            this.illWithPermanentPainCheckbox.getFieldElement().addEventListener("click", event => {
-                event.preventDefault();
-            }, true);
-            this.treatmentByForceCheckbox.setEnabled((this.treatmentByForceCheckbox.getValue()));
-            this.treatmentByForceCheckbox.getFieldElement().addEventListener("click", event => {
-                event.preventDefault();
-            }, true);
-        }
-        this.isReadOnlySet = true;
-    }
-
-    public async setData(value: FSKTypes.RegistrationTypeWrapper<FSKTypes.TreatmentWillType> | null | undefined): Promise<void> {
-        this.lastSavedValue = value && value.registrationType;
-        this.value = this.lastSavedValue;
-        const registrationDate = value && value.datetime;
-
-        this.registrationDatePanel.setValue(registrationDate);
-
-        setElementVisible(this.mainPanel, this.isAdminUser || !!this.lastSavedValue);
-        setElementVisible(this.noRegistrationPanel, !this.isAdminUser && !this.lastSavedValue);
-
-        const patientNameElement = document.createElement("strong");
-        patientNameElement.textContent = PatientUtil.getFullName(this.moduleContext.getPatient());
-        this.noRegistrationText.append(
-            patientNameElement,
-            this.isDentist ? " har ikke et behandlingstestamente" : " har hverken et livs- eller behandlingstestamente"
-        );
-
-        if (!this.isDentist) { // don't check livingWill existence for dentists
-            this.warningIfLivingWillExist(this.livingWillCache.loadHasRegistration());
-        }
-
-        if (this.lastSavedValue) {
-            Object.entries(this.lastSavedValue).forEach(([property, will]) => {
-                switch (property) {
-                    case "noLifeProlongingIfDying":
-                        this.terminallyIllCheckbox.setValue(will, true);
-                        break;
-                    case "noLifeProlongingIfSeverelyDegraded":
-                        this.illNoImprovementPanel.setValue(will.acceptanceNeeded);
-                        this.illNoImprovementCheckbox.setValue(will.$, true);
-                        break;
-                    case "noLifeProlongingIfSeverePain":
-                        this.illWithPermanentPainPanel.setValue(will.acceptanceNeeded);
-                        this.illWithPermanentPainCheckbox.setValue(will.$, true);
-                        break;
-                    case "noForcedTreatmentIfIncapable":
-                        this.treatmentByForcePanel.setValue(will.acceptanceNeeded);
-                        this.treatmentByForceCheckbox.setValue(will.$, true);
-                        break;
-                }
-            });
-        } else {
-            this.terminallyIllCheckbox.setValue(null, true);
-            this.illNoImprovementPanel.setValue(null);
-            this.illNoImprovementCheckbox.setValue(null, true);
-            this.illWithPermanentPainPanel.setValue(null);
-            this.illWithPermanentPainCheckbox.setValue(null, true);
-            this.treatmentByForcePanel.setValue(null);
-            this.treatmentByForceCheckbox.setValue(null, true);
-        }
-        if (!this.isReadOnlySet) {
-            this.setEnabled();
-        }
-        this.lastSavedValue ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
-    }
-
     private updateValue() {
         const oldValue = this.value;
         const newValue = <TreatmentWillType>{
@@ -342,7 +352,7 @@ export default class TreatmentWillPanel_2
 
         ValueChangeEvent.fireIfNotEqual(this, oldValue, newValue);
     }
-    // TODO: Test this
+
     private async warningIfLivingWillExist(livingWillExist: Promise<RegistrationState>) {
         const hasRegisteredLivingWillAndIsAdmin = await livingWillExist === RegistrationState.REGISTERED && this.isAdminUser;
         this.livingWillExistsWarning.setVisible(hasRegisteredLivingWillAndIsAdmin);
@@ -355,6 +365,7 @@ export default class TreatmentWillPanel_2
                 const value = handler.getValue();
                 const isValueChanged = this.isValueChanged();
                 this.updateButton.setEnabled(isValueChanged);
+                this.createButton.setEnabled(isValueChanged);
                 if (panel) {
                     panel.setVisible(value);
                     if (!value) {
@@ -365,13 +376,16 @@ export default class TreatmentWillPanel_2
         });
         if (!!panel) {
             panel.addValueChangeHandler(() => {
-                this.updateButton.setEnabled(this.isValueChanged());
+                const isValueChanged = this.isValueChanged();
+                this.updateButton.setEnabled(isValueChanged);
+                this.createButton.setEnabled(isValueChanged);
             });
         }
     }
 
     private isValueChanged(): boolean {
         const newValue = this.getValue();
-        return !CompareUtil.deepEquals(this.lastSavedValue, newValue);
+        return !CompareUtil.deepEquals(this.emptyValue, newValue)
+            && !CompareUtil.deepEquals(this.lastSavedValue, newValue);
     }
 }
