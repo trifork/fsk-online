@@ -1,7 +1,15 @@
-import {AsyncResponse, DefaultModule, getVersionInfo, ModuleRegistryFactory, PersonInfo, Version, VersionImpl} from "fmko-ts-common";
+import {
+    AsyncResponse,
+    DefaultModule,
+    getVersionInfo,
+    ModuleRegistryFactory,
+    PersonInfo,
+    Version,
+    VersionImpl
+} from "fmko-ts-common";
 import FSKOnlineContainer from "./FSKOnlineContainer";
 import OrganDonorRegistrationTab from "../tabs/OrganDonorRegistrationTab";
-import LivingWillTestamentTab from "../tabs/LivingWillTestamentTab";
+import LivingWillTab from "../tabs/LivingWillTab";
 import TreatmentWillTab from "../tabs/TreatmentWillTab";
 import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
 import TreatmentWillCache from "../services/TreatmentWillCache";
@@ -19,8 +27,8 @@ export default class FSKOnlineModule extends DefaultModule {
     private livingWillCache: LivingWillCache;
 
     private organDonorRegisterTab: OrganDonorRegistrationTab;
-    private livingWillTestamentTab: LivingWillTestamentTab;
-    private treatmentWillTestamentTab: TreatmentWillTab;
+    private livingWillTab: LivingWillTab;
+    private treatmentWillTab: TreatmentWillTab;
     private doctorOrNurseOrDentistWillTab: DoctorOrNurseOrDentistWillTab;
 
     constructor(private container: FSKOnlineContainer) {
@@ -40,14 +48,12 @@ export default class FSKOnlineModule extends DefaultModule {
     public initAfterModuleRegistered(): void {
         this.organDonorRegisterTab = this.container.resolve(OrganDonorRegistrationTab);
         this.addTabbedPanel(this.organDonorRegisterTab);
-        this.livingWillTestamentTab = this.container.resolve(LivingWillTestamentTab);
-        this.addTabbedPanel(this.livingWillTestamentTab);
-        this.treatmentWillTestamentTab = this.container.resolve(TreatmentWillTab);
-        this.addTabbedPanel(this.treatmentWillTestamentTab);
+        this.livingWillTab = this.container.resolve(LivingWillTab);
+        this.addTabbedPanel(this.livingWillTab);
+        this.treatmentWillTab = this.container.resolve(TreatmentWillTab);
+        this.addTabbedPanel(this.treatmentWillTab);
         this.doctorOrNurseOrDentistWillTab = this.container.resolve(DoctorOrNurseOrDentistWillTab);
         this.addTabbedPanel(this.doctorOrNurseOrDentistWillTab);
-        this.loadLocalStylesheet("/fmk/u/fsk-online-ts/css/fsk-online-temporary.css");
-        this.loadLocalStylesheet("/fmk/u/fsk-online-ts/css/fsk-online.css");
     }
 
     public override getVersion(): Version | undefined {
@@ -84,13 +90,5 @@ export default class FSKOnlineModule extends DefaultModule {
             this.treatmentWillCache.setStale(true);
             this.livingWillCache.setStale(true);
         }
-    }
-
-    private loadLocalStylesheet(pathToCssFile: string): void {
-        const styleSheet = document.createElement("link");
-        styleSheet.setAttribute("rel", "stylesheet");
-        styleSheet.setAttribute("type", "text/css");
-        styleSheet.setAttribute("href", pathToCssFile);
-        document.head.appendChild(styleSheet);
     }
 }
