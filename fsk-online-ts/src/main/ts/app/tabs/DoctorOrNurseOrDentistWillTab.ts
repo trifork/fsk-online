@@ -1,110 +1,72 @@
-import {LoginTypeUtil, ModuleContext, TabbedPanel, UserContext, ValueChangeHandler} from "fmko-ts-common";
-import {TemplateWidget} from "fmko-ts-mvc";
+import {
+    isElementVisible,
+    LoginTypeUtil,
+    ModuleContext,
+    setElementVisible,
+    TabbedPanel,
+    UserContext,
+    ValueChangeHandler
+} from "fmko-ts-common";
+import {Component, Dependency, Injector, Render, WidgetElement} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
-import {PopupDialog, PopupDialogKind} from "fmko-ts-widgets";
 import TreatmentWillCache from "../services/TreatmentWillCache";
 import FSKService from "../services/FSKService";
-import FSKConfig from "../main/FSKConfig";
 import LivingWillCache from "../services/LivingWillCache";
 import FSKUserUtil from "../util/FSKUserUtil";
 import TreatmentWillPanel from "../panels/treatment-will-panels/TreatmentWillPanel";
 import {RegistrationState} from "../model/RegistrationState";
 import LivingWillPanel from "../panels/living-will-panels/LivingWillPanel";
+import FSKConfig from "../main/FSKConfig";
+import {PopupDialog, PopupDialogKind} from "fmko-ts-widgets";
 import LivingWillType = FSKTypes.LivingWillType;
 import TreatmentWillType = FSKTypes.TreatmentWillType;
 
-export default class DoctorOrNurseOrDentistWillTab extends TemplateWidget implements TabbedPanel {
-    private ID = "DoctorOrNurseWillTab_TS";
+@Component({
+    template: require("./doctorOrNurseOrDentistWillTab.html")
+})
+export default class DoctorOrNurseOrDentistWillTab implements TabbedPanel, Render {
+    private static TAB_ID = "DoctorOrNurseWillTab_TS";
+    private static TAB_TITLE = "Livs/Behandlingstestamente";
+
+    public element: HTMLElement;
+
     private shown: boolean;
     private initialized: boolean;
+    private readonly isDentist = FSKUserUtil.isDentistWithoutElevatedRights(this.moduleContext.getUserContext());
+
     private treatmentWillChangeHandler: ValueChangeHandler<FSKTypes.RegistrationTypeWrapper<TreatmentWillType>>;
     private livingWillChangeHandler: ValueChangeHandler<FSKTypes.RegistrationTypeWrapper<LivingWillType>>;
-    private treatmentWillPanel: TreatmentWillPanel;
 
+    @WidgetElement private willContainer: HTMLDivElement;
 
-    public static deps = () => [IoC, "ModuleContext", "FSKConfig", LivingWillCache, TreatmentWillCache, FSKService, "RootElement"];
-
-    constructor(protected container: IoC,
-        private moduleContext: ModuleContext,
-        private fskConfig: FSKConfig,
-        private livingWillCache: LivingWillCache,
-        private treatmentWillCache: TreatmentWillCache,
-        private fskService: FSKService,
-        private rootElement: HTMLElement) {
-        super(container);
-        this.element = document.createElement(`div`);
-    }
-
-    public override init() {
-        if (this.initialized) {
-            return;
-        }
-        this.initialized = true;
-        super.init();
-    }
-
-    public getTemplate(): string {
-        return require("./doctorOrNurseOrDentistWillTab.html");
-    }
-
-    public setupBindings(): any {
-        this.rootElement.appendChild(this.element);
-    }
-
-    public override tearDownBindings(): void {
-        // unused
+    constructor(
+        @Injector private container: IoC,
+        @Dependency("ModuleContext") private moduleContext: ModuleContext,
+        @Dependency("FSKConfig") private fskConfig: FSKConfig,
+        @Dependency(LivingWillCache) private livingWillCache: LivingWillCache,
+        @Dependency(TreatmentWillCache) private treatmentWillCache: TreatmentWillCache,
+        @Dependency(FSKService) private fskService: FSKService
+    ) {
     }
 
     public getId(): string {
-        return this.ID;
+        return DoctorOrNurseOrDentistWillTab.TAB_ID;
     }
 
     public getTitle(): string {
-        return this.isDentist() ? "Behandlingstestamente" : "Livs/Behandlingstestamente";
-    }
-
-    public autoActivationAllowed(): boolean {
-        return true;
-    }
-
-    public override setVisible(visible: boolean): void {
-        super.setVisible(visible);
-        if (this.moduleContext.getPatient()) {
-            // Check if the user has clicked accept on the dialog
-            if (visible && this.livingWillCache.registrationState === RegistrationState.UNCHECKED &&
-                this.treatmentWillCache.registrationState === RegistrationState.UNCHECKED) {
-
-                if (this.initialized) {
-                    this.cleanChildrenOnVarName(`will-container`);
-                }
-                this.showLogDialog();
-
-            }
-        }
-        if (this.shown === visible) {
-            // Debounce..
-            return;
-        }
-
-        if (visible) {
-            this.init();
-        } else {
-            this.removeListeners();
-        }
-
-        this.shown = visible;
+        return this.isDentist ? "Behandlingstestamente" : DoctorOrNurseOrDentistWillTab.TAB_TITLE;
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
         return !LoginTypeUtil.loggedInWithPoces() && FSKUserUtil.isDoctorOrNurseOrDentistWithoutElevatedRights(userContext);
     }
 
-    public applicationContextIdChanged(applicationContextId: string): void {
+    public async applicationContextIdChanged(applicationContextId: string): Promise<void> {
         if (this.isApplicable(false, this.moduleContext.getUserContext())) {
             if (applicationContextId === "PATIENT") {
-                this.moduleContext.showTab(this.ID);
+                this.moduleContext.showTab(DoctorOrNurseOrDentistWillTab.TAB_ID);
             } else {
-                this.moduleContext.hideTab(this.ID);
+                this.moduleContext.hideTab(DoctorOrNurseOrDentistWillTab.TAB_ID);
             }
         }
     }
@@ -117,77 +79,89 @@ export default class DoctorOrNurseOrDentistWillTab extends TemplateWidget implem
         return 205;
     }
 
-    public async showLogDialog(): Promise<void> {
-        const yesClicked = await PopupDialog.displayConfirmCancel(PopupDialogKind.WARNING,
+    public autoActivationAllowed(): boolean {
+        return true;
+    }
+
+    public init() {
+        if (this.initialized) {
+            return;
+        }
+        this.initialized = true;
+        this.moduleContext.getRootElement().appendChild(this.element);
+    }
+
+    public render(): void | Promise<never> {
+        // Handled by renderLivingWill and renderTreatmentWill
+    }
+
+    public setVisible(visible: boolean): void {
+        setElementVisible(this.element, visible);
+        if (this.moduleContext.getPatient()) {
+            // Check if the user has clicked accept on the dialog
+            if (visible && this.livingWillCache.registrationState === RegistrationState.UNCHECKED &&
+                this.treatmentWillCache.registrationState === RegistrationState.UNCHECKED) {
+
+                if (this.initialized) {
+                    this.removeListeners();
+                    this.willContainer.innerHTML = "";
+                }
+                this.showLogDialog();
+            }
+        }
+
+        if (this.shown === visible) {
+            // Debounce..
+            return;
+        }
+
+        if (visible) {
+            // Tab was selected
+            if (!this.initialized) {
+                this.render();
+            }
+            this.init();
+        } else {
+            // Tab was de-selected
+            this.removeListeners();
+        }
+
+        this.shown = visible;
+    }
+
+    private showLogDialog() {
+        PopupDialog.displayConfirmCancel(PopupDialogKind.WARNING,
             "Bekræft visning af " + this.getTitle(),
-            require("./confirm-viewing-will-tab.html"), "Fortryd", "Videre");
-        if (yesClicked) {
-            this.addListeners();
-        }
-    }
-
-    public renderTreatmentWill() {
-        this.treatmentWillPanel = this.container.resolve<TreatmentWillPanel>(TreatmentWillPanel);
-
-        const value = this.treatmentWillCache.treatmentWill.getValue();
-        const loading = this.treatmentWillCache.treatmentWill.isLoading();
-        const failed = this.treatmentWillCache.treatmentWill.isFailed();
-
-        if (loading) {
-            if (this.initialized) {
-                // ignored
-            }
-        } else if (failed) {
-            // this.treatmentWillPanel.setData(value);
-        } else {
-            this.treatmentWillPanel.setData(value);
-        }
-        this.appendWidgetOnVarName(this.treatmentWillPanel, `will-container`, true);
-    }
-
-    public renderLivingWill() {
-        const livingPanel = this.container.resolve<LivingWillPanel>(LivingWillPanel);
-
-        const value = this.livingWillCache.livingWill.getValue();
-        const loading = this.livingWillCache.livingWill.isLoading();
-        const failed = this.livingWillCache.livingWill.isFailed();
-
-        if (loading) {
-            if (this.initialized) {
-                // ignored
-            }
-        } else if (failed) {
-            // livingPanel.setData(value);
-        } else {
-            livingPanel.setData(value);
-        }
-        this.appendWidgetOnVarName(livingPanel, `will-container`);
-    }
-
-    private isDentist(): boolean {
-        return FSKUserUtil.isDentistWithoutElevatedRights(this.moduleContext.getUserContext());
+            require("./confirm-viewing-will-tab.html"), "Fortryd", "Videre")
+            .then((result) => {
+                if (result) {
+                    this.addListeners().then(() => {
+                        // promise is ignored
+                    });
+                }
+            });
     }
 
     private async addListeners() {
-        if (!this.isDentist() && await this.livingWillCache.loadHasRegistration() === RegistrationState.REGISTERED) {
+        if (!this.isDentist && await this.livingWillCache.loadHasRegistration() === RegistrationState.REGISTERED) {
             if (!this.livingWillChangeHandler) {
                 this.livingWillChangeHandler = (() => {
-                    if (this.isVisible()) {
+                    if (isElementVisible(this.element)) {
                         this.renderLivingWill();
                     }
                 });
-                this.livingWillCache.livingWill.addValueChangeHandler(this.livingWillChangeHandler);
+                this.livingWillCache.livingWill.addValueChangeHandler(this.livingWillChangeHandler, true);
             } else {
                 this.livingWillCache.setStale();
             }
         } else {
             if (!this.treatmentWillChangeHandler) {
                 this.treatmentWillChangeHandler = (() => {
-                    if (this.isVisible()) {
+                    if (isElementVisible(this.element)) {
                         this.renderTreatmentWill();
                     }
                 });
-                this.treatmentWillCache.treatmentWill.addValueChangeHandler(this.treatmentWillChangeHandler);
+                this.treatmentWillCache.treatmentWill.addValueChangeHandler(this.treatmentWillChangeHandler, true);
             } else {
                 this.treatmentWillCache.setStale();
             }
@@ -203,5 +177,45 @@ export default class DoctorOrNurseOrDentistWillTab extends TemplateWidget implem
             this.livingWillCache.livingWill.removeValueChangeHandler(this.livingWillChangeHandler);
             this.livingWillChangeHandler = undefined;
         }
+    }
+
+    private renderTreatmentWill() {
+        const treatmentWillPanel = this.container.resolve(TreatmentWillPanel);
+        treatmentWillPanel.render();
+
+        const value = this.treatmentWillCache.treatmentWill.getValue();
+        const loading = this.treatmentWillCache.treatmentWill.isLoading();
+        const failed = this.treatmentWillCache.treatmentWill.isFailed();
+
+        if (loading) {
+            if (this.initialized) {
+                // ignored
+            }
+        } else if (failed) {
+            // ignored
+        } else {
+            treatmentWillPanel.setData(value);
+        }
+        this.willContainer.appendChild(treatmentWillPanel.element);
+    }
+
+    private renderLivingWill() {
+        const livingWillPanel = this.container.resolve(LivingWillPanel);
+        livingWillPanel.render();
+
+        const value = this.livingWillCache.livingWill.getValue();
+        const loading = this.livingWillCache.livingWill.isLoading();
+        const failed = this.livingWillCache.livingWill.isFailed();
+
+        if (loading) {
+            if (this.initialized) {
+                // ignored
+            }
+        } else if (failed) {
+            // ignored
+        } else {
+            livingWillPanel.setData(value);
+        }
+        this.willContainer.appendChild(livingWillPanel.element);
     }
 }

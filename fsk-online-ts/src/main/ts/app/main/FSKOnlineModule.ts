@@ -2,6 +2,7 @@ import {
     AsyncResponse,
     DefaultModule,
     getVersionInfo,
+    isElementVisible,
     ModuleRegistryFactory,
     PersonInfo,
     Version,
@@ -81,7 +82,7 @@ export default class FSKOnlineModule extends DefaultModule {
     }
 
     public override refreshPatient(): void {
-        if (this.doctorOrNurseOrDentistWillTab.isVisible()) {
+        if (isElementVisible(this.doctorOrNurseOrDentistWillTab.element)) {
             this.livingWillCache.registrationState = RegistrationState.UNCHECKED;
             this.treatmentWillCache.registrationState = RegistrationState.UNCHECKED;
             this.doctorOrNurseOrDentistWillTab.setVisible(true);
