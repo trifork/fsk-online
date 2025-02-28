@@ -18,11 +18,11 @@ import LivingWillCache from "../../services/LivingWillCache";
 import FSKService from "../../services/FSKService";
 import RegistrationStateUtil from "../../util/RegistrationStateUtil";
 import RegistrationDatePanel from "../registration-date-panel/RegistrationDatePanel";
-import {ButtonStrategy_ODR} from "../../model/ButtonStrategy_ODR";
-import FSKButtonStrategy_ODR from "../../model/FSKButtonStrategy_ODR";
-import LivingWillType = FSKTypes.LivingWillType;
+import {ButtonStrategy} from "../../model/ButtonStrategy";
+import FSKButtonStrategy from "../../model/FSKButtonStrategy";
 import TimelineUtil from "../../util/TimelineUtil";
 import FSKConfig from "../../main/FSKConfig";
+import LivingWillType = FSKTypes.LivingWillType;
 
 @Component({
     template: require("./livingWillPanel.html")
@@ -45,7 +45,7 @@ export default class LivingWillPanel
     @WidgetElement private terminallyIllCheckbox: TypedWCAGCheckbox<string>;
     @WidgetElement private severelyHandicappedCheckbox: TypedWCAGCheckbox<string>;
 
-    private buttonStrategy: ButtonStrategy_ODR;
+    private buttonStrategy: ButtonStrategy;
     @WidgetElement private createButton: StyledButton;
     @WidgetElement private updateButton: StyledButton;
     @WidgetElement private deleteButton: StyledButton;
@@ -235,7 +235,7 @@ export default class LivingWillPanel
             clickHandler: deleteHandler
         });
 
-        this.buttonStrategy = new FSKButtonStrategy_ODR(
+        this.buttonStrategy = new FSKButtonStrategy(
             this.moduleContext.getUserContext(),
             this.createButton,
             this.updateButton,

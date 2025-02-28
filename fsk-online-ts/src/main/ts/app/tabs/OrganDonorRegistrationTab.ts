@@ -22,7 +22,7 @@ import {
 } from "fmko-ts-widgets";
 import FullAccessPermissionPanel from "../panels/organdonor-panels/FullAccessPermissionPanel";
 import LimitedAccessPermissionPanel from "../panels/organdonor-panels/LimitedAccessPermissionPanel";
-import FSKButtonStrategy_ODR from "../model/FSKButtonStrategy_ODR";
+import FSKButtonStrategy from "../model/FSKButtonStrategy";
 import ErrorUtil from "../util/ErrorUtil";
 import FSKUserUtil from "../util/FSKUserUtil";
 import PatientUtil from "../util/PatientUtil";
@@ -63,7 +63,7 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
     @WidgetElement private dontKnowPermissionRadio: WCAGRadioButton<FSKTypes.OrganDonorPermissionType>;
     @WidgetElement private restrictedPermissionRadio: WCAGRadioButton<FSKTypes.OrganDonorPermissionType>;
 
-    private buttonStrategy: FSKButtonStrategy_ODR;
+    private buttonStrategy: FSKButtonStrategy;
     @WidgetElement private createButton: StyledButton;
     @WidgetElement private updateButton: StyledButton;
     @WidgetElement private deleteButton: StyledButton;
@@ -276,7 +276,7 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
             }
         });
 
-        this.buttonStrategy = new FSKButtonStrategy_ODR(this.moduleContext.getUserContext(),
+        this.buttonStrategy = new FSKButtonStrategy(this.moduleContext.getUserContext(),
             this.createButton,
             this.updateButton,
             this.deleteButton,

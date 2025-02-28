@@ -1,21 +1,18 @@
 import {ButtonStrategy} from "./ButtonStrategy";
-import SDSButton from "../elements/SDSButton";
 import {UserContext} from "fmko-ts-common";
 import FSKUserUtil from "../util/FSKUserUtil";
+import {StyledButton} from "fmko-ts-widgets";
 
 export default class FSKButtonStrategy implements ButtonStrategy {
+    private readonly isAdminUser = FSKUserUtil.isFSKAdmin(this.userContext);
 
-    public readonly createButton: SDSButton;
-    public readonly updateButton: SDSButton;
-    public readonly deleteButton: SDSButton;
-    public readonly printButton: SDSButton;
-
-    constructor(private userContext: UserContext) {
-        this.createButton = new SDSButton("Opret registrering", "primary");
-        this.updateButton = new SDSButton("Opdater registrering", "primary");
-        this.deleteButton = new SDSButton("Slet registrering", "danger");
-        this.printButton = new SDSButton("Print", "primary");
-    }
+    constructor(
+        private userContext: UserContext,
+        private createButton: StyledButton,
+        private updateButton: StyledButton,
+        private deleteButton: StyledButton,
+        private printButton?: StyledButton
+    ) {}
 
     public hideButtons() {
         this.createButton.setVisible(false);
@@ -36,34 +33,16 @@ export default class FSKButtonStrategy implements ButtonStrategy {
     }
 
     public setCreateMode(createButtonCondition = true): void {
-        const isFSKAdmin = FSKUserUtil.isFSKAdmin(this.userContext);
-        this.createButton.setVisible(isFSKAdmin && createButtonCondition);
+        this.createButton.setVisible(this.isAdminUser && createButtonCondition);
         this.updateButton.setVisible(false);
         this.deleteButton.setVisible(false);
     }
 
     public setEditMode(updateButtonCondition = true, deleteButtonCondition = true): void {
-        const isFSKAdmin = FSKUserUtil.isFSKAdmin(this.userContext);
         this.createButton.setVisible(false);
-        this.updateButton.setVisible(isFSKAdmin && updateButtonCondition);
+        this.updateButton.setVisible(this.isAdminUser && updateButtonCondition);
         this.updateButton.setEnabled(false);
-        this.deleteButton.setVisible(isFSKAdmin && deleteButtonCondition);
-    }
-
-    public addHandlerForCreateButton(event: (e: MouseEvent) => void): void {
-        this.createButton.addClickHandler(event);
-    }
-
-    public addHandlerForEditButton(event: (e: MouseEvent) => void): void {
-        this.updateButton.addClickHandler(event);
-    }
-
-    public addHandlerForDeleteButton(event: (e: MouseEvent) => void): void {
-        this.deleteButton.addClickHandler(event);
-    }
-
-    public addHandlerForPrintButton(event: (e: MouseEvent) => void): void {
-        this.printButton.addClickHandler(event);
+        this.deleteButton.setVisible(this.isAdminUser && deleteButtonCondition);
     }
 
     public enablePrintButton() {
