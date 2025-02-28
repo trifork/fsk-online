@@ -24,8 +24,8 @@ import {RegistrationState} from "../../model/RegistrationState";
 import RegistrationStateUtil from "../../util/RegistrationStateUtil";
 import TreatmentWillWishPanel from "./TreatmentWillWishPanel";
 import RegistrationDatePanel from "../registration-date-panel/RegistrationDatePanel";
-import {ButtonStrategy_ODR} from "../../model/ButtonStrategy_ODR";
-import FSKButtonStrategy_ODR from "../../model/FSKButtonStrategy_ODR";
+import {ButtonStrategy} from "../../model/ButtonStrategy";
+import FSKButtonStrategy from "../../model/FSKButtonStrategy";
 import TreatmentWillValueType = FSKTypes.TreatmentWillValueType;
 import TreatmentWillType = FSKTypes.TreatmentWillType;
 
@@ -61,7 +61,7 @@ export default class TreatmentWillPanel
     @WidgetElement private illWithPermanentPainPanel: TreatmentWillWishPanel;
     @WidgetElement private treatmentByForcePanel: TreatmentWillWishPanel;
 
-    private buttonStrategy: ButtonStrategy_ODR;
+    private buttonStrategy: ButtonStrategy;
     @WidgetElement private createButton: StyledButton;
     @WidgetElement private updateButton: StyledButton;
     @WidgetElement private deleteButton: StyledButton;
@@ -343,7 +343,7 @@ export default class TreatmentWillPanel
             clickHandler: deleteHandler
         });
 
-        this.buttonStrategy = new FSKButtonStrategy_ODR(
+        this.buttonStrategy = new FSKButtonStrategy(
             this.moduleContext.getUserContext(),
             this.createButton,
             this.updateButton,
