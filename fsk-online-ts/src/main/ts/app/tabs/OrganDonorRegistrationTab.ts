@@ -263,7 +263,7 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
                 if (value) {
                     this.buttonPanel.disableButtons();
                     await this.fskService.createOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr(), value);
-                    this.updateCache(true, "Organdonorregistering oprettet");
+                    this.updateCache(true, "Organdonorregistrering oprettet");
                 }
             } catch (error) {
                 PopupDialog.warning("Der opstod en fejl", ErrorUtil.getMessage(error));
@@ -276,7 +276,7 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
                 if (value) {
                     this.buttonPanel.disableButtons();
                     await this.fskService.updateOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr(), value);
-                    this.updateCache(true, "Organdonorregistering opdateret");
+                    this.updateCache(true, "Organdonorregistrering opdateret");
                 }
             } catch (error) {
                 PopupDialog.warning("Der opstod en fejl", ErrorUtil.getMessage(error));
@@ -299,7 +299,7 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
                 if (yesIsClicked === yesOption) {
                     this.buttonPanel.disableButtons();
                     await this.fskService.deleteOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr());
-                    this.updateCache(false, "Organdonorregistering slettet");
+                    this.updateCache(false, "Organdonorregistrering slettet");
                 }
             } catch (error) {
                 PopupDialog.warning("Der opstod en fejl", ErrorUtil.getMessage(error));
