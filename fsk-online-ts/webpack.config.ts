@@ -12,9 +12,6 @@ export default (_: any, options: any) => WebpackBuild.buildTemplate({
         fix: true,
         eslintPath: `${__dirname}/node_modules/eslint`
     },
-    copyConfig: [
-        {from: "src/main/webapp/css", to: "target/css/"}
-    ],
     aliases: {
         moment$: `${__dirname}/node_modules/moment/moment.js`
     },
