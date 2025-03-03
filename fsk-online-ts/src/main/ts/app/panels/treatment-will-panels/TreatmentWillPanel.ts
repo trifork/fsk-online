@@ -10,7 +10,6 @@ import {
     PopupDialog,
     PopupDialogKind,
     SnackBar,
-    StyledButton,
     TypedWCAGCheckbox
 } from "fmko-ts-widgets";
 import {CompareUtil, ImageSrc, ModuleContext, setElementVisible, ValueChangeEvent} from "fmko-ts-common";
@@ -24,8 +23,7 @@ import {RegistrationState} from "../../model/RegistrationState";
 import RegistrationStateUtil from "../../util/RegistrationStateUtil";
 import TreatmentWillWishPanel from "./TreatmentWillWishPanel";
 import RegistrationDatePanel from "../registration-date-panel/RegistrationDatePanel";
-import {ButtonStrategy} from "../../model/ButtonStrategy";
-import FSKButtonStrategy from "../../model/FSKButtonStrategy";
+import ButtonPanel from "../button-panel/ButtonPanel";
 import TreatmentWillValueType = FSKTypes.TreatmentWillValueType;
 import TreatmentWillType = FSKTypes.TreatmentWillType;
 
@@ -61,10 +59,7 @@ export default class TreatmentWillPanel
     @WidgetElement private illWithPermanentPainPanel: TreatmentWillWishPanel;
     @WidgetElement private treatmentByForcePanel: TreatmentWillWishPanel;
 
-    private buttonStrategy: ButtonStrategy;
-    @WidgetElement private createButton: StyledButton;
-    @WidgetElement private updateButton: StyledButton;
-    @WidgetElement private deleteButton: StyledButton;
+    @WidgetElement private buttonPanel: ButtonPanel;
 
     @WidgetElement private noRegistrationPanel: HTMLDivElement;
     @WidgetElement private noRegistrationText: HTMLSpanElement;
@@ -150,11 +145,11 @@ export default class TreatmentWillPanel
 
     public updateCache(hasRegistration: boolean, snackbarText: string) {
         this.treatmentWillCache.registrationState = RegistrationStateUtil.registrationStateMapper(hasRegistration);
-        hasRegistration ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
+        hasRegistration ? this.buttonPanel.setEditMode() : this.buttonPanel.setCreateMode();
         this.treatmentWillCache.treatmentWill.setStale();
         SnackBar.show({headerText: snackbarText, delay: 5000});
 
-        this.buttonStrategy.enableButtons();
+        this.buttonPanel.enableButtons();
     }
 
     public setEnabled(): void {
@@ -236,7 +231,7 @@ export default class TreatmentWillPanel
         if (!this.isReadOnlySet) {
             this.setEnabled();
         }
-        this.lastSavedValue ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
+        this.lastSavedValue ? this.buttonPanel.setEditMode() : this.buttonPanel.setCreateMode();
     }
 
     private setCheckboxAndFireEvent(checkbox: TypedWCAGCheckbox<string>, value: any) {
@@ -265,7 +260,7 @@ export default class TreatmentWillPanel
         const createHandler = async () => {
             try {
                 const hasRegisteredLivingWill: boolean = this.livingWillCache.registrationState === RegistrationState.REGISTERED;
-                this.buttonStrategy.disableButtons();
+                this.buttonPanel.disableButtons();
                 if (hasRegisteredLivingWill) {
                     this.warningIfLivingWillExist(Promise.resolve(RegistrationState.NOT_REGISTERED)); // remove warning
                     this.livingWillCache.setStale(true);
@@ -287,7 +282,7 @@ export default class TreatmentWillPanel
 
         const updateHandler = async () => {
             try {
-                this.buttonStrategy.disableButtons();
+                this.buttonPanel.disableButtons();
                 await this.fskService.updateTreatmentWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
                     this.getValue());
@@ -314,7 +309,7 @@ export default class TreatmentWillPanel
                     "Er du sikker på du vil slette patientens behandlingstestamenteregistrering?",
                     noOption, yesOption);
                 if (yesIsClicked === yesOption) {
-                    this.buttonStrategy.disableButtons();
+                    this.buttonPanel.disableButtons();
                     await this.fskService.deleteTreatmentWillForPatient(this.moduleContext.getPatient().getCpr());
                     this.updateCache(false, `Behandlingstestamente slettet`);
                     this.moduleContext.setApplicationContextId(`PATIENT`);
@@ -324,33 +319,11 @@ export default class TreatmentWillPanel
             }
         };
 
-        this.createButton = new StyledButton({
-            text: "Opret registrering",
-            style: ButtonStyle.DEFAULT,
-            clickHandler: createHandler
-        });
-
-        this.updateButton = new StyledButton({
-            text: "Opdater registrering",
-            style: ButtonStyle.DEFAULT,
-            clickHandler: updateHandler
-        });
-        this.updateButton.setEnabled(false);
-
-        this.deleteButton = new StyledButton({
-            text: "Slet registrering",
-            style: ButtonStyle.DEFAULT,
-            clickHandler: deleteHandler
-        });
-
-        this.buttonStrategy = new FSKButtonStrategy(
-            this.moduleContext.getUserContext(),
-            this.createButton,
-            this.updateButton,
-            this.deleteButton
-        );
-
-        this.buttonStrategy.hideButtons();
+        this.buttonPanel = this.container.resolve(ButtonPanel);
+        this.buttonPanel.render();
+        this.buttonPanel.addHandlerForCreateButton(createHandler);
+        this.buttonPanel.addHandlerForEditButton(updateHandler);
+        this.buttonPanel.addHandlerForDeleteButton(deleteHandler);
     }
 
     private updateValue() {
@@ -375,8 +348,8 @@ export default class TreatmentWillPanel
         if (this.isAdminUser) {
             checkBox.addValueChangeHandler(() => {
                 const isValueChanged = this.isValueChanged();
-                this.updateButton.setEnabled(isValueChanged);
-                this.createButton.setEnabled(isValueChanged);
+                this.buttonPanel.updateButton.setEnabled(isValueChanged);
+                this.buttonPanel.createButton.setEnabled(isValueChanged);
             });
         } else {
             checkBox.setEnabled(checkBox.isChecked());
@@ -394,8 +367,8 @@ export default class TreatmentWillPanel
             });
             panel.addValueChangeHandler(() => {
                 const isValueChanged = this.isValueChanged();
-                this.updateButton.setEnabled(isValueChanged);
-                this.createButton.setEnabled(isValueChanged);
+                this.buttonPanel.updateButton.setEnabled(isValueChanged);
+                this.buttonPanel.createButton.setEnabled(isValueChanged);
             });
         }
     }
