@@ -1,6 +1,7 @@
 import {Component, Render, WidgetElement} from "fmko-ts-mvc";
-import {HasValueWidget, ImageDimensions, InfoPanel, InfoPanelSeverity, TypedWCAGCheckbox} from "fmko-ts-widgets";
-import {ImageSrc, ValueChangeEvent} from "fmko-ts-common";
+import {HasValueWidget, TypedWCAGCheckbox} from "fmko-ts-widgets";
+import {ValueChangeEvent} from "fmko-ts-common";
+import {HasValidator, ValidationBuilder, ValidationContext} from "fmko-ts-validation";
 import OrganDonorRegistrationType = FSKTypes.OrganDonorRegistrationType;
 
 @Component({
@@ -8,11 +9,14 @@ import OrganDonorRegistrationType = FSKTypes.OrganDonorRegistrationType;
 })
 export default class LimitedAccessPermissionPanel
     extends HasValueWidget<FSKTypes.OrganDonorRegistrationType>
-    implements Render {
+    implements Render, HasValidator {
+
+    private validator: ValidationContext;
+
     private isFSKSupporter: boolean;
     private anyChecked = false;
 
-    @WidgetElement private noCheckboxSelected: InfoPanel;
+    @WidgetElement private noCheckboxSelected: HTMLDivElement;
 
     @WidgetElement private corneasCheckbox: TypedWCAGCheckbox<boolean>;
     @WidgetElement private heartCheckbox: TypedWCAGCheckbox<boolean>;
@@ -25,16 +29,11 @@ export default class LimitedAccessPermissionPanel
     @WidgetElement private consentCheckbox: TypedWCAGCheckbox<boolean>;
     private checkboxes: Map<string, TypedWCAGCheckbox<boolean>>;
 
+    public getValidator(): ValidationContext {
+        return this.validator;
+    }
+
     public render(): void | Promise<never> {
-        this.noCheckboxSelected = new InfoPanel({
-            description: `Angiv mindst ét organ`,
-            severity: InfoPanelSeverity.WARNING,
-            imageOptions: {
-                alt: "warning sign",
-                src: ImageSrc.ATTENTION,
-                imageSize: ImageDimensions.L
-            }
-        });
         this.corneasCheckbox = new TypedWCAGCheckbox({
             checkedValue: undefined, label: "Hornhinder"
         });
@@ -78,6 +77,7 @@ export default class LimitedAccessPermissionPanel
                 this.updateValue();
             });
         });
+        this.setupValidation();
     }
 
     public setValue(newValue: OrganDonorRegistrationType | null | undefined, fireEvents?: boolean) {
@@ -142,12 +142,24 @@ export default class LimitedAccessPermissionPanel
         this.anyChecked = Object.entries(newValue)
             .filter(([key, value]) => key !== `requiresRelativeAcceptance` && value)
             .some(([, value]) => value === true);
-        this.showCheckboxError(!this.anyChecked);
 
         ValueChangeEvent.fireIfNotEqual(this, oldValue, newValue);
     }
 
-    private showCheckboxError(show: boolean): void {
-        this.noCheckboxSelected.setVisible(show);
+    private setupValidation(): void {
+        this.validator = new ValidationBuilder()
+            .addCustomValidator({
+                widgets: Array.from(this.checkboxes.values()),
+                validate: () => {
+                    if (!this.anyChecked) {
+                        return {
+                            validationMessage: "Vælg mindst ét organ"
+                        };
+                    }
+                },
+                errorDisplayContainer: this.noCheckboxSelected,
+                active: () => this.isVisible()
+            })
+            .build();
     }
 }
