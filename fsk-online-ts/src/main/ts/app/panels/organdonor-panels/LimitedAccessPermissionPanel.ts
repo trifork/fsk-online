@@ -120,10 +120,6 @@ export default class LimitedAccessPermissionPanel
         this.isFSKSupporter = value;
     }
 
-    public isAnyCheckboxChosen(): boolean {
-        return this.anyChecked;
-    }
-
     private updateValue(): void {
         const oldValue = this.value;
         const newValue = <FSKTypes.OrganDonorRegistrationType>{
@@ -147,9 +143,13 @@ export default class LimitedAccessPermissionPanel
     }
 
     private setupValidation(): void {
+        const organCheckboxes = Array.from(this.checkboxes.entries())
+            .filter(([key]) => key !== `requiresRelativeAcceptance`)
+            .map(([, checkbox]) => checkbox);
+
         this.validator = new ValidationBuilder()
             .addCustomValidator({
-                widgets: Array.from(this.checkboxes.values()),
+                widgets: organCheckboxes,
                 validate: () => {
                     if (!this.anyChecked) {
                         return {
@@ -157,9 +157,9 @@ export default class LimitedAccessPermissionPanel
                         };
                     }
                 },
-                errorDisplayContainer: this.noCheckboxSelected,
-                active: () => this.isVisible()
+                errorDisplayContainer: this.noCheckboxSelected
             })
+            .activeWhen(() => this.isVisible())
             .build();
     }
 }

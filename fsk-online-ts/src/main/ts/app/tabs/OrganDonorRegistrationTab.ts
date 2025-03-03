@@ -133,16 +133,13 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
         this.limitedPermissionPanel.setEnabled(this.isAdminUser);
         this.limitedPermissionPanel.addValueChangeHandler(() => {
             if (this.isAdminUser) {
-                const isCheckboxChosen = this.limitedPermissionPanel.isAnyCheckboxChosen();
                 const valueHasChanged = this.isValueChanged();
                 this.buttonPanel.updateButton.setEnabled(
                     valueHasChanged
-                    && isCheckboxChosen
                     && isElementVisible(this.buttonPanel.updateButton.element)
                 );
                 this.buttonPanel.createButton.setEnabled(
                     valueHasChanged
-                    && isCheckboxChosen
                     && isElementVisible(this.buttonPanel.createButton.element)
                     && !!this.radioGroupValue
                 );
@@ -261,6 +258,11 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
             try {
                 const value = this.getValue();
                 if (value) {
+                    if (value.permissionType === "LIMITED" || value.permissionType === "LIMITED_WITH_RESEARCH") {
+                        if (!this.limitedPermissionPanel.getValidator().validateAll()) {
+                            return;
+                        }
+                    }
                     this.buttonPanel.disableButtons();
                     await this.fskService.createOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr(), value);
                     this.updateCache(true, "Organdonorregistrering oprettet");
@@ -274,6 +276,11 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
             try {
                 const value = this.getValue();
                 if (value) {
+                    if (value.permissionType === "LIMITED" || value.permissionType === "LIMITED_WITH_RESEARCH") {
+                        if (!this.limitedPermissionPanel.getValidator().validateAll()) {
+                            return;
+                        }
+                    }
                     this.buttonPanel.disableButtons();
                     await this.fskService.updateOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr(), value);
                     this.updateCache(true, "Organdonorregistrering opdateret");
@@ -351,13 +358,10 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
         if (!!matchingRadio) {
             matchingRadio.setChecked(true);
             this.radioGroupValue = matchingRadio.getCheckedValue();
-            if (newValue === "LIMITED" || newValue === "LIMITED_WITH_RESEARCH") {
-                this.buttonPanel.createButton.setEnabled(!!this.radioGroupValue && this.limitedPermissionPanel.isAnyCheckboxChosen());
-                this.buttonPanel.updateButton.setEnabled(this.limitedPermissionPanel.isAnyCheckboxChosen());
-            } else {
-                this.buttonPanel.createButton.setEnabled(!!this.radioGroupValue);
-                this.buttonPanel.updateButton.setEnabled(true);
-            }
+
+            this.buttonPanel.createButton.setEnabled(!!this.radioGroupValue);
+            this.buttonPanel.updateButton.setEnabled(true);
+
             this.showCorrespondingDetailPanel(this.radioGroupValue);
         }
     }

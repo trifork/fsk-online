@@ -7,20 +7,21 @@ import {Component, Dependency, Render, WidgetElement} from "fmko-ts-mvc";
     template: require("./buttonPanel.html")
 })
 export default class ButtonPanel implements Render {
-    private readonly isAdminUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
-
     element?: HTMLDivElement;
+
     @WidgetElement public createButton: StyledButton;
     @WidgetElement public updateButton: StyledButton;
     @WidgetElement public deleteButton: StyledButton;
     @WidgetElement public printButton: StyledButton;
+
+    private readonly isAdminUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
 
     constructor(
         @Dependency("ModuleContext") private moduleContext: ModuleContext
     ) {
     }
 
-    render(): void | Promise<never> {
+    public render(): void | Promise<never> {
         this.createButton = new StyledButton({
             text: "Opret registrering",
             style: ButtonStyle.SECONDARY
