@@ -7,7 +7,6 @@ import {
     PopupDialog,
     PopupDialogKind,
     SnackBar,
-    StyledButton,
     TypedWCAGCheckbox
 } from "fmko-ts-widgets";
 import {CompareUtil, ModuleContext, setElementVisible, ValueChangeEvent} from "fmko-ts-common";
@@ -18,8 +17,7 @@ import LivingWillCache from "../../services/LivingWillCache";
 import FSKService from "../../services/FSKService";
 import RegistrationStateUtil from "../../util/RegistrationStateUtil";
 import RegistrationDatePanel from "../registration-date-panel/RegistrationDatePanel";
-import {ButtonStrategy} from "../../model/ButtonStrategy";
-import FSKButtonStrategy from "../../model/FSKButtonStrategy";
+import ButtonPanel from "../button-panel/ButtonPanel";
 import TimelineUtil from "../../util/TimelineUtil";
 import FSKConfig from "../../main/FSKConfig";
 import LivingWillType = FSKTypes.LivingWillType;
@@ -45,10 +43,7 @@ export default class LivingWillPanel
     @WidgetElement private terminallyIllCheckbox: TypedWCAGCheckbox<string>;
     @WidgetElement private severelyHandicappedCheckbox: TypedWCAGCheckbox<string>;
 
-    private buttonStrategy: ButtonStrategy;
-    @WidgetElement private createButton: StyledButton;
-    @WidgetElement private updateButton: StyledButton;
-    @WidgetElement private deleteButton: StyledButton;
+    @WidgetElement private buttonPanel: ButtonPanel;
 
     @WidgetElement private noRegistrationPanel: HTMLDivElement;
     @WidgetElement private noRegistrationText: HTMLSpanElement;
@@ -98,12 +93,12 @@ export default class LivingWillPanel
     public updateCache(hasRegistration: boolean, snackbarText: string) {
         this.livingWillCache.registrationState = RegistrationStateUtil.registrationStateMapper(hasRegistration);
         hasRegistration
-            ? this.buttonStrategy.setEditMode()
-            : this.buttonStrategy.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));
+            ? this.buttonPanel.setEditMode()
+            : this.buttonPanel.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));
         this.livingWillCache.livingWill.setStale();
         SnackBar.show({headerText: snackbarText, delay: 5000});
 
-        this.buttonStrategy.enableButtons();
+        this.buttonPanel.enableButtons();
     }
 
     public setEnabled(): void {
@@ -153,8 +148,8 @@ export default class LivingWillPanel
         }
 
         this.lastSavedValue
-            ? this.buttonStrategy.setEditMode()
-            : this.buttonStrategy.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));
+            ? this.buttonPanel.setEditMode()
+            : this.buttonPanel.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));
     }
 
     private setCheckboxAndFireEvent(checkbox: TypedWCAGCheckbox<string>, value: any) {
@@ -165,7 +160,7 @@ export default class LivingWillPanel
     private setupButtons(): void {
         const createHandler = async () => {
             try {
-                this.buttonStrategy.disableButtons();
+                this.buttonPanel.disableButtons();
                 await this.fskService.createLivingWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
                     this.getValue());
@@ -177,7 +172,7 @@ export default class LivingWillPanel
 
         const updateHandler = async () => {
             try {
-                this.buttonStrategy.disableButtons();
+                this.buttonPanel.disableButtons();
                 await this.fskService.updateLivingWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
                     this.getValue());
@@ -204,7 +199,7 @@ export default class LivingWillPanel
                     "Er du sikker på du vil slette patientens livstestamenteregistrering?",
                     noOption, yesOption);
                 if (yesIsClicked === yesOption) {
-                    this.buttonStrategy.disableButtons();
+                    this.buttonPanel.disableButtons();
                     await this.fskService.deleteLivingWillForPatient(this.moduleContext.getPatient().getCpr());
                     this.updateCache(false, `Livstestamente slettet`);
                     if (TimelineUtil.useTreatmentWill(this.fskConfig)) {
@@ -216,33 +211,12 @@ export default class LivingWillPanel
             }
         };
 
-        this.createButton = new StyledButton({
-            text: "Opret registrering",
-            style: ButtonStyle.DEFAULT,
-            clickHandler: createHandler
-        });
-
-        this.updateButton = new StyledButton({
-            text: "Opdater registrering",
-            style: ButtonStyle.DEFAULT,
-            clickHandler: updateHandler
-        });
-        this.updateButton.setEnabled(false);
-
-        this.deleteButton = new StyledButton({
-            text: "Slet registrering",
-            style: ButtonStyle.DEFAULT,
-            clickHandler: deleteHandler
-        });
-
-        this.buttonStrategy = new FSKButtonStrategy(
-            this.moduleContext.getUserContext(),
-            this.createButton,
-            this.updateButton,
-            this.deleteButton
-        );
-
-        this.buttonStrategy.hideButtons();
+        this.buttonPanel = this.container.resolve(ButtonPanel);
+        this.buttonPanel.render();
+        this.buttonPanel.addHandlerForCreateButton(createHandler);
+        this.buttonPanel.addHandlerForEditButton(updateHandler);
+        this.buttonPanel.addHandlerForDeleteButton(deleteHandler);
+        this.buttonPanel.updateButton.setEnabled(false);
     }
 
     private updateValue() {
@@ -260,8 +234,8 @@ export default class LivingWillPanel
         if (this.isAdminUser) {
             checkBox.addValueChangeHandler(() => {
                 const isValueChanged = this.isValueChanged();
-                this.updateButton.setEnabled(isValueChanged);
-                this.createButton.setEnabled(isValueChanged);
+                this.buttonPanel.updateButton.setEnabled(isValueChanged);
+                this.buttonPanel.createButton.setEnabled(isValueChanged);
             });
         } else {
             checkBox.setEnabled(checkBox.isChecked());

@@ -11,18 +11,10 @@ import {Component, Dependency, Injector, Render, WidgetElement} from "fmko-ts-mv
 import {IoC} from "fmko-ts-ioc";
 import FSKService from "../services/FSKService";
 import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
-import {
-    ButtonStyle,
-    DialogOption,
-    PopupDialog,
-    PopupDialogKind,
-    SnackBar,
-    StyledButton,
-    WCAGRadioButton
-} from "fmko-ts-widgets";
+import {ButtonStyle, DialogOption, PopupDialog, PopupDialogKind, SnackBar, WCAGRadioButton} from "fmko-ts-widgets";
 import FullAccessPermissionPanel from "../panels/organdonor-panels/FullAccessPermissionPanel";
 import LimitedAccessPermissionPanel from "../panels/organdonor-panels/LimitedAccessPermissionPanel";
-import FSKButtonStrategy from "../model/FSKButtonStrategy";
+import ButtonPanel from "../panels/button-panel/ButtonPanel";
 import ErrorUtil from "../util/ErrorUtil";
 import FSKUserUtil from "../util/FSKUserUtil";
 import PatientUtil from "../util/PatientUtil";
@@ -63,11 +55,7 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
     @WidgetElement private dontKnowPermissionRadio: WCAGRadioButton<FSKTypes.OrganDonorPermissionType>;
     @WidgetElement private restrictedPermissionRadio: WCAGRadioButton<FSKTypes.OrganDonorPermissionType>;
 
-    private buttonStrategy: FSKButtonStrategy;
-    @WidgetElement private createButton: StyledButton;
-    @WidgetElement private updateButton: StyledButton;
-    @WidgetElement private deleteButton: StyledButton;
-    @WidgetElement private printButton: StyledButton;
+    @WidgetElement private buttonPanel: ButtonPanel;
 
     @WidgetElement private noRegistrationPanel: HTMLDivElement;
     @WidgetElement private noRegistrationText: HTMLSpanElement;
@@ -89,6 +77,8 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
     }
 
     public render(): void | Promise<never> {
+        this.setupButtons();
+
         setElementVisible(this.mainPanel, false);
         setElementVisible(this.noRegistrationPanel, false);
 
@@ -114,13 +104,13 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
         this.fullPermissionPanel.addValueChangeHandler(() => {
             if (this.isAdminUser) {
                 const valueHasChanged = this.isValueChanged();
-                this.updateButton.setEnabled(
+                this.buttonPanel.updateButton.setEnabled(
                     valueHasChanged
-                    && isElementVisible(this.updateButton.element)
+                    && isElementVisible(this.buttonPanel.updateButton.element)
                 );
-                this.createButton.setEnabled(
+                this.buttonPanel.createButton.setEnabled(
                     valueHasChanged
-                    && isElementVisible(this.createButton.element)
+                    && isElementVisible(this.buttonPanel.createButton.element)
                 );
             }
         });
@@ -145,15 +135,15 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
             if (this.isAdminUser) {
                 const isCheckboxChosen = this.limitedPermissionPanel.isAnyCheckboxChosen();
                 const valueHasChanged = this.isValueChanged();
-                this.updateButton.setEnabled(
+                this.buttonPanel.updateButton.setEnabled(
                     valueHasChanged
                     && isCheckboxChosen
-                    && isElementVisible(this.updateButton.element)
+                    && isElementVisible(this.buttonPanel.updateButton.element)
                 );
-                this.createButton.setEnabled(
+                this.buttonPanel.createButton.setEnabled(
                     valueHasChanged
                     && isCheckboxChosen
-                    && isElementVisible(this.createButton.element)
+                    && isElementVisible(this.buttonPanel.createButton.element)
                     && !!this.radioGroupValue
                 );
             }
@@ -198,99 +188,12 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
             radioButton.addValueChangeHandler(() => {
                 this.setValue(radioButton.getCheckedValue());
                 if (this.isAdminUser) {
-                    this.updateButton.setEnabled(
+                    this.buttonPanel.updateButton.setEnabled(
                         this.isValueChanged()
-                        && isElementVisible(this.updateButton.element));
+                        && isElementVisible(this.buttonPanel.updateButton.element));
                 }
             });
         });
-
-        // Buttons
-        this.createButton = new StyledButton({
-            text: "Opret registrering",
-            style: ButtonStyle.DEFAULT,
-            clickHandler: async () => {
-                try {
-                    const value = this.getValue();
-                    if (value) {
-                        this.buttonStrategy.disableButtons();
-                        await this.fskService.createOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr(), value);
-                        this.updateCache(true, "Organdonorregistering oprettet");
-                    }
-                } catch (error) {
-                    PopupDialog.warning("Der opstod en fejl", ErrorUtil.getMessage(error));
-                }
-            }
-        });
-        this.updateButton = new StyledButton({
-            text: "Opdater registrering",
-            style: ButtonStyle.DEFAULT,
-            clickHandler: async () => {
-                try {
-                    const value = this.getValue();
-                    if (value) {
-                        this.buttonStrategy.disableButtons();
-                        await this.fskService.updateOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr(), value);
-                        this.updateCache(true, "Organdonorregistering opdateret");
-                    }
-                } catch (error) {
-                    PopupDialog.warning("Der opstod en fejl", ErrorUtil.getMessage(error));
-                }
-            }
-        });
-        this.deleteButton = new StyledButton({
-            text: "Slet registrering",
-            style: ButtonStyle.DEFAULT,
-            clickHandler: async () => {
-                try {
-                    const yesOption = <DialogOption>{
-                        buttonStyle: ButtonStyle.DEFAULT,
-                        text: "Slet"
-                    };
-
-                    const noOption = <DialogOption>{
-                        buttonStyle: ButtonStyle.SECONDARY,
-                        text: "Fortryd"
-                    };
-                    const yesIsClicked = await PopupDialog.display(PopupDialogKind.WARNING, "Bekræft sletning",
-                        "Er du sikker på du vil slette patientens organdonorregistrering?",
-                        noOption, yesOption);
-                    if (yesIsClicked === yesOption) {
-                        this.buttonStrategy.disableButtons();
-                        await this.fskService.deleteOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr());
-                        this.updateCache(false, "Organdonorregistering slettet");
-                    }
-                } catch (error) {
-                    PopupDialog.warning("Der opstod en fejl", ErrorUtil.getMessage(error));
-                }
-            }
-        });
-
-        this.printButton = new StyledButton({
-            text: "Print",
-            style: ButtonStyle.DEFAULT,
-            clickHandler: async () => {
-                if (this.printButton.isVisible()) {
-                    window.print();
-                }
-            }
-        });
-
-        this.buttonStrategy = new FSKButtonStrategy(this.moduleContext.getUserContext(),
-            this.createButton,
-            this.updateButton,
-            this.deleteButton,
-            this.printButton);
-
-        if (this.isAdminUser) {
-            this.printButton.setVisible(false);
-            this.printButton.setEnabled(false);
-            this.updateButton.setEnabled(false);
-        } else if (this.isOdrCoordinator) {
-            this.buttonStrategy.disableButtons();
-        }
-
-        this.buttonStrategy.hideButtons();
     }
 
     public getId(): string {
@@ -353,13 +256,86 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
         return false;
     }
 
+    private setupButtons() {
+        const createHandler = async () => {
+            try {
+                const value = this.getValue();
+                if (value) {
+                    this.buttonPanel.disableButtons();
+                    await this.fskService.createOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr(), value);
+                    this.updateCache(true, "Organdonorregistering oprettet");
+                }
+            } catch (error) {
+                PopupDialog.warning("Der opstod en fejl", ErrorUtil.getMessage(error));
+            }
+        };
+
+        const updateHandler = async () => {
+            try {
+                const value = this.getValue();
+                if (value) {
+                    this.buttonPanel.disableButtons();
+                    await this.fskService.updateOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr(), value);
+                    this.updateCache(true, "Organdonorregistering opdateret");
+                }
+            } catch (error) {
+                PopupDialog.warning("Der opstod en fejl", ErrorUtil.getMessage(error));
+            }
+        };
+        const deleteHandler = async () => {
+            try {
+                const yesOption = <DialogOption>{
+                    buttonStyle: ButtonStyle.DEFAULT,
+                    text: "Slet"
+                };
+
+                const noOption = <DialogOption>{
+                    buttonStyle: ButtonStyle.SECONDARY,
+                    text: "Fortryd"
+                };
+                const yesIsClicked = await PopupDialog.display(PopupDialogKind.WARNING, "Bekræft sletning",
+                    "<p>Er du sikker på du vil slette patientens organdonorregistrering?</p>",
+                    noOption, yesOption);
+                if (yesIsClicked === yesOption) {
+                    this.buttonPanel.disableButtons();
+                    await this.fskService.deleteOrganDonorRegisterForPatient(this.moduleContext.getPatient().getCpr());
+                    this.updateCache(false, "Organdonorregistering slettet");
+                }
+            } catch (error) {
+                PopupDialog.warning("Der opstod en fejl", ErrorUtil.getMessage(error));
+            }
+        };
+
+        const printHandler = async () => {
+            if (this.buttonPanel.printButton.isVisible()) {
+                window.print();
+            }
+        };
+
+        this.buttonPanel = this.container.resolve(ButtonPanel);
+        this.buttonPanel.render();
+        this.buttonPanel.addHandlerForCreateButton(createHandler);
+        this.buttonPanel.addHandlerForEditButton(updateHandler);
+        this.buttonPanel.addHandlerForDeleteButton(deleteHandler);
+        this.buttonPanel.addHandlerForPrintButton(printHandler);
+
+        if (this.isAdminUser) {
+            this.buttonPanel.printButton.setVisible(false);
+            this.buttonPanel.printButton.setEnabled(false);
+            this.buttonPanel.updateButton.setEnabled(false);
+        } else if (this.isOdrCoordinator) {
+            this.buttonPanel.disableButtons();
+            this.buttonPanel.enablePrintButton();
+        }
+    }
+
     private updateCache(hasRegistration: boolean, snackbarText: string) {
         this.fskOrganDonorCache.hasRegistration = hasRegistration;
-        hasRegistration ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
+        hasRegistration ? this.buttonPanel.setEditMode() : this.buttonPanel.setCreateMode();
         this.fskOrganDonorCache.organDonorRegister.setStale();
         SnackBar.show({headerText: snackbarText, delay: 5000});
 
-        this.buttonStrategy.enableButtons();
+        this.buttonPanel.enableButtons();
     }
 
     private setValue(newValue: FSKTypes.OrganDonorPermissionType | null | undefined): void {
@@ -376,11 +352,11 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
             matchingRadio.setChecked(true);
             this.radioGroupValue = matchingRadio.getCheckedValue();
             if (newValue === "LIMITED" || newValue === "LIMITED_WITH_RESEARCH") {
-                this.createButton.setEnabled(!!this.radioGroupValue && this.limitedPermissionPanel.isAnyCheckboxChosen());
-                this.updateButton.setEnabled(this.limitedPermissionPanel.isAnyCheckboxChosen());
+                this.buttonPanel.createButton.setEnabled(!!this.radioGroupValue && this.limitedPermissionPanel.isAnyCheckboxChosen());
+                this.buttonPanel.updateButton.setEnabled(this.limitedPermissionPanel.isAnyCheckboxChosen());
             } else {
-                this.createButton.setEnabled(!!this.radioGroupValue);
-                this.updateButton.setEnabled(true);
+                this.buttonPanel.createButton.setEnabled(!!this.radioGroupValue);
+                this.buttonPanel.updateButton.setEnabled(true);
             }
             this.showCorrespondingDetailPanel(this.radioGroupValue);
         }
@@ -475,10 +451,10 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
         patientNameElement.textContent = PatientUtil.getFullName(this.moduleContext.getPatient());
         this.noRegistrationText.append(
             patientNameElement,
-            " har ikke bekræftet sin tilmelding til Organdonorregistreret"
+            " har ikke bekræftet sin tilmelding til Organdonorregisteret"
         );
 
-        this.createButton.setEnabled(!!type);
+        this.buttonPanel.createButton.setEnabled(!!type);
 
         this.radioGroup.forEach(radioButton => {
             if (radioButton.getCheckedValue() === type) {
@@ -504,7 +480,7 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
         this.showCorrespondingDetailPanel(type);
 
         // set edit or create mode
-        this.lastSavedValue ? this.buttonStrategy.setEditMode() : this.buttonStrategy.setCreateMode();
+        this.lastSavedValue ? this.buttonPanel.setEditMode() : this.buttonPanel.setCreateMode();
     }
 
     private isValueChanged(): boolean {
