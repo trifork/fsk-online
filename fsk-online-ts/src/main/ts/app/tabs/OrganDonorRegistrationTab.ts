@@ -433,6 +433,7 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
         if (this.initialized) {
             setElementVisible(this.mainPanel, false);
             setElementVisible(this.noRegistrationPanel, false);
+            this.noRegistrationText.innerHTML = "";
         }
     }
 
