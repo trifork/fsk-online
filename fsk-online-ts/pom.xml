@@ -86,13 +86,6 @@
                                 <include>**/*.ts</include>
                             </includes>
                         </resource>
-                        <resource>
-                            <directory>${project.build.directory}/css</directory>
-                            <targetPath>css</targetPath>
-                            <includes>
-                                <include>*/*.css</include>
-                            </includes>
-                        </resource>
                     </webResources>
 
                 </configuration>
