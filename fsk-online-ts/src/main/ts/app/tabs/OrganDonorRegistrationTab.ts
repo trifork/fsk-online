@@ -455,7 +455,7 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
         patientNameElement.textContent = PatientUtil.getFullName(this.moduleContext.getPatient());
         this.noRegistrationText.append(
             patientNameElement,
-            " har ikke bekræftet sin tilmelding til Organdonorregisteret"
+            " har ingen organdonorregistrering"
         );
 
         this.buttonPanel.createButton.setEnabled(!!type);
