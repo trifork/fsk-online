@@ -1,115 +1,184 @@
-import {TemplateWidget} from "fmko-ts-mvc";
+import {Component, Dependency, Injector, Render, WidgetElement} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
 import {
     ButtonStyle,
-    CheckboxWrapper,
     DialogOption,
-    ErrorDisplay,
+    HasValueWidget,
     PopupDialog,
-    PopupDialogKind, SnackBar,
-    TextBoxField
+    PopupDialogKind,
+    SnackBar,
+    TypedWCAGCheckbox
 } from "fmko-ts-widgets";
-import {ModuleContext, Widget} from "fmko-ts-common";
-import {ButtonStrategy} from "../../model/ButtonStrategy";
-import FSKButtonStrategy from "../../model/FSKButtonStrategy";
+import {CompareUtil, ModuleContext, setElementVisible, ValueChangeEvent} from "fmko-ts-common";
 import ErrorUtil from "../../util/ErrorUtil";
 import FSKUserUtil from "../../util/FSKUserUtil";
 import PatientUtil from "../../util/PatientUtil";
-import TreatmentWillCache from "../../services/TreatmentWillCache";
-import FSKService from "../../services/FSKService";
 import LivingWillCache from "../../services/LivingWillCache";
-import FSKConfig from "../../main/FSKConfig";
+import FSKService from "../../services/FSKService";
 import RegistrationStateUtil from "../../util/RegistrationStateUtil";
+import RegistrationDatePanel from "../registration-date-panel/RegistrationDatePanel";
+import ButtonPanel from "../button-panel/ButtonPanel";
 import TimelineUtil from "../../util/TimelineUtil";
-import moment from "moment";
+import FSKConfig from "../../main/FSKConfig";
 import LivingWillType = FSKTypes.LivingWillType;
 
-export default class LivingWillPanel extends TemplateWidget {
+@Component({
+    template: require("./livingWillPanel.html")
+})
+export default class LivingWillPanel
+    extends HasValueWidget<LivingWillType>
+    implements Render {
+    private lastSavedValue: LivingWillType;
+    private emptyValue: LivingWillType = {
+        noLifeProlongingIfDying: false,
+        noLifeProlongingIfSeverelyDegraded: false
+    };
 
-    private terminallyIllCheckbox: CheckboxWrapper;
-    private severelyHandicappedCheckbox: CheckboxWrapper;
-    private registrationDateTextBox: TextBoxField;
+    private readonly isAdminUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
+    private isReadOnlySet: boolean;
 
-    private buttonStrategy: ButtonStrategy;
-    private isAdministratorUser: boolean;
+    @WidgetElement private mainPanel: HTMLDivElement;
+    @WidgetElement private registrationDatePanel: RegistrationDatePanel;
 
-    public static deps = () => [IoC, "ModuleContext", "FSKConfig", LivingWillCache, TreatmentWillCache, FSKService];
+    @WidgetElement private terminallyIllCheckbox: TypedWCAGCheckbox<string>;
+    @WidgetElement private severelyHandicappedCheckbox: TypedWCAGCheckbox<string>;
 
-    constructor(protected container: IoC,
-        private moduleContext: ModuleContext,
-        private fskConfig: FSKConfig,
-        private livingWillCache: LivingWillCache,
-        private treatmentWillCache: TreatmentWillCache,
-        private fskService: FSKService) {
-        super(container);
-        this.isAdministratorUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
-        this.init();
+    @WidgetElement private buttonPanel: ButtonPanel;
+
+    @WidgetElement private noRegistrationPanel: HTMLDivElement;
+    @WidgetElement private noRegistrationText: HTMLSpanElement;
+
+    constructor(
+        @Injector private container: IoC,
+        @Dependency("ModuleContext") private moduleContext: ModuleContext,
+        @Dependency(FSKService) private fskService: FSKService,
+        @Dependency("FSKConfig") private fskConfig: FSKConfig,
+        @Dependency(LivingWillCache) private livingWillCache: LivingWillCache
+    ) {
+        super();
     }
 
-    public getTemplate(): string {
-        return require("./livingWillPanel.html");
-    }
-
-    public setupBindings(): any {
+    public render(): void | Promise<never> {
         this.setupButtons();
 
-        this.terminallyIllCheckbox = new CheckboxWrapper(this.getElementByVarName(`terminally-ill-checkbox`));
-        this.terminallyIllCheckbox.addValueChangeHandler(() => {
-            this.buttonStrategy.updateButton.setEnabled(true);
+        setElementVisible(this.mainPanel, false);
+        setElementVisible(this.noRegistrationPanel, false);
+
+        this.registrationDatePanel = this.container.resolve(RegistrationDatePanel);
+
+        this.terminallyIllCheckbox = new TypedWCAGCheckbox({
+            checkedValue: "noLifeProlongingIfDying",
+            label: "Patienten er i en situation, hvor patienten er uafvendeligt døende"
         });
-        this.severelyHandicappedCheckbox = new CheckboxWrapper(this.getElementByVarName(`severely-handicapped-checkbox`));
-        this.severelyHandicappedCheckbox.addValueChangeHandler(() => {
-            this.buttonStrategy.updateButton.setEnabled(true);
+        this.addHandlerForCheckbox(this.terminallyIllCheckbox);
+
+        this.severelyHandicappedCheckbox = new TypedWCAGCheckbox({
+            checkedValue: "noLifeProlongingIfSeverelyDegraded",
+            label: "Patienten ønsker ikke livsforlængende behandling i tilfælde af, at sygdom, fremskreden " +
+                "alderdomssvækkelse, ulykke, hjertestop el.lign. har medført en så svær invaliditet, at patienten " +
+                "varigt vil være ude af stand til at tage vare på sig selv fysisk og mentalt."
         });
-
-        if (!this.isAdministratorUser) {
-            this.terminallyIllCheckbox.getInput().onclick = (() => false);
-            this.severelyHandicappedCheckbox.getInput().onclick = (() => false);
-        }
-
-        this.registrationDateTextBox = new TextBoxField(this.getElementByVarName("registration-date"));
-
-        this.buttonStrategy.hideButtons();
-
-        this.addAndReplaceWidgetByVarName(this.buttonStrategy.createButton, `create-button`);
-        this.addAndReplaceWidgetByVarName(this.buttonStrategy.updateButton, `update-button`);
-        this.addAndReplaceWidgetByVarName(this.buttonStrategy.deleteButton, `delete-button`);
+        this.addHandlerForCheckbox(this.severelyHandicappedCheckbox);
     }
 
-    public override tearDownBindings(): any {
-        // Unused
+    public override setValue(newValue: LivingWillType, fireEvents?: boolean) {
+        // Not used
     }
 
     public getValue(): LivingWillType {
-        return <LivingWillType>{
-            noLifeProlongingIfDying: !!this.terminallyIllCheckbox.getValue(),
-            noLifeProlongingIfSeverelyDegraded: !!this.severelyHandicappedCheckbox.getValue()
-        };
+        this.updateValue();
+        return this.value;
     }
 
-    public setupButtons(): void {
-        this.buttonStrategy = new FSKButtonStrategy(this.moduleContext.getUserContext());
+    public updateCache(hasRegistration: boolean, snackbarText: string) {
+        this.livingWillCache.registrationState = RegistrationStateUtil.registrationStateMapper(hasRegistration);
+        hasRegistration
+            ? this.buttonPanel.setEditMode()
+            : this.buttonPanel.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));
+        this.livingWillCache.livingWill.setStale();
+        SnackBar.show({headerText: snackbarText, delay: 5000});
+
+        this.buttonPanel.enableButtons();
+    }
+
+    public setEnabled(): void {
+        if (!this.isAdminUser) {
+            this.terminallyIllCheckbox.setEnabled(this.terminallyIllCheckbox.isChecked());
+            this.terminallyIllCheckbox.getFieldElement().addEventListener("click", event => {
+                event.preventDefault();
+            }, true);
+            this.severelyHandicappedCheckbox.setEnabled(this.severelyHandicappedCheckbox.isChecked());
+            this.severelyHandicappedCheckbox.getFieldElement().addEventListener("click", event => {
+                event.preventDefault();
+            }, true);
+        }
+        this.isReadOnlySet = true;
+    }
+
+    public async setData(value: FSKTypes.RegistrationTypeWrapper<FSKTypes.LivingWillType> | null | undefined): Promise<void> {
+        this.lastSavedValue = value && value.registrationType;
+
+        this.value = this.lastSavedValue;
+        const registrationDate = value && value.datetime;
+
+        this.registrationDatePanel.setValue(registrationDate);
+        if (!!this.lastSavedValue) {
+            this.registrationDatePanel.render();
+        }
+
+        setElementVisible(this.mainPanel, this.isAdminUser || !!this.lastSavedValue);
+        setElementVisible(this.noRegistrationPanel, !this.isAdminUser && !this.lastSavedValue);
+
+        const patientNameElement = document.createElement("strong");
+        patientNameElement.textContent = PatientUtil.getFullName(this.moduleContext.getPatient());
+        this.noRegistrationText.append(
+            patientNameElement,
+            " har hverken et livs- eller behandlingstestamente"
+        );
+
+        if (this.lastSavedValue) {
+            this.setCheckboxAndFireEvent(this.terminallyIllCheckbox, this.lastSavedValue.noLifeProlongingIfDying);
+            this.setCheckboxAndFireEvent(this.severelyHandicappedCheckbox, this.lastSavedValue.noLifeProlongingIfSeverelyDegraded);
+        } else {
+            this.setCheckboxAndFireEvent(this.terminallyIllCheckbox, false);
+            this.setCheckboxAndFireEvent(this.severelyHandicappedCheckbox, false);
+        }
+        if (!this.isReadOnlySet) {
+            this.setEnabled();
+        }
+
+        this.lastSavedValue
+            ? this.buttonPanel.setEditMode()
+            : this.buttonPanel.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));
+    }
+
+    private setCheckboxAndFireEvent(checkbox: TypedWCAGCheckbox<string>, value: any) {
+        checkbox.setChecked(value);
+        ValueChangeEvent.fire(checkbox, value);
+    }
+
+    private setupButtons(): void {
         const createHandler = async () => {
             try {
-                this.buttonStrategy.disableButtons();
+                this.buttonPanel.disableButtons();
                 await this.fskService.createLivingWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
                     this.getValue());
                 this.updateCache(true, `Livstestamente oprettet`);
             } catch (error) {
-                ErrorDisplay.showError("Der opstod en fejl", ErrorUtil.getMessage(error));
+                PopupDialog.warning("Der opstod en fejl", ErrorUtil.getMessage(error));
             }
         };
 
         const updateHandler = async () => {
             try {
-                this.buttonStrategy.disableButtons();
+                this.buttonPanel.disableButtons();
                 await this.fskService.updateLivingWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
                     this.getValue());
                 this.updateCache(true, `Livstestamente opdateret`);
             } catch (error) {
-                ErrorDisplay.showError("Der opstod en fejl", ErrorUtil.getMessage(error));
+                PopupDialog.warning("Der opstod en fejl", ErrorUtil.getMessage(error));
             }
         };
 
@@ -124,69 +193,59 @@ export default class LivingWillPanel extends TemplateWidget {
                     buttonStyle: ButtonStyle.SECONDARY,
                     text: `Fortryd`
                 };
-                const yesIsClicked = await PopupDialog.display(PopupDialogKind.WARNING, "Bekræft sletning",
-                    "<p>Er du sikker på du vil slette patientens livstestamenteregistrering?</p>",
+                const yesIsClicked = await PopupDialog.display(
+                    PopupDialogKind.WARNING,
+                    "Bekræft sletning",
+                    "Er du sikker på du vil slette patientens livstestamenteregistrering?",
                     noOption, yesOption);
                 if (yesIsClicked === yesOption) {
-                    this.buttonStrategy.disableButtons();
+                    this.buttonPanel.disableButtons();
                     await this.fskService.deleteLivingWillForPatient(this.moduleContext.getPatient().getCpr());
-                    this.terminallyIllCheckbox.setValue(false);
-                    this.severelyHandicappedCheckbox.setValue(false);
                     this.updateCache(false, `Livstestamente slettet`);
                     if (TimelineUtil.useTreatmentWill(this.fskConfig)) {
                         this.moduleContext.setApplicationContextId(`PATIENT`);
                     }
                 }
             } catch (error) {
-                ErrorDisplay.showError("Der opstod en fejl", ErrorUtil.getMessage(error));
+                PopupDialog.warning("Der opstod en fejl", ErrorUtil.getMessage(error));
             }
         };
-        this.buttonStrategy.updateButton.setEnabled(false);
-        this.buttonStrategy.addHandlerForCreateButton(() => createHandler());
-        this.buttonStrategy.addHandlerForEditButton(() => updateHandler());
-        this.buttonStrategy.addHandlerForDeleteButton(() => deleteHandler());
+
+        this.buttonPanel = this.container.resolve(ButtonPanel);
+        this.buttonPanel.render();
+        this.buttonPanel.addHandlerForCreateButton(createHandler);
+        this.buttonPanel.addHandlerForEditButton(updateHandler);
+        this.buttonPanel.addHandlerForDeleteButton(deleteHandler);
+        this.buttonPanel.updateButton.setEnabled(false);
     }
 
-    public updateCache(hasRegistration: boolean, snackbarText: string) {
-        this.livingWillCache.registrationState = RegistrationStateUtil.registrationStateMapper(hasRegistration);
-        hasRegistration
-            ? this.buttonStrategy.setEditMode()
-            : this.buttonStrategy.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));
-        this.livingWillCache.livingWill.setStale();
-        this.buttonStrategy.enableButtons();
-        SnackBar.show({headerText: snackbarText, delay: 5000});
+    private updateValue() {
+        const oldValue = this.value;
+        const newValue = <LivingWillType>{
+            noLifeProlongingIfDying: this.terminallyIllCheckbox.isChecked(),
+            noLifeProlongingIfSeverelyDegraded: this.severelyHandicappedCheckbox.isChecked()
+        };
+        this.value = newValue;
+
+        ValueChangeEvent.fireIfNotEqual(this, oldValue, newValue);
     }
 
-    public setEnabled(illCheckBoxCondition: boolean | undefined, handicapCheckBoxCondition: boolean | undefined) {
-        this.terminallyIllCheckbox.setEnabled(!!illCheckBoxCondition);
-        this.severelyHandicappedCheckbox.setEnabled(!!handicapCheckBoxCondition);
-    }
-
-    public async setData(value: FSKTypes.RegistrationTypeWrapper<FSKTypes.LivingWillType> | null | undefined) {
-        const livingWill = value && value.registrationType;
-        const dateTime = value && value.datetime;
-        if (dateTime) {
-            const dateString = moment(dateTime, "YYYYMMDDHHmmss").format("DD.MM.YYYY");
-            this.registrationDateTextBox.element.innerHTML = `Registreringen er senest ændret: <b>${dateString}</b>`;
-        }
-        if (livingWill) {
-            this.terminallyIllCheckbox.setValue(livingWill.noLifeProlongingIfDying);
-            this.severelyHandicappedCheckbox.setValue(livingWill.noLifeProlongingIfSeverelyDegraded);
-            if (!this.isAdministratorUser) {
-                this.setEnabled(livingWill.noLifeProlongingIfDying, livingWill.noLifeProlongingIfSeverelyDegraded);
-            }
+    private addHandlerForCheckbox(checkBox: TypedWCAGCheckbox<string>) {
+        if (this.isAdminUser) {
+            checkBox.addValueChangeHandler(() => {
+                const isValueChanged = this.isValueChanged();
+                this.buttonPanel.updateButton.setEnabled(isValueChanged);
+                this.buttonPanel.createButton.setEnabled(isValueChanged);
+            });
         } else {
-            this.terminallyIllCheckbox.setValue(false);
-            this.severelyHandicappedCheckbox.setValue(false);
+            checkBox.setEnabled(checkBox.isChecked());
+            checkBox.addClickHandler((event) => event.preventDefault());
         }
+    }
 
-        Widget.setVisible(this.getElementByVarName(`main-panel`), this.isAdministratorUser || !!livingWill);
-        Widget.setVisible(this.getElementByVarName(`empty-panel`), !this.isAdministratorUser && !livingWill);
-        Widget.setVisible(this.getElementByVarName(`registration-date-row`), !!livingWill);
-        this.getElementByVarName(`empty-state-patient`).innerText = PatientUtil.getFullName(this.moduleContext.getPatient());
-
-        livingWill
-            ? this.buttonStrategy.setEditMode()
-            : this.buttonStrategy.setCreateMode(!TimelineUtil.useTreatmentWill(this.fskConfig));
+    private isValueChanged(): boolean {
+        const newValue = this.getValue();
+        return !CompareUtil.deepEquals(this.emptyValue, newValue)
+            && !CompareUtil.deepEquals(this.lastSavedValue, newValue);
     }
 }

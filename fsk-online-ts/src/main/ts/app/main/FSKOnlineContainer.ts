@@ -3,9 +3,6 @@ import {BindingScope, IoC, ReferenceType} from "fmko-ts-ioc";
 import {IdSynthesizer, ModuleRegistryFactory, VersionImpl} from "fmko-ts-common";
 
 import FSKOnlineConfigurationFactory from "./FSKOnlineConfigurationFactory";
-import FSKOrganDonorCache from "../services/FSKOrganDonorCache";
-import TreatmentWillCache from "../services/TreatmentWillCache";
-import LivingWillCache from "../services/LivingWillCache";
 
 const SINGLETON = BindingScope.SINGLETON;
 const ROOT_ELEMENT_ID = "fskMain";
@@ -38,9 +35,6 @@ export default class FSKOnlineContainer {
             })
             .scopedAs(SINGLETON);
 
-        this._ioc.bind(FSKOrganDonorCache).scopedAs(SINGLETON);
-        this._ioc.bind(TreatmentWillCache).scopedAs(SINGLETON);
-        this._ioc.bind(LivingWillCache).scopedAs(SINGLETON);
     }
 
     public resolve<T>(type: ReferenceType<T>) {

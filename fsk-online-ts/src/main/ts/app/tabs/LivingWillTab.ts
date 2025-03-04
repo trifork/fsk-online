@@ -8,35 +8,36 @@ import {
 } from "fmko-ts-common";
 import {Component, Dependency, Injector, Render, WidgetElement} from "fmko-ts-mvc";
 import {IoC} from "fmko-ts-ioc";
-import TreatmentWillCache from "../services/TreatmentWillCache";
+import LivingWillCache from "../services/LivingWillCache";
 import FSKConfig from "../main/FSKConfig";
 import FSKUserUtil from "../util/FSKUserUtil";
-import TreatmentWillType = FSKTypes.TreatmentWillType;
 import TimelineUtil from "../util/TimelineUtil";
-import TreatmentWillPanel from "../panels/treatment-will-panels/TreatmentWillPanel";
+import LivingWillType = FSKTypes.LivingWillType;
+import LivingWillPanel from "../panels/living-will-panels/LivingWillPanel";
+import {RegistrationState} from "../model/RegistrationState";
 
 @Component({
-    template: require("./treatmentWillTab.html")
-
+    template: require("./livingWillTab.html")
 })
-export default class TreatmentWillTab implements TabbedPanel, Render {
-    private static TAB_ID = "TreatmentWillTab_TS";
-    private static TAB_TITLE = "Behandlingstestamente";
+export default class LivingWillTab implements TabbedPanel, Render {
+    private static TAB_ID = "LivingWillTestamentTab_TS";
+    private static TAB_TITLE = "Livstestamente";
 
     public element: HTMLElement;
 
     private shown: boolean;
     private initialized: boolean;
+    private readonly isAdminUser = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
 
-    private treatmentWillChangeHandler: ValueChangeHandler<FSKTypes.RegistrationTypeWrapper<TreatmentWillType>>;
+    private livingWillChangeHandler: ValueChangeHandler<FSKTypes.RegistrationTypeWrapper<LivingWillType>>;
 
-    @WidgetElement private treatmentWillPanel: TreatmentWillPanel;
+    @WidgetElement private livingWillPanel: LivingWillPanel;
 
     constructor(
         @Injector private container: IoC,
         @Dependency("ModuleContext") private moduleContext: ModuleContext,
         @Dependency("FSKConfig") private fskConfig: FSKConfig,
-        @Dependency(TreatmentWillCache) private treatmentWillCache: TreatmentWillCache
+        @Dependency(LivingWillCache) private livingWillCache: LivingWillCache
     ) {
     }
 
@@ -49,17 +50,17 @@ export default class TreatmentWillTab implements TabbedPanel, Render {
     }
 
     public render(): void | Promise<never> {
-        this.treatmentWillPanel = this.container.resolve(TreatmentWillPanel);
-        this.treatmentWillPanel.render();
-        this.element.appendChild(this.treatmentWillPanel.element);
+        this.livingWillPanel = this.container.resolve(LivingWillPanel);
+        this.livingWillPanel.render();
+        this.element.appendChild(this.livingWillPanel.element);
     }
 
     public getId(): string {
-        return TreatmentWillTab.TAB_ID;
+        return LivingWillTab.TAB_ID;
     }
 
     public getTitle(): string {
-        return TreatmentWillTab.TAB_TITLE;
+        return LivingWillTab.TAB_TITLE;
     }
 
     public setVisible(visible: boolean): void {
@@ -85,23 +86,22 @@ export default class TreatmentWillTab implements TabbedPanel, Render {
     }
 
     public isApplicable(readOnly: boolean, userContext: UserContext): boolean {
-        if (!TimelineUtil.useTreatmentWill(this.fskConfig)) {
-            return false;
-        }
-
-        return FSKUserUtil.isFSKAdmin(userContext);
+        return this.isAdminUser;
     }
 
     public async applicationContextIdChanged(applicationContextId: string): Promise<void> {
         if (this.isApplicable(false, this.moduleContext.getUserContext())) {
-            const isTreatmentWillStarted = TimelineUtil.useTreatmentWill(this.fskConfig);
-            const isFSKAdmin = FSKUserUtil.isFSKAdmin(this.moduleContext.getUserContext());
+            const useLivingWill = !TimelineUtil.useTreatmentWill(this.fskConfig);
             const isPatientContext = applicationContextId === "PATIENT";
 
-            if (isTreatmentWillStarted && isFSKAdmin && isPatientContext) {
-                this.moduleContext.showTab(TreatmentWillTab.TAB_ID);
+            if (this.isAdminUser && isPatientContext && useLivingWill) {
+                this.moduleContext.showTab(LivingWillTab.TAB_ID);
+            } else if (this.isAdminUser
+                        && isPatientContext
+                        && await this.livingWillCache.loadHasRegistration() === RegistrationState.REGISTERED) {
+                this.moduleContext.showTab(LivingWillTab.TAB_ID);
             } else {
-                this.moduleContext.hideTab(TreatmentWillTab.TAB_ID);
+                this.moduleContext.hideTab(LivingWillTab.TAB_ID);
             }
         }
     }
@@ -111,21 +111,17 @@ export default class TreatmentWillTab implements TabbedPanel, Render {
     }
 
     public getLeftToRightPriority(): number {
-        return 204;
+        return 202;
     }
 
     public autoActivationAllowed(): boolean {
         return true;
     }
 
-    public isTestFunctionality?(): boolean {
-        return false;
-    }
-
     private fetchDataFromCache() {
-        const value = this.treatmentWillCache.treatmentWill.getValue();
-        const loading = this.treatmentWillCache.treatmentWill.isLoading();
-        const failed = this.treatmentWillCache.treatmentWill.isFailed();
+        const value = this.livingWillCache.livingWill.getValue();
+        const loading = this.livingWillCache.livingWill.isLoading();
+        const failed = this.livingWillCache.livingWill.isFailed();
 
         if (loading) {
             if (this.initialized) {
@@ -134,25 +130,25 @@ export default class TreatmentWillTab implements TabbedPanel, Render {
         } else if (failed) {
             // ignored
         } else {
-            this.treatmentWillPanel.setData(value);
+            this.livingWillPanel.setData(value);
         }
     }
 
     private addListeners() {
-        if (!this.treatmentWillChangeHandler) {
-            this.treatmentWillChangeHandler = (() => {
+        if (!this.livingWillChangeHandler) {
+            this.livingWillChangeHandler = (() => {
                 if (isElementVisible(this.element)) {
                     this.fetchDataFromCache();
                 }
             });
-            this.treatmentWillCache.treatmentWill.addValueChangeHandler(this.treatmentWillChangeHandler);
+            this.livingWillCache.livingWill.addValueChangeHandler(this.livingWillChangeHandler);
         }
     }
 
     private removeListeners() {
-        if (this.treatmentWillChangeHandler) {
-            this.treatmentWillCache.treatmentWill.removeValueChangeHandler(this.treatmentWillChangeHandler);
-            this.treatmentWillChangeHandler = undefined;
+        if (this.livingWillChangeHandler) {
+            this.livingWillCache.livingWill.removeValueChangeHandler(this.livingWillChangeHandler);
+            this.livingWillChangeHandler = undefined;
         }
     }
 }

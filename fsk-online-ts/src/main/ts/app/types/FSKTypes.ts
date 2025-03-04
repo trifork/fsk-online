@@ -26,7 +26,7 @@ namespace FSKTypes {
     }
 
     export interface TreatmentWillType {
-        noLifeProlongingIfDying?: TreatmentWillValueType;
+        noLifeProlongingIfDying?: TreatmentWillValueType | boolean;
         noLifeProlongingIfSeverelyDegraded?: TreatmentWillValueType;
         noLifeProlongingIfSeverePain?: TreatmentWillValueType;
         noForcedTreatmentIfIncapable?: TreatmentWillValueType;

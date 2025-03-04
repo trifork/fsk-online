@@ -7,7 +7,6 @@
 	<dir path="" from="${src}/main/webapp" />
 	<dir path="src/main/ts" from="${src}/main/ts" />
 	<dir path="js" from="${target}/js" />
-	<dir path="css" from="${target}/css" />
 	<dir path="WEB-INF/classes" from="${target}/fsk-online-ts-${pomVersion}/WEB-INF/classes" />
 	<dir path="WEB-INF/lib" from="${target}/fsk-online-ts-${pomVersion}/WEB-INF/lib" />
 </jar>
