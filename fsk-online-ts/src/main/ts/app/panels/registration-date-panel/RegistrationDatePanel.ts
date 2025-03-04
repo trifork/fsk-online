@@ -25,7 +25,7 @@ export default class RegistrationDatePanel
     public render(): void | Promise<never> {
         this.formattedDate = moment(this.value, "YYYYMMDDHHmmss").format("DD.MM.YYYY");
         this.registrationDate = new InfoPanel({
-            description: `Registreringen er senest ændret: ${this.formattedDate}`,
+            description: `Registreringen er bekræftet og senest ændret: ${this.formattedDate}`,
             severity: InfoPanelSeverity.INFO,
             imageOptions: {
                 alt: "info sign",
