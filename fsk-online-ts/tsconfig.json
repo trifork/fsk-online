@@ -9,7 +9,7 @@
     ],
     "compilerOptions": {
         "moduleResolution": "bundler",
-        "target": "ES2019",
+        "target": "ES2021",
         "skipLibCheck": true,
         "allowSyntheticDefaultImports": true,
         "strictNullChecks": false,
@@ -29,13 +29,5 @@
     "atom": {
         "rewriteTsconfig": true
     },
-    "compileOnSave": false,
-    "ts-node": {
-        "compilerOptions": {
-            "moduleResolution": "nodenext",
-            "module": "NodeNext",
-            "esModuleInterop": true,
-            "allowSyntheticDefaultImports": true
-        }
-    }
+    "compileOnSave": false
 }

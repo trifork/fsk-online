@@ -12,9 +12,23 @@ module.exports = {
         "createDefaultProgram": true
     },
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "promise"
     ],
     "rules": {
+        "promise/always-return": "error",
+        "promise/no-return-wrap": "error",
+        "promise/param-names": "error",
+        "promise/catch-or-return": "error",
+        "promise/no-native": "off",
+        "promise/no-nesting": "warn",
+        "promise/no-promise-in-callback": "warn",
+        "promise/no-callback-in-promise": "warn",
+        "promise/avoid-new": "warn",
+        "promise/no-new-statics": "error",
+        "promise/no-return-in-finally": "warn",
+        "promise/valid-params": "warn",
+        "promise/prefer-await-to-then": "warn",
         "@typescript-eslint/dot-notation": "error",
         "@typescript-eslint/explicit-member-accessibility": [
             "error",
