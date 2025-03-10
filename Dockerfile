@@ -40,7 +40,7 @@ RUN ln -s ${T4_INSTALL_DIR} ${T4_INSTALL_BASE_DIR}/trifork
 RUN addgroup --system fmk-online-fsk --gid ${USERID} && adduser --system --gid ${USERID} --uid ${USERID} --home /usr/fmk-online-fsk fmk-online-fsk
 USER fmk-online-fsk:fmk-online-fsk
 COPY --from=base --chown=fmk-online-fsk /${T4_INSTALL_DIR}/ /${T4_INSTALL_DIR}/
-COPY fsk-online-rest/src/main/resources/fsk-config.properties ${T4_INSTALL_DIR}/domains/${T4_DOMAIN}/config/${T4_SERVER_NAME}/
+COPY fsk-online-rest/src/main/resources/fsk-rest-config.properties ${T4_INSTALL_DIR}/domains/${T4_DOMAIN}/config/${T4_SERVER_NAME}/
 
 CMD ["/bin/bash", "-c", "${T4_INSTALL_DIR}/domains/${T4_DOMAIN}/bin/trifork server start ${T4_JAVA_OPTS}"]
 # docker build -t registry.fmk.netic.dk/fmkonline/vsd --build-arg VERSION=3.2.0-SNAPSHOT -f docker/Dockerfile .
