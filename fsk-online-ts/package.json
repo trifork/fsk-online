@@ -7,7 +7,6 @@
     "watch": "node esbuild.mjs --watch"
   },
   "devDependencies": {
-    "fmko-ts-build": "6.90.0",
     "@typescript-eslint/parser": "5.56.0",
     "@typescript-eslint/eslint-plugin": "5.56.0",
     "eslint-plugin-promise": "6.1.1",
@@ -15,7 +14,6 @@
     "fmko-ts-esbuild": "6.90.0",
     "esbuild": "0.25.1",
     "typescript": "5.0.2"
-
   },
   "dependencies": {
     "fmko-ts-common": "6.90.0",
