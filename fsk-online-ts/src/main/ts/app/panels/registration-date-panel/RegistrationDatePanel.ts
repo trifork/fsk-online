@@ -1,31 +1,34 @@
 import {Component, Render, WidgetElement} from "fmko-ts-mvc";
-import {HasValueWidget, ImageDimensions, InfoPanel, InfoPanelSeverity} from "fmko-ts-widgets";
+import {ImageDimensions, InfoPanel, InfoPanelSeverity} from "fmko-ts-widgets";
 import moment from "moment";
-import {ImageSrc, setElementVisible} from "fmko-ts-common";
+import {ImageSrc, setElementVisible, Widget} from "fmko-ts-common";
 
 @Component({
     template: require("./registrationDatePanel.html")
 })
 export default class RegistrationDatePanel
-    extends HasValueWidget<string>
+    extends Widget
     implements Render {
 
     @WidgetElement private registrationDate: InfoPanel;
+    private date: string;
     private formattedDate: string;
+    private descriptionText = "Registreringen er senest ændret: ";
 
-    public override setValue(newValue: string, fireEvents?: boolean) {
-        this.value = newValue;
-        setElementVisible(this.element, !!newValue);
+    public setDatePreRender(date: string) {
+        this.date = date;
+        setElementVisible(this.element, !!date);
     }
 
-    public override getValue(): string {
-        return this.value;
+    public renderODR(): void | Promise<never> {
+        this.descriptionText = "Registreringen er bekræftet og senest ændret: ";
+        this.render();
     }
 
     public render(): void | Promise<never> {
-        this.formattedDate = moment(this.value, "YYYYMMDDHHmmss").format("DD.MM.YYYY");
+        this.formattedDate = moment(this.date, "YYYYMMDDHHmmss").format("DD.MM.YYYY");
         this.registrationDate = new InfoPanel({
-            description: `Registreringen er bekræftet og senest ændret: ${this.formattedDate}`,
+            description: `${this.descriptionText}${this.formattedDate}`,
             severity: InfoPanelSeverity.INFO,
             imageOptions: {
                 alt: "info sign",

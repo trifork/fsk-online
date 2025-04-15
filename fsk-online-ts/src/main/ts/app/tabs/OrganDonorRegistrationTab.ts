@@ -446,9 +446,9 @@ export default class OrganDonorRegistrationTab implements TabbedPanel, Render {
         setElementVisible(this.mainPanel, this.isAdminUser || !!type);
         setElementVisible(this.noRegistrationPanel, !this.isAdminUser && !type);
 
-        this.registrationDatePanel.setValue(registrationDate);
+        this.registrationDatePanel.setDatePreRender(registrationDate);
         if (!!type) {
-            this.registrationDatePanel.render();
+            this.registrationDatePanel.renderODR();
         }
 
         const patientNameElement = document.createElement("strong");

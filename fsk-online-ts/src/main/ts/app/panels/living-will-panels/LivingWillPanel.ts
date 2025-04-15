@@ -121,7 +121,7 @@ export default class LivingWillPanel
         this.value = this.lastSavedValue;
         const registrationDate = value && value.datetime;
 
-        this.registrationDatePanel.setValue(registrationDate);
+        this.registrationDatePanel.setDatePreRender(registrationDate);
         if (!!this.lastSavedValue) {
             this.registrationDatePanel.render();
         }
