@@ -129,17 +129,13 @@ export default class DoctorOrNurseOrDentistWillTab implements TabbedPanel, Rende
         this.shown = visible;
     }
 
-    private showLogDialog() {
-        PopupDialog.displayConfirmCancel(PopupDialogKind.WARNING,
+    private async showLogDialog() {
+        const confirmed = await PopupDialog.displayConfirmCancel(PopupDialogKind.WARNING,
             "Bekræft visning af " + this.getTitle(),
-            require("./confirm-viewing-will-tab.html"), "Fortryd", "Videre")
-            .then((result) => {
-                if (result) {
-                    this.addListeners().then(() => {
-                        // promise is ignored
-                    });
-                }
-            });
+            require("./confirm-viewing-will-tab.html"), "Fortryd", "Videre");
+        if (confirmed) {
+            await this.addListeners();
+        }
     }
 
     private async addListeners() {

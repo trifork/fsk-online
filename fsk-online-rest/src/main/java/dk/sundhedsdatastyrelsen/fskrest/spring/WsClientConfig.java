@@ -1,14 +1,10 @@
 package dk.sundhedsdatastyrelsen.fskrest.spring;
 
-import com.trifork.web.security.userinfo.OrganisationIdType;
-import com.trifork.web.security.userinfo.UserInfo;
-import com.trifork.web.security.userinfo.UserInfoHolder;
-import dk.fmkonline.common.shared.IRole;
-import dk.fmkonline.common.shared.Role;
-import dk.fmkonline.dgwsidwsclient.*;
-import dk.sundhedsdatastyrelsen.behandlingstestamente._2020._03._16.TreatmentWillPortType;
-import dk.sundhedsdatastyrelsen.livstestamente._2018._05._01.LivingWillPortType;
-import dk.sundhedsdatastyrelsen.organdonor._2018._05._01.OrganDonorRegistrationPortType;
+import static dk.fmkonline.common.shared.SharedHeaders.IDCARD_HEADER_NAME;
+
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.cxf.Bus;
 import org.apache.cxf.endpoint.Client;
@@ -26,10 +22,22 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.env.Environment;
 
+import com.trifork.web.security.userinfo.OrganisationIdType;
+import com.trifork.web.security.userinfo.UserInfo;
+import com.trifork.web.security.userinfo.UserInfoHolder;
+
+import dk.fmkonline.common.shared.IRole;
+import dk.fmkonline.common.shared.Role;
+import dk.fmkonline.dgwsidwsclient.DgwsClientMessageHandler;
+import dk.fmkonline.dgwsidwsclient.FlowIdProvider;
+import dk.fmkonline.dgwsidwsclient.IdCardProvider;
+import dk.fmkonline.dgwsidwsclient.OrganisationProvider;
+import dk.fmkonline.dgwsidwsclient.RequestedRoleProvider;
+import dk.sundhedsdatastyrelsen.behandlingstestamente._2020._03._16.TreatmentWillPortType;
+import dk.sundhedsdatastyrelsen.livstestamente._2018._05._01.LivingWillPortType;
+import dk.sundhedsdatastyrelsen.organdonor._2018._05._01.OrganDonorRegistrationPortType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.xml.soap.SOAPException;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 
 @Configuration
 @ImportResource({"classpath:META-INF/cxf/cxf.xml"})
@@ -42,7 +50,7 @@ public class WsClientConfig {
     @Bean
     public IdCardProvider idCardProvider(final HttpServletRequest req) {
         return () -> {
-            String idCardHeader = req.getHeader("X-ID-Card");
+            String idCardHeader = req.getHeader(IDCARD_HEADER_NAME);
             if (idCardHeader == null) {
                 log.info("No ID-card found for user. Request: " + req.getRequestURI());
                 return null;
