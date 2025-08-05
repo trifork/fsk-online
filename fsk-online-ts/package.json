@@ -1,6 +1,6 @@
 {
   "name": "fsk-online",
-  "version": "2.21.1-SNAPSHOT",
+  "version": "2.21.2-SNAPSHOT",
   "scripts": {
     "dev": "node esbuild.mjs",
     "prod": "node esbuild.mjs --production",
