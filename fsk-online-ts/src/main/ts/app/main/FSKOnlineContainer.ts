@@ -1,8 +1,9 @@
 import {BindingScope, IoC, ReferenceType} from "fmko-ts-ioc";
 
-import {IdSynthesizer, ModuleRegistryFactory, VersionImpl} from "fmko-ts-common";
+import {IdSynthesizer, Level, ModuleRegistryFactory, RemoteLogService, VersionImpl} from "fmko-ts-common";
 
 import FSKOnlineConfigurationFactory from "./FSKOnlineConfigurationFactory";
+import { PopupDialog } from "fmko-ts-widgets";
 
 const SINGLETON = BindingScope.SINGLETON;
 const ROOT_ELEMENT_ID = "fskMain";
@@ -34,7 +35,7 @@ export default class FSKOnlineContainer {
                 return new VersionImpl(SCM_VERSION, SCM_BRANCH, BUILD_TIME, POM_VERSION);
             })
             .scopedAs(SINGLETON);
-
+        this._ioc.bind(RemoteLogService).scopedAs(SINGLETON);
     }
 
     public resolve<T>(type: ReferenceType<T>) {

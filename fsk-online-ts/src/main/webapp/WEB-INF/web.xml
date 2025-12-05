@@ -48,4 +48,13 @@
 		<dispatcher>REQUEST</dispatcher>
 		<dispatcher>FORWARD</dispatcher>
 	</filter-mapping>
+
+	<servlet>
+		<servlet-name>RemoteLogServlet</servlet-name>
+		<servlet-class>dk.fmkonline.common.server.RemoteLogServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RemoteLogServlet</servlet-name>
+		<url-pattern>/log</url-pattern>
+	</servlet-mapping>
 </web-app>

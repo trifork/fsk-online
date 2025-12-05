@@ -3,8 +3,10 @@ import {
     DefaultModule,
     getVersionInfo,
     isElementVisible,
+    Level,
     ModuleRegistryFactory,
     PersonInfo,
+    RemoteLogService,
     Version,
     VersionImpl
 } from "fmko-ts-common";
@@ -17,6 +19,7 @@ import TreatmentWillCache from "../services/TreatmentWillCache";
 import LivingWillCache from "../services/LivingWillCache";
 import DoctorOrNurseOrDentistWillTab from "../tabs/DoctorOrNurseOrDentistWillTab";
 import {RegistrationState} from "../model/RegistrationState";
+import { PopupDialog } from "fmko-ts-widgets";
 
 export default class FSKOnlineModule extends DefaultModule {
 
@@ -38,6 +41,14 @@ export default class FSKOnlineModule extends DefaultModule {
 
     public override register(): void {
         ModuleRegistryFactory.getInstance().setupModuleContextByReference(this);
+
+        const remoteLogService = this.container.resolve(RemoteLogService);
+        ModuleRegistryFactory.getModuleContext().setUncaughtExceptionHandler(error => {
+            PopupDialog.warning("Uventet fejl", error.message);
+            remoteLogService.log(Level.ERROR, error.message, error);
+            return true;
+        });
+
         this.organDonorCache = this.container.resolve(FSKOrganDonorCache);
         this.treatmentWillCache = this.container.resolve(TreatmentWillCache);
         this.livingWillCache = this.container.resolve(LivingWillCache);
