@@ -10,7 +10,7 @@
     <parent>
         <groupId>dk.fmkonline</groupId>
         <artifactId>fol-parent</artifactId>
-        <version>3.50.5</version>
+        <version>3.51.5</version>
     </parent>
 
     <properties>
@@ -149,7 +149,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
                 <configuration>
                     <argLine>-Xmx1024m</argLine>
                     <forkCount>1</forkCount>

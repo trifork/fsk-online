@@ -43,6 +43,9 @@ export default class FSKOnlineModule extends DefaultModule {
         ModuleRegistryFactory.getInstance().setupModuleContextByReference(this);
 
         const remoteLogService = this.container.resolve(RemoteLogService);
+
+        remoteLogService.setupErrorHandler(false);
+
         ModuleRegistryFactory.getModuleContext().setUncaughtExceptionHandler(error => {
             PopupDialog.warning("Uventet fejl", error.message);
             remoteLogService.log(Level.ERROR, error.message, error);
