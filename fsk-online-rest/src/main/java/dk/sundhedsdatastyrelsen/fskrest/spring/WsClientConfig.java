@@ -27,7 +27,7 @@ import com.trifork.web.security.userinfo.UserInfo;
 import com.trifork.web.security.userinfo.UserInfoHolder;
 
 import dk.fmkonline.common.shared.IRole;
-import dk.fmkonline.common.shared.Role;
+import dk.fmkonline.common.shared.RoleHelper;
 import dk.fmkonline.dgwsidwsclient.DgwsClientMessageHandler;
 import dk.fmkonline.dgwsidwsclient.FlowIdProvider;
 import dk.fmkonline.dgwsidwsclient.IdCardProvider;
@@ -61,15 +61,11 @@ public class WsClientConfig {
     }
 
     @Bean
-    public RequestedRoleProvider requestedRoleProvider(final HttpServletRequest req) {
+    public RequestedRoleProvider requestedRoleProvider() {
         return () -> {
             UserInfo userInfo = UserInfoHolder.get();
-            if (userInfo != null) {
-                IRole role = Role.forName(UserInfoHolder.get().requestedRole);
-                return role.getSchemaName();
-            } else {
-                return Role.Citizen.getSchemaName();
-            }
+            IRole role = RoleHelper.roleFrom(userInfo);
+            return role;
         };
     }
 

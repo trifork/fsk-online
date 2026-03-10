@@ -2,7 +2,6 @@ package dk.sundhedsdatastyrelsen.fskrest.service;
 
 import com.trifork.web.security.userinfo.UserInfo;
 import com.trifork.web.security.userinfo.UserInfoHolder;
-import dk.fmkonline.common.shared.Role;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,8 +19,8 @@ public class AccessControlImpl implements AccessControl {
     @Override
     public void checkOdrReadAccess() {
         UserInfo userInfo = UserInfoHolder.get();
-        boolean isAuthorized = (Role.Supporter.getName().equals(userInfo.requestedRole)
-                || Role.WebAdmin.getName().equals(userInfo.requestedRole));
+        boolean isAuthorized = ("supporter".equals(userInfo.role.name)
+                || "webadmin".equals(userInfo.role.name));
         if (isAuthorized) {
             isAuthorized &= userInfo.requestedRoleSystemRestrictionList.contains(SYSTEM_NAME);
         }
@@ -36,7 +35,7 @@ public class AccessControlImpl implements AccessControl {
     @Override
     public void checkLtrBtrReadAccess() {
         UserInfo userInfo = UserInfoHolder.get();
-        boolean isAdmin = Role.WebAdmin.getName().equals(userInfo.requestedRole);
+        boolean isAdmin = "webadmin".equals(userInfo.role.name);
         boolean isAuthorized = isAdmin
                 || !StringUtils.isBlank(userInfo.authNo);
         if (isAdmin) {
@@ -53,7 +52,7 @@ public class AccessControlImpl implements AccessControl {
     @Override
     public void checkWriteAccess() {
         UserInfo userInfo = UserInfoHolder.get();
-        boolean isAuthorized = Role.WebAdmin.getName().equals(userInfo.requestedRole);
+        boolean isAuthorized = "webadmin".equals(userInfo.role.name);
         if (isAuthorized) {
             isAuthorized &= userInfo.requestedRoleSystemRestrictionList.contains(SYSTEM_NAME);
         }

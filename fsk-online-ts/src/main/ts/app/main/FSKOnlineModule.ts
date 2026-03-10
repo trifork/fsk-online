@@ -80,8 +80,8 @@ export default class FSKOnlineModule extends DefaultModule {
         return getVersionInfo(version);
     }
 
-    public override setPatient(patient: PersonInfo, asyncResponse: AsyncResponse): boolean {
-        const result = super.setPatient(patient, asyncResponse);
+    public override setPatient(patient: PersonInfo, patientEncounterId: string): boolean {
+        const result = super.setPatient(patient, patientEncounterId);
         if (patient) {
             this.organDonorCache.organDonorRegister.setStale();
             this.livingWillCache.livingWill.setStale();
