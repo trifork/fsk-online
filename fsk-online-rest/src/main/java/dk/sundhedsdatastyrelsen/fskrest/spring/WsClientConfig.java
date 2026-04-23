@@ -8,9 +8,8 @@ import java.util.HashMap;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.cxf.Bus;
 import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.ext.logging.LoggingFeature;
 import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.interceptor.LoggingInInterceptor;
-import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.logging.log4j.LogManager;
@@ -112,8 +111,11 @@ public class WsClientConfig {
         if (env.getProperty("ws.message.content.logging", Boolean.class, true)) {
             int maxLogBytes = env.getProperty("ws.message.content.logging.max.length", Integer.class, 1000 * 1024);
             log.info("MinLogClient client: Logging of full message content enabled");
-            bean.getInInterceptors().add(new LoggingInInterceptor(maxLogBytes));
-            bean.getOutInterceptors().add(new LoggingOutInterceptor(maxLogBytes));
+            LoggingFeature loggingFeature = new LoggingFeature();
+            loggingFeature.setLimit(maxLogBytes);
+            loggingFeature.setInMemThreshold(maxLogBytes);
+            loggingFeature.setLogMultipart(true);
+            bean.getFeatures().add(loggingFeature);
         }
 
         HashMap<String, Object> props = new HashMap<>();
