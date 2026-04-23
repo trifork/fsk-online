@@ -1,16 +1,21 @@
-import {UserContext} from "fmko-ts-common";
+import {RoleHelper, UserContext} from "fmko-ts-common";
 import FSKOnlineModule from "../main/FSKOnlineModule";
 
 export default class FSKUserUtil {
 
     public static isFSKAdmin(userContext: UserContext): boolean {
         const isFSKUser = userContext.hasSupporterOrAdminRoleForSystem(FSKOnlineModule.SYSTEM_NAME);
-        return isFSKUser && userContext.isAdministratorLogin();
+        const isAdminLogin = RoleHelper.WebAdmin.equals(userContext.getSelectedRole());
+
+        return isFSKUser && isAdminLogin;
     }
 
     public static isFSKSupporter(userContext: UserContext): boolean {
         const isFSKUser = userContext.hasSupporterOrAdminRoleForSystem(FSKOnlineModule.SYSTEM_NAME);
-        return isFSKUser && userContext.isSupporterLogin();
+        const isSupporterLogin = RoleHelper.Supporter.equals(userContext.getSelectedRole());
+
+        return isFSKUser && isSupporterLogin;
+
     }
 
     public static userHasAuthorisations(userContext: UserContext): boolean {
@@ -33,10 +38,10 @@ export default class FSKUserUtil {
         if (!userContext) {
             return false;
         }
-        if (userContext.isAdministratorLogin()) {
+        if (RoleHelper.WebAdmin.equals(userContext.getSelectedRole())) {
             return false;
         }
-        if (userContext.isSupporterLogin()) {
+        if (RoleHelper.Supporter.equals(userContext.getSelectedRole())) {
             return false;
         }
         const userHasEducation = (education: string) => educations.includes(education);

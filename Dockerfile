@@ -1,6 +1,6 @@
 ARG VERSION
-ARG T4_VERSION=6.0.3
-ARG JAVA_VERSION=21
+ARG T4_VERSION=6.0.5
+ARG JAVA_VERSION=25
 ARG BASE_IMAGE=registry.fmk.netic.dk/devops/fmkbase:${JAVA_VERSION}
 
 FROM registry.fmk.netic.dk/fmk/t4:${T4_VERSION}-jdk${JAVA_VERSION} AS base

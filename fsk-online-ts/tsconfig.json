@@ -20,7 +20,6 @@
         "noEmitHelpers": true,
         "experimentalDecorators": true,
         "noImplicitOverride": true,
-        "downlevelIteration": true,
         "lib": [
             "dom",
             "ES2023"
