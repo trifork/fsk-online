@@ -16,7 +16,7 @@ export default class FSKOrganDonorCache {
             return null;
         }
     }, () => {
-        PopupDialog.warning("Der opstod en fejl", `Der opstod en uventet fejl ved aflæsning af patientens organdonorregistrering.`);
+        PopupDialog.warning("Der opstod en fejl", "Der opstod en uventet fejl ved aflæsning af patientens organdonorregistrering.");
     });
 
     constructor(
@@ -39,7 +39,7 @@ export default class FSKOrganDonorCache {
     }
 
     private async loadHasRegistration(): Promise<boolean> {
-        if (typeof this.hasRegistration === `boolean`) {
+        if (typeof this.hasRegistration === "boolean") {
             return this.hasRegistration;
         }
         this.hasRegistration = this.moduleContext.getPatient()

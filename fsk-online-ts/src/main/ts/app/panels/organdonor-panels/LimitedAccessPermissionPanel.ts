@@ -84,15 +84,15 @@ export default class LimitedAccessPermissionPanel
         if (newValue) {
             Object.entries(newValue).forEach(([yesNoPermissionType, permission]) => {
                 if ([
-                    `permissionForHeart`,
-                    `permissionForKidneys`,
-                    `permissionForLungs`,
-                    `permissionForCornea`,
-                    `permissionForLiver`,
-                    `permissionForSmallIntestine`,
-                    `permissionForPancreas`,
-                    `permissionForSkin`,
-                    `requiresRelativeAcceptance`
+                    "permissionForHeart",
+                    "permissionForKidneys",
+                    "permissionForLungs",
+                    "permissionForCornea",
+                    "permissionForLiver",
+                    "permissionForSmallIntestine",
+                    "permissionForPancreas",
+                    "permissionForSkin",
+                    "requiresRelativeAcceptance"
                 ].includes(yesNoPermissionType)) {
                     const checkBox: TypedWCAGCheckbox<boolean> = this.checkboxes.get(yesNoPermissionType);
                     checkBox.setChecked(permission);
@@ -136,7 +136,7 @@ export default class LimitedAccessPermissionPanel
         this.value = newValue;
 
         this.anyChecked = Object.entries(newValue)
-            .filter(([key, value]) => key !== `requiresRelativeAcceptance` && value)
+            .filter(([key, value]) => key !== "requiresRelativeAcceptance" && value)
             .some(([, value]) => value === true);
 
         ValueChangeEvent.fireIfNotEqual(this, oldValue, newValue);
@@ -144,7 +144,7 @@ export default class LimitedAccessPermissionPanel
 
     private setupValidation(): void {
         const organCheckboxes = Array.from(this.checkboxes.entries())
-            .filter(([key]) => key !== `requiresRelativeAcceptance`)
+            .filter(([key]) => key !== "requiresRelativeAcceptance")
             .map(([, checkbox]) => checkbox);
 
         this.validator = new ValidationBuilder()

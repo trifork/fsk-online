@@ -19,7 +19,7 @@ export default class TreatmentWillCache {
             return null;
         }
     }, () => {
-        PopupDialog.warning("Der opstod en fejl", `Der opstod en uventet fejl ved aflæsning af patientens behandlingstestamente.`);
+        PopupDialog.warning("Der opstod en fejl", "Der opstod en uventet fejl ved aflæsning af patientens behandlingstestamente.");
     });
 
     constructor(

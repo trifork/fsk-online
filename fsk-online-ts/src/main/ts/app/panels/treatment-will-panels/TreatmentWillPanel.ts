@@ -272,8 +272,8 @@ export default class TreatmentWillPanel
                         this.moduleContext.getPatient().getCpr(),
                         this.getValue());
                 }
-                this.updateCache(true, `Behandlingstestamente oprettet`);
-                this.moduleContext.setApplicationContextId(`PATIENT`);
+                this.updateCache(true, "Behandlingstestamente oprettet");
+                this.moduleContext.setApplicationContextId("PATIENT");
 
             } catch (error) {
                 PopupDialog.warning("Der opstod en fejl", ErrorUtil.getMessage(error));
@@ -286,7 +286,7 @@ export default class TreatmentWillPanel
                 await this.fskService.updateTreatmentWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
                     this.getValue());
-                this.updateCache(true, `Behandlingstestamente opdateret`);
+                this.updateCache(true, "Behandlingstestamente opdateret");
             } catch (error) {
                 PopupDialog.warning("Der opstod en fejl", ErrorUtil.getMessage(error));
             }
@@ -296,12 +296,12 @@ export default class TreatmentWillPanel
             try {
                 const yesOption = <DialogOption>{
                     buttonStyle: ButtonStyle.DEFAULT,
-                    text: `Slet`
+                    text: "Slet"
                 };
 
                 const noOption = <DialogOption>{
                     buttonStyle: ButtonStyle.SECONDARY,
-                    text: `Fortryd`
+                    text: "Fortryd"
                 };
                 const yesIsClicked = await PopupDialog.display(
                     PopupDialogKind.WARNING,
@@ -311,8 +311,8 @@ export default class TreatmentWillPanel
                 if (yesIsClicked === yesOption) {
                     this.buttonPanel.disableButtons();
                     await this.fskService.deleteTreatmentWillForPatient(this.moduleContext.getPatient().getCpr());
-                    this.updateCache(false, `Behandlingstestamente slettet`);
-                    this.moduleContext.setApplicationContextId(`PATIENT`);
+                    this.updateCache(false, "Behandlingstestamente slettet");
+                    this.moduleContext.setApplicationContextId("PATIENT");
                 }
             } catch (error) {
                 PopupDialog.warning("Der opstod en fejl", ErrorUtil.getMessage(error));

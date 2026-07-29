@@ -164,7 +164,7 @@ export default class LivingWillPanel
                 await this.fskService.createLivingWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
                     this.getValue());
-                this.updateCache(true, `Livstestamente oprettet`);
+                this.updateCache(true, "Livstestamente oprettet");
             } catch (error) {
                 PopupDialog.warning("Der opstod en fejl", ErrorUtil.getMessage(error));
             }
@@ -176,7 +176,7 @@ export default class LivingWillPanel
                 await this.fskService.updateLivingWillForPatient(
                     this.moduleContext.getPatient().getCpr(),
                     this.getValue());
-                this.updateCache(true, `Livstestamente opdateret`);
+                this.updateCache(true, "Livstestamente opdateret");
             } catch (error) {
                 PopupDialog.warning("Der opstod en fejl", ErrorUtil.getMessage(error));
             }
@@ -186,12 +186,12 @@ export default class LivingWillPanel
             try {
                 const yesOption = <DialogOption>{
                     buttonStyle: ButtonStyle.DEFAULT,
-                    text: `Slet`
+                    text: "Slet"
                 };
 
                 const noOption = <DialogOption>{
                     buttonStyle: ButtonStyle.SECONDARY,
-                    text: `Fortryd`
+                    text: "Fortryd"
                 };
                 const yesIsClicked = await PopupDialog.display(
                     PopupDialogKind.WARNING,
@@ -201,9 +201,9 @@ export default class LivingWillPanel
                 if (yesIsClicked === yesOption) {
                     this.buttonPanel.disableButtons();
                     await this.fskService.deleteLivingWillForPatient(this.moduleContext.getPatient().getCpr());
-                    this.updateCache(false, `Livstestamente slettet`);
+                    this.updateCache(false, "Livstestamente slettet");
                     if (TimelineUtil.useTreatmentWill(this.fskConfig)) {
-                        this.moduleContext.setApplicationContextId(`PATIENT`);
+                        this.moduleContext.setApplicationContextId("PATIENT");
                     }
                 }
             } catch (error) {

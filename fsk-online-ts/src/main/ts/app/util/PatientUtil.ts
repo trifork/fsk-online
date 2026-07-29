@@ -5,10 +5,10 @@ export default class PatientUtil {
         if (!patient) {
             return "";
         }
-        const firstName = patient.getFirstName() || ``;
+        const firstName = patient.getFirstName() || "";
         // If the person has a middle name, then add it and create a space for the last name otherwise leave the space empty
-        const middleName = patient.getMiddleName() ? patient.getMiddleName() + ` ` : ``;
-        const lastName = patient.getLastName() || ``;
+        const middleName = patient.getMiddleName() ? patient.getMiddleName() + " " : "";
+        const lastName = patient.getLastName() || "";
 
         return `${firstName} ${middleName}${lastName}`;
     }

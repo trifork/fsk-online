@@ -27,16 +27,10 @@
                     <execution>
                         <id>npm-install</id>
                         <phase>process-resources</phase>
-                        <configuration>
-                            <skip>${skipNpmBuild}</skip>
-                        </configuration>
                     </execution>
                     <execution>
                         <id>npm-build</id>
                         <phase>compile</phase>
-                        <configuration>
-                            <skip>${skipNpmBuild}</skip>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

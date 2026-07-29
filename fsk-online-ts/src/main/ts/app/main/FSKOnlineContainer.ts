@@ -30,7 +30,7 @@ export default class FSKOnlineContainer {
             .withFactoryFunction(() => {
                 return new IdSynthesizer("fsk-online_");
             }).scopedAs(SINGLETON);
-        this._ioc.bind(`Version`)
+        this._ioc.bind("Version")
             .withFactoryFunction(() => {
                 return new VersionImpl(SCM_VERSION, SCM_BRANCH, BUILD_TIME, POM_VERSION);
             })

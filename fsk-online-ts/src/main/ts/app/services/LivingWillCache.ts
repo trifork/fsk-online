@@ -18,7 +18,7 @@ export default class LivingWillCache {
             return null;
         }
     }, () => {
-        PopupDialog.warning("Der opstod en fejl", `Der opstod en uventet fejl ved aflæsning af patientens livstestamente.`);
+        PopupDialog.warning("Der opstod en fejl", "Der opstod en uventet fejl ved aflæsning af patientens livstestamente.");
     });
 
     public static deps = () => ["ModuleContext", FSKService];

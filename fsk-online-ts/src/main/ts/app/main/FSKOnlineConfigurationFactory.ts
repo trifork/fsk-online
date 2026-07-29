@@ -5,8 +5,8 @@ export default class FSKOnlineConfigurationFactory {
     public static createInstance(moduleContext: ModuleContext): FSKConfig {
 
         const DEFAULTS: FSKConfig = {
-            FSKUrlBase: `/fmk/p/fsk-online/rest`,
-            TreatmentWillStartDate: `2018-01-31T23:00:00.000Z`
+            FSKUrlBase: "/fmk/p/fsk-online/rest",
+            TreatmentWillStartDate: "2018-01-31T23:00:00.000Z"
         };
 
         const fskConfig = moduleContext.getModuleConfiguration();
