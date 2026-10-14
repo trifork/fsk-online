@@ -7,7 +7,7 @@
     "watch": "node esbuild.mjs --watch"
   },
   "devDependencies": {
-    "fmko-ts-esbuild": "6.133.1",
+    "fmko-ts-esbuild": "6.134.0",
     "@stylistic/eslint-plugin": "5.10.0",
     "@typescript-eslint/eslint-plugin": "8.64.0",
     "@typescript-eslint/parser": "8.64.0",
@@ -23,12 +23,12 @@
     "typescript-eslint": "8.64.0"
   },
   "dependencies": {
-    "fmko-ts-common": "6.133.1",
-    "fmko-ts-grid": "6.133.1",
-    "fmko-ts-ioc": "6.133.1",
-    "fmko-ts-mvc": "6.133.1",
-    "fmko-ts-validation": "6.133.1",
-    "fmko-ts-widgets": "6.133.1",
+    "fmko-ts-common": "6.134.0",
+    "fmko-ts-grid": "6.134.0",
+    "fmko-ts-ioc": "6.134.0",
+    "fmko-ts-mvc": "6.134.0",
+    "fmko-ts-validation": "6.134.0",
+    "fmko-ts-widgets": "6.134.0",
     "moment": "2.31.0",
     "tslib": "2.8.1"
   },
