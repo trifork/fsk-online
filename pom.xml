@@ -27,19 +27,16 @@
     </scm>
 
     <distributionManagement>
-        <snapshotRepository>
-            <id>trifork.snapshots</id>
-            <name>Trifork internal snapshot Nexus</name>
-            <url>https://ci.fmk.netic.dk/nexus/content/repositories/snapshots/</url>
-        </snapshotRepository>
-
         <repository>
-            <id>trifork.releases</id>
-            <name>Trifork internal releases Nexus</name>
-            <url>https://ci.fmk.netic.dk/nexus/content/repositories/releases</url>
+            <id>releases</id>
+            <url>${deployment.repository}</url>
         </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>${deployment.snapshotRepository}</url>
+        </snapshotRepository>
     </distributionManagement>
-
+    
     <repositories>
         <repository>
             <id>trifork-public</id>
