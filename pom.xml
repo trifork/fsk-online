@@ -28,15 +28,15 @@
 
     <distributionManagement>
         <repository>
-            <id>releases</id>
+            <id>trifork.releases</id>
             <url>${deployment.repository}</url>
         </repository>
         <snapshotRepository>
-            <id>snapshots</id>
+            <id>trifork.snapshots</id>
             <url>${deployment.snapshotRepository}</url>
         </snapshotRepository>
     </distributionManagement>
-    
+
     <repositories>
         <repository>
             <id>trifork-public</id>
