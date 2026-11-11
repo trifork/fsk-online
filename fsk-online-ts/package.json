@@ -1,6 +1,9 @@
 {
   "name": "fsk-online",
   "version": "2.33.0-master-SNAPSHOT",
+  "engines": {
+    "npm": ">=11.17.0"
+  },
   "scripts": {
     "dev": "node esbuild.mjs",
     "prod": "node esbuild.mjs --production",
@@ -31,6 +34,9 @@
     "fmko-ts-widgets": "6.135.0",
     "moment": "2.31.0",
     "tslib": "2.8.1"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true
   },
   "registry": "https://ci.fmk.netic.dk/nexus/content/groups/npm-fmk-all/"
 }
